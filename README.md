@@ -1,5 +1,5 @@
 # crystal-mir2-modified
-基于 [Crystal Mir2](https://github.com/Suprcode/Crystal)，添加了一些外挂辅助功能，主要用于单机自己玩 ![:-)](https://github.com/masmx86/crystal-mir2-modified/blob/main/smile.jpg)
+基于 [Crystal Mir2](https://github.com/Suprcode/Crystal)，添加了一些外挂辅助功能，主要用于单机自己玩
 
 ##### 文件中做过的修改：
 
@@ -33,8 +33,8 @@
    ```
    Server.Library\MirObjects\HumanObject.cs
    
-   public void ChangeHP()
-   public void ChangeMP()
+   public void ChangeHP() -> Protected override void ChangeHP()
+   public void ChangeMP() -> Protected override void ChangeMP()
    ```
 
 4、法师幻影术可以召唤最多 10 个分身（可以设置成无限制）
@@ -57,15 +57,7 @@
    private void SummonShinsu()
    ```
 
-6、~~战士刀刀刺杀（不是这里）~~
-
-   ```
-   Server.Library\MirObjects\HumanObject.cs
-   
-   public void Attack() :Thrusting
-   ```
-
-7、仓库购买额外存储空间时间限制由 10 天改成 1 年
+6、仓库购买额外存储空间时间限制由 10 天改成 1 年
 
    ```
    Shared\Language.cs
@@ -78,85 +70,40 @@
    public void Chat() :ADDSTORAGE
    ```
 
-12、物品持久保护
+7、物品持久保护
 
    ```
    Server.Library\MirObjects\HumanObject.cs
    
    private void DamageDura()
    public void DamageWeapon()
-   public void DamageItem()
+   public void DamageItem() -> 50% 掉持久, 50% 持久增加
    ```
 
-13、增加小极品物品掉落概率
+8、增加小极品物品掉落概率
    ```
    Server.Library\MirEnvir\Envir.cs
    
-   public UserItem CreateDropItem()
-   public void UpgradeItemHacked()
+   public UserItem CreateDropItem() -> public void UpgradeItemHacked()
    
    Server\Configs\RandomItemStats.ini
 
    ```
 
-14、增加打怪爆率及掉落物品种类
+9、增加打怪爆率及掉落物品种类
 
    ```
    Server\Envir\Drops\*.txt
    ```                     
                      
-15、战士添加宝宝（正在验证中...）
-   ```
-   Server.Library\MirObjects\PlayerObject.cs
-   
-   private void StartGameSuccess()
-   public void StopGame()
-   ```
-   ```
-   Server.Library\MirObjects\PlayerObject.cs
-   
-   public override void UseItem()
-       ......
-       UserItem item = null;
-       int index = -1;
-
-       for (int i = 0; i < Info.Inventory.Length; i++)
-       {
-           item = Info.Inventory[i];
-           if (item == null || item.UniqueID != id) continue;
-           index = i;
-           break;
-       }
-       if (item == null || index == -1 || !CanUseItem(item))
-       {
-           Enqueue(p);
-           return;
-       }
-       ......
-
-       switch (item.Info.Type)
-       {
-           case ItemType.Book:
-               UserMagic magic = new UserMagic((Spell)item.Info.Shape);
-               if (magic.Info == null)
-               {
-                   Enqueue(p);
-                   return;
-               }
-               Info.Magics.Add(magic);
-               SendMagicInfo(magic);
-               RefreshStats();
-               break;
-           ......
-   ```
-
-15. 主界面上添加时间显示
+10. 主界面上添加时间、人物属性和装备持久显示
    ```
    Client\MirScenes\Dialogs\MainDialogs.cs
    public void MainDialog.Process()
+   public ChatControlBar()
    ```
 
-16. 增加角色名称可用字符集范围
+11. 扩展角色名称可用字符集
    ```
    Client\MirScenes\Dialogs\NewCharacterDialog.cs
    public sealed class NewCharacterDialog : MirImageControl{}
@@ -165,10 +112,18 @@
    static Envir()
    ```
 
+12. 道士自动使用符、毒
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   protected UserItem GetAmulet()
+   protected UserItem GetPoison()
+   ```
 
 ##### TODO：
 
-道士自动换符、换毒药
+自动整理包裹，物品自动归类排序
+
+战士添加宝宝
 
 自动显示、拾取超过一定等级的物品，自动捡钱
 
