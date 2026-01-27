@@ -1,67 +1,187 @@
-<h1 align="center">
-Legend of Mir 2 - Official Public Crystal Source
-</h2>
+# crystal-mir2-modified
+基于 [Crystal Mir2](https://github.com/Suprcode/Crystal)，添加了一些外挂辅助功能，主要用于单机自己玩 ![:-)](https://github.com/masmx86/crystal-mir2-modified/blob/main/smile.jpg)
 
-<h3 align="center">
-  
-[![Latest Release](https://img.shields.io/github/v/release/JevLOMCN/mir4?label=release&style=flat-square)](https://github.com/Suprcode/Crystal/releases/latest)
-[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg?style=flat-square)](LICENSE)
-![C#](https://img.shields.io/badge/c%23-%23239120.svg?style=for-the-badge&logo=csharp&logoColor=white)
-</h3>
+##### 文件中做过的修改：
 
-<h2 align="center">
-  
-Crystal is the most widely used open-source server and client engine for The Legend of Mir 2, developed and maintained by the LOMCN community.
-Originally created by Jamie and contributors, Crystal is a modern, fully managed C# implementation of the classic Mir 2 server architecture, designed to be stable, flexible, and easy to build upon.
+###### 都在注释 [hack] 标签下
 
-The project faithfully recreates the gameplay systems of the original 1999 MMORPG by ActozSoft and Wemade Entertainment, while also introducing modern improvements such as:
+1、解除了负重跑步限制
 
-🧰 Modular, readable C# codebase for both client and server
+   ```
+   Client\MirScenes\GameScene.cs
 
-🗺️ Custom map editor and data tools
+   private bool CanRun()
+   ```
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   public virtual bool CanRun()
+   public bool Run()
+   ```
 
-⚡ Performance improvements and bug fixes over legacy server files
+2、比奇和盟重的彩票员猜数字活动，无论输赢都会得到 1 千万金币
 
-🌍 Support for custom content, new features, and community expansions
+   ```
+   Server\Envir\NPCs\BichonProvince\BichonWall\Lottery.txt
+   Server\Envir\NPCs\MongchonProvince\MudWall\Lottery.txt
+   ```
 
-Crystal has become the foundation for most private Legend of Mir 2 servers worldwide, serving as a cornerstone of the Mir development scene since its public release on LOMCN
-</h2>
+3、锁红锁蓝
 
----
+      红保护线设置为 10~20%，永不死亡
+      蓝保护线设置为 10~20%
 
-## 🔗 Quick Links
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   
+   public void ChangeHP()
+   public void ChangeMP()
+   ```
 
-### LOMCN Community
+4、法师幻影术可以召唤最多 10 个分身（可以设置成无限制）
 
-- 🛠️ [Build Guide](https://www.lomcn.net/wiki/index.php/Getting_Started)
-- 💬 [Wiki](https://www.lomcn.net/wiki/index.php/Crystal)
-- 🐞 [Help](https://www.lomcn.net/forum/forums/crystalm2-help.663/)
-- 📚 [Tutorials](https://www.lomcn.net/forum/forums/crystalm2-tutorials.634/)
+      原来的逻辑是法师没蓝以后分身会消失  
+      锁蓝以后分身就会一直存在，无法消失  
 
-### Project Links
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   
+   private void Mirroring()
+   ```
+   
+5、道士召唤术可以召唤最多 10 个宝宝（可以设置成无限制）
 
-- 🌐 [Databases](https://github.com/Suprcode/Crystal.Database)
-- 🌐 [Map Editor](https://github.com/Suprcode/Crystal.MapEditor)
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   
+   private void SummonSkeleton()
+   private void SummonShinsu()
+   ```
 
-### Official Links
+6、~~战士刀刀刺杀（不是这里）~~
 
-- <img src="https://web-cdn.mironline.co.kr/mir2/icon/mir2_favicon.ico" alt="Wemade" width="20"/> [Wemade Mir 2](https://mir2.mironline.co.kr/)
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   
+   public void Attack() :Thrusting
+   ```
 
----
+7、仓库购买额外存储空间时间限制由 10 天改成 1 年
 
-# Contributors:
+   ```
+   Shared\Language.cs
+   public static string ExtraStorage
+   public static string ExtendYourRentalPeriod
+   ```
+   ```
+   Server.Library\MirObjects\PlayerObject.cs
+   
+   public void Chat() :ADDSTORAGE
+   ```
 
-> [Community Contributors](https://github.com/Suprcode/Crystal/graphs/contributors)
+12、物品持久保护
 
----
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   
+   private void DamageDura()
+   public void DamageWeapon()
+   public void DamageItem()
+   ```
 
-## <img src="https://mirfiles.co.uk/resources/mir2/users/Jev/favicon.png" width="40"> Other Projects
+13、增加小极品物品掉落概率
+   ```
+   Server.Library\MirEnvir\Envir.cs
+   
+   public UserItem CreateDropItem()
+   public void UpgradeItemHacked()
+   
+   Server\Configs\RandomItemStats.ini
 
-- <img src="https://github.com/JevLOMCN/mir4/blob/main/Tools/icons/mir1.png" alt="Mir1" width="20"/> [Mir 1](https://github.com/JevLOMCN/mir1/) | [Database](https://github.com/Suprcode/Carbon.Database) - Remake of ActozSoft's 1997 _The Legend Of Mir 1_
-- <img src="https://github.com/JevLOMCN/mir4/blob/main/Tools/icons/mir2.png" alt="Mir2" width="20"/> [Mir 2](https://github.com/Suprcode/Crystal) | [Database](https://github.com/Suprcode/Crystal.Database) | [Map Editor](https://github.com/Suprcode/Crystal.MapEditor) - Remake of ActozSoft/Wemade Entertainment's 1999 _The Legend Of Mir 2_
-- <img src="https://github.com/JevLOMCN/mir4/blob/main/Tools/icons/mir3.png" alt="Mir3" width="20"/> [Mir 3](https://github.com/Suprcode/Zircon) | [Database](https://mirfiles.com/resources/mir3/zircon/Database.7z) | [Map Editor](https://www.lomcn.net/forum/threads/map-editor.109317/)- Remake of Wemade Entertainment's 2003 _The Legend Of Mir 3_
-- <img src="https://github.com/JevLOMCN/mir4/blob/main/Tools/icons/woool.png" alt="WoOOL" width="20"/> [WoOOL](https://www.lomcn.net/forum/forums/woool-development-project-onyx.857/) - Remake of Shanda Games' (now Shengqu Games) 2003 _The World Of Legend_
-- <img src="https://github.com/JevLOMCN/mir4/blob/main/Tools/icons/mir3d.png" alt="Mir3D" width="20"/> [Mir 3D (Moon Spirit)](https://github.com/mir-ethernity/mir-eternal) | [Mir 3D (Holy Cow)](https://github.com/JevLOMCN/Eternal-Legend) - Remake of Shanda Games' (now Shengqu Games) 2016 _Legend Eternal_
-- <img src="https://github.com/JevLOMCN/mir4/blob/main/Tools/icons/mir4.png" alt="Mir4" width="20"/> [Mir 4](https://github.com/JevLOMCN/mir4) - Remake of Wemade Entertainment's 2021 _Mir 4_
+   ```
 
----
+14、增加打怪爆率及掉落物品种类
+
+   ```
+   Server\Envir\Drops\*.txt
+   ```                     
+                     
+15、战士添加宝宝（正在验证中...）
+   ```
+   Server.Library\MirObjects\PlayerObject.cs
+   
+   private void StartGameSuccess()
+   public void StopGame()
+   ```
+   ```
+   Server.Library\MirObjects\PlayerObject.cs
+   
+   public override void UseItem()
+       ......
+       UserItem item = null;
+       int index = -1;
+
+       for (int i = 0; i < Info.Inventory.Length; i++)
+       {
+           item = Info.Inventory[i];
+           if (item == null || item.UniqueID != id) continue;
+           index = i;
+           break;
+       }
+       if (item == null || index == -1 || !CanUseItem(item))
+       {
+           Enqueue(p);
+           return;
+       }
+       ......
+
+       switch (item.Info.Type)
+       {
+           case ItemType.Book:
+               UserMagic magic = new UserMagic((Spell)item.Info.Shape);
+               if (magic.Info == null)
+               {
+                   Enqueue(p);
+                   return;
+               }
+               Info.Magics.Add(magic);
+               SendMagicInfo(magic);
+               RefreshStats();
+               break;
+           ......
+   ```
+
+15. 主界面上添加时间显示
+   ```
+   Client\MirScenes\Dialogs\MainDialogs.cs
+   public void MainDialog.Process()
+   ```
+
+16. 增加角色名称可用字符集范围
+   ```
+   Client\MirScenes\Dialogs\NewCharacterDialog.cs
+   public sealed class NewCharacterDialog : MirImageControl{}
+
+   Server.Library\MirEnvir\Envir.cs
+   static Envir()
+   ```
+
+
+##### TODO：
+
+道士自动换符、换毒药
+
+自动显示、拾取超过一定等级的物品，自动捡钱
+
+自动喝药、自动喝灵符
+
+自动修理装备
+
+自动传送回城
+
+自动挂机打怪
+
+自动换装备
+
+自动宠物回血
+
+自动存取仓库
