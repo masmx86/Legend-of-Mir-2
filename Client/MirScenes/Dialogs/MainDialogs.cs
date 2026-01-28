@@ -1337,7 +1337,7 @@ namespace Client.MirScenes.Dialogs
 
                 AutoSize = true,
                 Parent = this,
-                Location = new Point(SizeButton.Location.X - 40, SizeButton.Location.Y),
+                Location = new Point(Location.X / 2 + 40, 0),
                 ForeColour = Color.White,
                 OutLine = true,
                 NotControl = true,

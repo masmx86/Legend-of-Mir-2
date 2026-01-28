@@ -4450,7 +4450,7 @@ namespace Server.MirObjects
                 if (monster.Node == null) continue;
                 monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
                 // [hack] comment off this return to allow multiple skeletons
-                return;
+                //return;
             }
 
             // [hack] allow multiple skeletons up to 10
