@@ -23,6 +23,9 @@ namespace Server.MirDatabase
         public int Index;
         public string Name = string.Empty;
 
+        // [hack] add nickname to monter
+        public string Nickname = string.Empty;
+
         public Monster Image;
         public byte AI, Effect, ViewRange = 7, CoolEye;
         public ushort Level;

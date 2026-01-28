@@ -4320,11 +4320,15 @@ namespace Server.MirObjects
                 if (monster.Node == null) continue;
 
                 action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, true);
+                //action = new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true);
                 CurrentMap.ActionList.Add(action);
 
                 // [hack] comment off this return to allow multiple clones
                 //return;
             }
+
+            // [hack] limit pets max count to 10
+            if (Pets.Count(x => x.Race == ObjectType.Monster) >= 10) return;
 
             MonsterInfo info = Envir.GetMonsterInfo(Settings.CloneName);
             if (info == null) return;
@@ -4335,6 +4339,12 @@ namespace Server.MirObjects
             monster.Master = this;
             monster.ActionTime = Envir.Time + 1000;
             monster.RefreshNameColour(false);
+
+            // [hack] assign nickname to clone
+            // todo: allow custom naming of clones
+            // read nicknames from settings predefined nickname list
+            //string nickname = $"{Settings.CloneName} ({Name})";
+            //info.Nickname = nickname;
 
             Pets.Add(monster);
 
@@ -4473,6 +4483,12 @@ namespace Server.MirObjects
             monster.ActionTime = Envir.Time + 1000;
             monster.RefreshNameColour(false);
 
+            // [hack] assign nickname to clone
+            // todo: allow custom naming of clones
+            // read nicknames from settings predefined nickname list
+            //string nickname = $"{Settings.CloneName} ({Name})";
+            //info.Nickname = nickname;
+
             //Pets.Add(monster);
 
             DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
@@ -4524,6 +4540,12 @@ namespace Server.MirObjects
             monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
             monster.Direction = Direction;
             monster.ActionTime = Envir.Time + 1000;
+
+            // [hack] assign nickname to clone
+            // todo: allow custom naming of clones
+            // read nicknames from settings predefined nickname list
+            //string nickname = $"{Settings.CloneName} ({Name})";
+            //info.Nickname = nickname;
 
             //Pets.Add(monster);
 
