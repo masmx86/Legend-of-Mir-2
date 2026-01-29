@@ -2832,8 +2832,7 @@ public static class GameLanguage
             { nameof(ClientTextKeys.NoClass), "The class you selected does not exist. Contact a GM for assistance." },
             { nameof(ClientTextKeys.ToManyCharacters), "You cannot make anymore then {0} Characters." },
             { nameof(ClientTextKeys.CharacterNameExists), "A Character with this name already exists." },
-            {
-                nameof(ClientTextKeys.WarriorsDes), "Warriors are a class of great strength and vitality. They are not easily killed in battle and have the advantage of being able to use" +
+            { nameof(ClientTextKeys.WarriorsDes), "Warriors are a class of great strength and vitality. They are not easily killed in battle and have the advantage of being able to use" +
                                                     " a variety of heavy weapons and Armour. Therefore, Warriors favor attacks that are based on melee physical damage. They are weak in ranged" +
                                                     " attacks, however the variety of equipment that are developed specifically for Warriors complement their weakness in ranged combat."
             },
@@ -2940,12 +2939,10 @@ public static class GameLanguage
             { nameof(ClientTextKeys.TooManyErrors), "Too many problems occured, no longer displaying future errors" },
             { nameof(ClientTextKeys.ErrorSavingFile), "Problem occured saving this file: " },
             { nameof(ClientTextKeys.FileDownload_Failure), "Failed to download file: {0}" },
-            {
-                nameof(ClientTextKeys.LauncherHostSettingFormatError),
+            { nameof(ClientTextKeys.LauncherHostSettingFormatError),
                 "Please Check Launcher HOST Setting is formatted correctly\nCan be caused by missing or extra slashes and spelling mistakes.\nThis error can be ignored if patching is not required."
             },
-            {
-                nameof(ClientTextKeys.LauncherBrowserFormatError),
+            { nameof(ClientTextKeys.LauncherBrowserFormatError),
                 "Please Check Launcher BROWSER Setting is formatted correctly.\nCan be caused by missing or extra slashes and spelling mistakes.\nThis error can be ignored."
             },
 
@@ -3238,239 +3235,181 @@ public static class GameLanguage
             { nameof(ClientTextKeys.NewMovementStyle), "[New Movement Style]" },
             { nameof(ClientTextKeys.OldMovementStyle), "[Old Movement Style]" },
             { nameof(ClientTextKeys.KeyboardKeybind), "Keyboard ({0})" },
-            {
-                nameof(ClientTextKeys.FencingSkillDescription),
+            { nameof(ClientTextKeys.FencingSkillDescription),
                 "Fencing\n\nPassive Skill\n\nHitting accuracy will be increased in accordance\nwith practice level.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.SlayingSkillDescription),
+            { nameof(ClientTextKeys.SlayingSkillDescription),
                 "Slaying\n\nPassive Skill\n\nHitting accuracy and destructive power will\nbe increased in accordance with practice level.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.ThrustingSkillDescription),
+            { nameof(ClientTextKeys.ThrustingSkillDescription),
                 "Thrusting\n\nToggle Skill\n\nIncreases the reach of your hits destructive power\nwill increase in accordance with practice level.\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.RageSkillDescription),
+            { nameof(ClientTextKeys.RageSkillDescription),
                 "Rage\n\nBuff Skill\nMana Cost {2}\n\nEnhances your inner force to increase its power\nfor a certain time. Attack power and duration time\nwill depend on the skill level. Once the skill has been used\n you will have to wait to use it again.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.ProtectionFieldSkillDescription),
+            { nameof(ClientTextKeys.ProtectionFieldSkillDescription),
                 "Protection Field\n\nBuff Skill\nMana Cost {2}\n\nConcentrates inner force and spreads it to all\n the parts of your body. This will enhance the\nprotection from enemies. Defense power and duration\nwill be depend on the skill level. Once the skill\n has been used, you will have to wait to use it again.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.HalfMoonSkillDescription),
+            { nameof(ClientTextKeys.HalfMoonSkillDescription),
                 "Half Moon\n\nToggle Skill\nMana Cost: {2} per attack\n\nCause damage to enemies in a semi circle around the caster with\nthe shock waves from your fast moving weapon.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.FlamingSwordSkillDescription),
+            { nameof(ClientTextKeys.FlamingSwordSkillDescription),
                 "Flaming Sword\n\nActive Skill\nMana Cost: {2}\n\nSummons the spirit of fire in to your next attack, causing\na devastating blow to the target.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.ShoulderDashSkillDescription),
+            { nameof(ClientTextKeys.ShoulderDashSkillDescription),
                 "Shoulder Dash\n\nActive Skill\nMana Cost: {2}\n\nA warrior can push a target backwards by charging\nthem with his shoulder, inflicting damage\nif they hit any obstacle.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.CrossHalfMoonSkillDescription),
+            { nameof(ClientTextKeys.CrossHalfMoonSkillDescription),
                 "Cross Half-Moon\n\nToggle Skill\nMana Cost: {2} per attack\n\nA warrior uses two powerful waves of Half Moon\nto inflict damage on all mobs stood next to them.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.TwinDrakeBladeSkillDescription),
+            { nameof(ClientTextKeys.TwinDrakeBladeSkillDescription),
                 "Twin Drake Blade\n\nActive Skill\nMana Cost {2}\n\nThe art of making multiple power attacks.\nIt has a low chance of stunning a target temporarily.\nStunned monsters receive an additional 50% damage.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.EntrapmentSkillDescription), "Entrapment\n\nActive Skill\nMana Cost: {2}\n\nParalyses mobs and draws them to the caster.\nCurrent Skill Level {0}\nNext Level {1}"
+            { nameof(ClientTextKeys.EntrapmentSkillDescription), "Entrapment\n\nActive Skill\nMana Cost: {2}\n\nParalyses mobs and draws them to the caster.\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.LionRoarSkillDescription),
+            { nameof(ClientTextKeys.LionRoarSkillDescription),
                 "Lion Roar\n\nActive Skill\nMana Cost: {2}\n\nParalyses enemies around the caster, duration increases with skill level.\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.CounterAttackSkillDescription),
+            { nameof(ClientTextKeys.CounterAttackSkillDescription),
                 "Counter Attack\n\nBuff Skill\nMana Cost {2}\n\nIncreases AC and AMC for a short period of time\nChance to defend an attack and counter.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             { nameof(ClientTextKeys.ImmortalSkinSkillDescription), "Immortal Skin\n\nBuff Skill\nMana Cost {2}\n\nIncrease defence to reduce attacks.\n\nCurrent Skill Level {0}\nNext Level {1}" },
-            {
-                nameof(ClientTextKeys.FurySkillDescription), "Fury\n\nBuff Skill\nMana Cost {2}\n\nIncreases the warriors Accuracy for a set period of time.\n\nCurrent Skill Level {0}\nNext Level {1}"
+            { nameof(ClientTextKeys.FurySkillDescription), "Fury\n\nBuff Skill\nMana Cost {2}\n\nIncreases the warriors Accuracy for a set period of time.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.SlashingBurstSkillDescription),
+            { nameof(ClientTextKeys.SlashingBurstSkillDescription),
                 "Slashing Burst\n\nActive Skill\nMana Cost: {2}\n\nAllows The Warrior to Jump 1 Space Over an Object or Monster.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.BladeAvalancheSkillDescription),
+            { nameof(ClientTextKeys.BladeAvalancheSkillDescription),
                 "Blade Avalanche\n\nActive Skill\nMana Cost {2}\n\nHurls blades in three directions in front of the\ncaster, creating a deadly storm of metal\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.FireballSkillDescription),
+            { nameof(ClientTextKeys.FireballSkillDescription),
                 "Fireball \n\nInstant Casting\nMana Cost {2}\n\nElements of fire are gathered to form\na fireball. Throw at monsters for damage.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.ThunderboltSkillDescription),
+            { nameof(ClientTextKeys.ThunderboltSkillDescription),
                 "Thunderbolt\n\nInstant Casting\nMana Cost {2}\n\nStrikes the foe with a lightning bolt \ninflicting high damage.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.GreatFireballSkillDescription),
+            { nameof(ClientTextKeys.GreatFireballSkillDescription),
                 "Great Fireball\n\nInstant Casting\nMana Cost {2}\n\nSuccessor to fire ball, Great Fire Ball causes increased\ndamage to targets.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.RepulsionSkillDescription),
+            { nameof(ClientTextKeys.RepulsionSkillDescription),
                 "Repulsion\n\nInstant Casting\nMana Cost {2}\n\nPush away surrounding targets using the power of fire.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.HellfireSkillDescription),
+            { nameof(ClientTextKeys.HellfireSkillDescription),
                 "Hellfire\n\nInstant Casting\nMana Cost {2}\n\nShoots out a streak of fire attack\nthe monster in front.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.LightningSkillDescription),
+            { nameof(ClientTextKeys.LightningSkillDescription),
                 "Lightning\n\nInstant Casting\nMana Cost {2}\n\nShoots out a steak of lightning to attack\nthe monster in front.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.ElectricShockSkillDescription),
+            { nameof(ClientTextKeys.ElectricShockSkillDescription),
                 "Electric Shock\n\nInstant Casting\nMana Cost {2}\n\nStrong shock wave hits the mob and the\nmob will not be able to move or the mob\nwill get confused and fight for you.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             { nameof(ClientTextKeys.TeleportSkillDescription), "Teleport\n\nInstant Casting\nMana Cost {2}\n\nTeleport to a random spot.\n\nCurrent Skill Level {0}\nNext Level {1}" },
-            {
-                nameof(ClientTextKeys.FireWallSkillDescription),
+            { nameof(ClientTextKeys.FireWallSkillDescription),
                 "Fire Wall\n\nInstant Casting\nMana Cost {2}\n\nThis skill will build a fire wall at a designated\nspot to attack the monster passing the area.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.FireBangSkillDescription),
+            { nameof(ClientTextKeys.FireBangSkillDescription),
                 "Fire Bang\n\nInstant Casting\nMana Cost {2}\n\nFire Bang will burst out fire at a designated spot to\nburn all the monster within the area.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.ThunderstormSkillDescription),
+            { nameof(ClientTextKeys.ThunderstormSkillDescription),
                 "Thunderstorm \n\nInstant Casting\nMana Cost {2}\n\nCreates a thunder storm around the caster causing\ndamage to all Undead enemies with its range.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.MagicShieldSkillDescription),
+            { nameof(ClientTextKeys.MagicShieldSkillDescription),
                 "Magic Shield\n\nInstant Casting\nMana Cost {2}\n\nCreates a protective field around the caster that absorbs damage.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.TurnUndeadSkillDescription),
+            { nameof(ClientTextKeys.TurnUndeadSkillDescription),
                 "Turn Undead\n\nInstant Casting\nMana Cost {2}\n\nChance to kill any undead target that meets the level requirements, in a single cast.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.IceStormSkillDescription),
+            { nameof(ClientTextKeys.IceStormSkillDescription),
                 "Ice Storm\n\nInstant Castin\nMana Cost {2}\n\nThis skill will make an ice storm with in a designated \narea to attack the monsters with in\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.FlameDisruptorSkillDescription),
+            { nameof(ClientTextKeys.FlameDisruptorSkillDescription),
                 "Flame Disruptor\n\nInstant Casting\nMana Cost {2}\n\nFlame from the underground will be brought\ninto surface to attack the mobs.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.FrostCrunchSkillDescription),
+            { nameof(ClientTextKeys.FrostCrunchSkillDescription),
                 "Frost Crunch\n\nInstant Casting\nMana Cost {2}\n\nFreeze the elements in the air around the \nmonster to slow them down\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.MirroringSkillDescription),
+            { nameof(ClientTextKeys.MirroringSkillDescription),
                 "Mirroring\n\nInstant Casting\nMana Cost {2}\n\nCreate a mirror image of yourself to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.FlameFieldSkillDescription),
+            { nameof(ClientTextKeys.FlameFieldSkillDescription),
                 "Flame Field\n\nInstant Casting\nMana Cost {2}\n\nA powerful spell of fire is used to \ndamage surrounding enemies.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.VampirismSkillDescription),
+            { nameof(ClientTextKeys.VampirismSkillDescription),
                 "Vampirism\n\nInstant Casting\nMana Cost {2}\n\nUsing Mp take away monsters Hp to\nincrease your Hp.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.BlizzardSkillDescription),
+            { nameof(ClientTextKeys.BlizzardSkillDescription),
                 "Blizzard\n\nChannelling Casting\nMana Cost {2}\n\nConcentrate inner force and spreads it to all\nthe parts of your body.This will enhance the\nprotection from enemies. Defence power and duration\ntime will depend on the skill level. Once the skill\nhas been used, you will have to wait to use it again.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.MeteorStrikeSkillDescription),
+            { nameof(ClientTextKeys.MeteorStrikeSkillDescription),
                 "Meteor Strike\n\nChannelling Casting\nMana Cost {2}\n\nAttacks all monsters within 5x5 square area with lumps \nof fire falling from the sky.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.IceThrustSkillDescription),
+            { nameof(ClientTextKeys.IceThrustSkillDescription),
                 "Ice Thrust\n\nInstant Casting\nMana Cost {2}\n\nAttack monsters by creating an ice pillar.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.MagicBoosterSkillDescription),
+            { nameof(ClientTextKeys.MagicBoosterSkillDescription),
                 "Magic Booster\n\nLasting Effect\nMana Cost {2}\n\nIncrease magical damage, but consume additional MP.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             { nameof(ClientTextKeys.FastMoveSkillDescription), "Fast Move\n\nChannelling Casting\nMana Cost {2}\n\nIncrease movement with rooted skills.\n\nCurrent Skill Level {0}\nNext Level {1}" },
-            {
-                nameof(ClientTextKeys.StormEscapeSkillDescription),
+            { nameof(ClientTextKeys.StormEscapeSkillDescription),
                 "Storm Escape\n\nChannelling Casting\nMana Cost {2}\n\nParalyze nearby enemies and teleport to the designated location.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             { nameof(ClientTextKeys.BlinkSkillDescription), "Blink\n\nInstant Casting\nMana Cost {2}\n\nTeleport to a random spot near you.\n\nCurrent Skill Level {0}\nNext Level {1}" },
-            {
-                nameof(ClientTextKeys.SpiritSwordSkillDescription),
+            { nameof(ClientTextKeys.SpiritSwordSkillDescription),
                 "Spirit Sword\n\nIncreases the chance of hitting the target in\n melee combat.\nPassive Skill\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.HealingSkillDescription),
+            { nameof(ClientTextKeys.HealingSkillDescription),
                 "Healing\n\nInstant Casting\nMana Cost {2}\n\nHeals a single target \nrecovering HP over time.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.PoisoningSkillDescription),
+            { nameof(ClientTextKeys.PoisoningSkillDescription),
                 "Poisoning\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Poison Powder\n\nThrow poison at mobs to weaken them.\nUse green poison to weaken Hp.\nUse red poison to weaken defense.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.SoulFireBallSkillDescription),
+            { nameof(ClientTextKeys.SoulFireBallSkillDescription),
                 "Soul FireBall\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nPut power into a scroll and throw it at \na mob. The scroll will burst into fire.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.SoulShieldSkillDescription),
+            { nameof(ClientTextKeys.SoulShieldSkillDescription),
                 "Soul Shield\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nBless caster and party members to strengthen their magic\ndefence.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.BlessedArmourSkillDescription),
+            { nameof(ClientTextKeys.BlessedArmourSkillDescription),
                 "Blessed Armour\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nBless caster and party members to strengthen their defence.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.TrapHexagonSkillDescription),
+            { nameof(ClientTextKeys.TrapHexagonSkillDescription),
                 "Trap Hexagon\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nTrap the monster with this magical power\n to stop them from moving. Any damages\nfrom outside source will allow the monsters\nto move again.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.SummonSkeletonSkillDescription),
+            { nameof(ClientTextKeys.SummonSkeletonSkillDescription),
                 "Summon Skeleton\n\nInstant Casting\nMana Cost {2}\n\nSummons a Powerful AOE Skeleton, Which will Fight Side By Side With You\n\nRequired Items: Amulet.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.HidingSkillDescription),
+            { nameof(ClientTextKeys.HidingSkillDescription),
                 "Hiding\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nMobs will not be able to spot you for a short\nmoment.Mobs will notice you if you start\nto move around.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.MassHidingSkillDescription),
+            { nameof(ClientTextKeys.MassHidingSkillDescription),
                 "Mass-Hiding\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nMobs will not be able to spot you or your \nparty members for a short moment. \nMobs will notice you and your party if \nyou start to move around.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             { nameof(ClientTextKeys.RevelationSkillDescription), "Revelation\n\nInstant Casting\nMana Cost {2}\n\nYou will be able to read Hp of others\n\nCurrent Skill Level {0}\nNext Level {1}" },
-            {
-                nameof(ClientTextKeys.MassHealingSkillDescription),
+            { nameof(ClientTextKeys.MassHealingSkillDescription),
                 "Mass-Healing\n\nInstant Casting\nMana Cost {2}\n\nHeal all injured players in the specified\narea by surrounding them with mana.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.SummonShinsuSkillDescription),
+            { nameof(ClientTextKeys.SummonShinsuSkillDescription),
                 "Summon Shinsu\n\nInstant Casting\nMana Cost {2}\n\nSummons a Dog, That Will fight Side By Side with you.\nRequired Items: Amulet.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.UltimateEnhancerSkillDescription),
+            { nameof(ClientTextKeys.UltimateEnhancerSkillDescription),
                 "Ultimate Enhancer\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nAbsorb the energy from the surroundings to increase the stats.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.EnergyRepulsorSkillDescription),
+            { nameof(ClientTextKeys.EnergyRepulsorSkillDescription),
                 "Energy Repulsor\n\nInstant Casting\nMana Cost {2}\n\nConcentrate your energy for one big blast to push away the monsters around you.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.PurificationSkillDescription),
+            { nameof(ClientTextKeys.PurificationSkillDescription),
                 "Purification\n\nInstant Casting\nMana Cost {2}\n\nHelp others to recover from poisoning and\nparalysis using this skill.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.SummonHolyDevaSkillDescription),
+            { nameof(ClientTextKeys.SummonHolyDevaSkillDescription),
                 "Summon HolyDeva\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nSummon a holy spirit.This holy spirit will\nuse strong thunder to attack monsters.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.CurseSkillDescription),
+            { nameof(ClientTextKeys.CurseSkillDescription),
                 "Curse\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet + Poison\n\nReduces targets AttackSpeed, DC ,MC and SC.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.HallucinationSkillDescription),
+            { nameof(ClientTextKeys.HallucinationSkillDescription),
                 "Hallucination\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nThe monster will only see hallucination \nand attack anyone on the way\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
-            {
-                nameof(ClientTextKeys.ReincarnationSkillDescription),
+            { nameof(ClientTextKeys.ReincarnationSkillDescription),
                 "Reincarnation\n\nInstant Casting\nMana Cost {2}\n\nRequired Items: Amulet\n\nRevives a dead players\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             {
@@ -3709,12 +3648,10 @@ public static class GameLanguage
             { nameof(ClientTextKeys.SubmitBug), "Submit Bug" },
             { nameof(ClientTextKeys.ReportPlayer), "Report Player" },
             { nameof(ClientTextKeys.TradeAmount), "Trade Amount:" },
-            {
-                nameof(ClientTextKeys.ConsignmentRules),
+            { nameof(ClientTextKeys.ConsignmentRules),
                 "1. Consignment is {0} gold per item \n\n2. 1% of sale price is paid to Trust Merchant at sale end\n\n3. Maximum {1} days of item sale registration until item is removed\n\n4. Maximum of unlimited items allowed for sale\n\n5. Sale price can be set between: {2} - {3} gold"
             },
-            {
-                nameof(ClientTextKeys.AuctionRules),
+            { nameof(ClientTextKeys.AuctionRules),
                 "1. Auction cost is {0} gold, max starting bid is {1} gold per item \n\n2. 1% of final bid price is paid to Trust Merchant at auction end\n\n3. Maximum {2} days of item sale registration, afterwards the item will be sent to highest bidder\n\n4. Maximum of unlimited items allowed for auction\n\n"
             },
             { nameof(ClientTextKeys.InterestedInPurchase), "I am interested in purchasing {0} for {1}." },
