@@ -14425,10 +14425,35 @@ namespace Server.MirObjects
             if (!hero.Dead)
                 SpawnHero(hero);
 
+            // [hack] assign nickname to hero
+            hero.Info.Nickname = GiveHeroNickname(hero);
+
             Hero = hero;
             Info.HeroSpawned = true;
             Enqueue(new S.UpdateHeroSpawnState { State = hero.Dead ? HeroSpawnState.Dead : HeroSpawnState.Summoned });
         }
+        // [hack] assign nickname to hero
+        private string GiveHeroNickname(HumanObject hero)
+        {
+            if (hero == null) return string.Empty;
+
+            string nickname;
+            // hero nicknames
+            if (hero.Info.Name == Settings.HeroName)
+            {
+                HumanObject owner = hero.Master as HumanObject;
+                MirGender gender = owner.Gender;
+                for (int i = 0; i < (gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length); i++)
+                {
+                    nickname = (gender == MirGender.Male ? Settings.BoysHeroNicknames : Settings.GirlsHeroNicknames)[Envir.Random.Next(gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length)];
+                    if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.HeroName) continue;
+                    return nickname;
+                }
+                return Settings.HeroName;
+            }
+            return string.Empty;
+        }
+
         private void SpawnHero(HeroObject hero)
         {
             if (CurrentMap.ValidPoint(Front))

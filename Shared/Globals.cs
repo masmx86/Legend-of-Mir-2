@@ -20,7 +20,8 @@
 
         MaxGroup = 15,
 
-        MaxPets = 5,
+        // [hack] change from 5 to 10 to allow more pets
+        MaxPets = 10,
 
         MaxAttackRange = 9,
 

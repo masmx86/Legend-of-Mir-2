@@ -14,6 +14,10 @@ namespace Server.MirDatabase
 
         public int Index;
         public string Name;
+
+        // [hack] add nickname to charactor
+        public string Nickname = string.Empty;
+
         public ushort Level;
         public MirClass Class;
         public MirGender Gender;

@@ -4341,10 +4341,7 @@ namespace Server.MirObjects
             monster.RefreshNameColour(false);
 
             // [hack] assign nickname to clone
-            // todo: allow custom naming of clones
-            // read nicknames from settings predefined nickname list
-            //string nickname = $"{Settings.CloneName} ({Name})";
-            //info.Nickname = nickname;
+            monster.Info.Nickname = GivePetNickname(monster);
 
             Pets.Add(monster);
 
@@ -4484,15 +4481,60 @@ namespace Server.MirObjects
             monster.RefreshNameColour(false);
 
             // [hack] assign nickname to clone
-            // todo: allow custom naming of clones
-            // read nicknames from settings predefined nickname list
-            //string nickname = $"{Settings.CloneName} ({Name})";
-            //info.Nickname = nickname;
+            monster.Info.Nickname = GivePetNickname(monster);
 
             //Pets.Add(monster);
 
             DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
             CurrentMap.ActionList.Add(action);
+        }
+
+        // [hack] assign nickname to pets
+        private string GivePetNickname(MonsterObject pet)
+        {
+            if(pet == null) return string.Empty;
+
+            string nickname;
+            // skeleton nicknames
+            if (pet.Info.Name == Settings.SkeletonName)
+            {
+                for(int i = 0; i < Settings.SkeletonNicknames.Length; i++)
+                {
+                    nickname = Settings.SkeletonNicknames[Envir.Random.Next(Settings.SkeletonNicknames.Length)];
+                    if(string.IsNullOrWhiteSpace(nickname) || nickname == Settings.SkeletonName) continue;
+                    //if(Pets.Any(p => p.Info.Nickname == Settings.SkeletonName)) continue;
+                    return nickname;
+                }
+                return Settings.SkeletonName;
+            }
+            // shinsu nicknames
+            if (pet.Info.Name == Settings.ShinsuName)
+            {
+                for(int i = 0; i < Settings.ShinsuNicknames.Length; i++)
+                {
+                    nickname = Settings.ShinsuNicknames[Envir.Random.Next(Settings.ShinsuNicknames.Length)];
+                    if(string.IsNullOrWhiteSpace(nickname) || nickname == Settings.ShinsuName) continue;
+                    //if(Pets.Any(p => p.Info.Nickname == Settings.ShinsuName)) continue;
+                    return nickname;
+                }
+                return Settings.ShinsuName;
+            }
+            // clone nicknames
+            if (pet.Info.Name == Settings.CloneName)
+            {
+                HumanObject owner = pet.Master as HumanObject;
+                MirGender gender = owner.Gender;
+                for (int i = 0; i < (gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length); i++)
+                {
+                    nickname = (gender == MirGender.Male ? Settings.BoysHeroNicknames : Settings.GirlsHeroNicknames)[Envir.Random.Next(gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length)];
+                    if(string.IsNullOrWhiteSpace(nickname) || nickname == Settings.CloneName) continue;
+                    //if(Pets.Any(p => p.Info.Nickname == Settings.CloneName)) continue;
+                    return nickname;
+                }
+                return Settings.CloneName;
+            }
+
+            return string.Empty;
         }
         private void Purification(MapObject target, UserMagic magic)
         {
@@ -4542,10 +4584,7 @@ namespace Server.MirObjects
             monster.ActionTime = Envir.Time + 1000;
 
             // [hack] assign nickname to clone
-            // todo: allow custom naming of clones
-            // read nicknames from settings predefined nickname list
-            //string nickname = $"{Settings.CloneName} ({Name})";
-            //info.Nickname = nickname;
+            monster.Info.Nickname = GivePetNickname(monster);
 
             //Pets.Add(monster);
 

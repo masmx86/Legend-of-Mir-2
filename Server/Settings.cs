@@ -320,6 +320,13 @@ namespace Server
 
         public static bool AllowObserve;
 
+        // [hack] add pet and hero nicknames
+        public static string[] SkeletonNicknames = new string[0];
+        public static string[] ShinsuNicknames = new string[0];
+        public static string[] HeroTitles = new string[0];
+        public static string[] BoysHeroNicknames = new string[0];
+        public static string[] GirlsHeroNicknames = new string[0];
+
         //Guild related settings
         public static bool NewbieGuildBuffEnabled = true;
         public static int NewbieGuildExpBuff = 5;
@@ -615,6 +622,8 @@ namespace Server
             LoadNotice();
             LoadWorldMap();
             LoadHeroSettings();
+
+            LoadNicknames();
 
             string languageDirectory = @".\Localization\";
             if (!Directory.Exists(languageDirectory))
@@ -1323,6 +1332,54 @@ namespace Server
                 reader.Write("Hero", $"CanCreate{Enum.GetName(typeof(MirClass), i)}", Hero_CanCreateClass[i]);
             reader.Write("Hero", "SealItemName", HeroSealItemName);
             reader.Write("Hero", "MaximumSealCount", HeroMaximumSealCount);
+        }
+
+        // [hack] Load nicknames from ini files
+        public static void LoadNicknames()
+        {
+            if (!File.Exists(Path.Combine(ConfigPath, "PetNicknames.ini")))
+            {
+                return;
+            }
+            if(!File.Exists(Path.Combine(ConfigPath, "HeroNicknames.ini")))
+            {
+                return;
+            }
+
+            // load pet nicknames
+            InIReader petReader = new InIReader(Path.Combine(ConfigPath, "PetNicknames.ini"));
+            
+            for(int i  = 0; i < 10; i++)
+            {
+                string nickname = petReader.ReadString(Settings.SkeletonName, "nickname" + i.ToString(), Settings.SkeletonName);
+                SkeletonNicknames.Append(nickname);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                string nickname = petReader.ReadString(Settings.ShinsuName, "nickname" + i.ToString(), Settings.ShinsuName);
+                ShinsuNicknames.Append(nickname);
+            }
+
+            // load hero nicknames
+            InIReader heroReader = new InIReader(Path.Combine(ConfigPath, "HeroNicknames.ini"));
+
+            for (int i = 0; i < 10; i++)
+            {
+                string nickname = petReader.ReadString(Settings.HeroName, "nickname" + i.ToString(), Settings.HeroName);
+                HeroTitles.Append(nickname);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                string nickname = petReader.ReadString("Boys", "nickname" + i.ToString(), Settings.HeroName);
+                BoysHeroNicknames.Append(nickname);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                string nickname = petReader.ReadString("Girls", "nickname" + i.ToString(), Settings.HeroName);
+                GirlsHeroNicknames.Append(nickname);
+            }
         }
 
         public static void LoadGuildSettings()
