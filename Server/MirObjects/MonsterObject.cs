@@ -1940,6 +1940,22 @@ namespace Server.MirObjects
                                 case ObjectType.Monster:
                                 case ObjectType.Hero:
 
+                                    // [hack] add bugbatmaggot to pet's target
+                                    if (this.Master != null && (this.Info.Name == Settings.ShinsuName || this.Info.Name == Settings.SkeletonName || this.Info.Name == Settings.CloneName))
+                                    {
+                                        if (ob is BugBagMaggot) 
+                                        { 
+                                            Target = ob; 
+                                            continue; 
+                                        }
+                                        else if(ob.Master != null && (ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName)) 
+                                        { 
+                                            Target = ob.Master; 
+                                            continue;
+                                        }
+                                    }
+                                    // [/hack]
+
                                     if (!ob.IsAttackTarget(this)) continue;
                                     if (ob.Hidden && (!CoolEye || Level < ob.Level)) continue;
                                     if (this is TrapRock && ob.InTrapRock) continue;

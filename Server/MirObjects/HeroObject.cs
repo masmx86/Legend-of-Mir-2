@@ -969,12 +969,18 @@ namespace Server.MirObjects
                                 case ObjectType.Player:
                                 case ObjectType.Hero:
                                     // [hack] add BugBagMaggot to hero's attck target
-                                    if(ob is BugBagMaggot)
+                                    if (ob is BugBagMaggot)
                                     {
                                         targets.Add(ob);
                                         continue;
                                     }
+                                    else if (ob.Master != null && (ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName))
+                                    {
+                                        Target = ob.Master;
+                                        continue;
+                                    }
                                     // [/hack]
+
                                     if (!ob.IsAttackTarget(this)) continue;
                                     if (ob.Hidden && (!CoolEye || Level < ob.Level) && needSight) continue;
                                     if (ob.Race == ObjectType.Player)
@@ -1094,9 +1100,14 @@ namespace Server.MirObjects
                                     if (ob is BugBagMaggot)
                                     {
                                         Target = ob;
-                                        return;
+                                        continue;
                                     }
-                                    // [end hack]
+                                    if(ob.Master != null && (ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName))
+                                    {
+                                        Target = ob.Master;
+                                        continue;
+                                    }
+                                    // [/hack]
 
                                     if (ob is TownArcher) continue;
                                     if (!ob.IsAttackTarget(Owner)) continue;
