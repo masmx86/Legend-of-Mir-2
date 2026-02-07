@@ -4319,9 +4319,11 @@ namespace Server.MirObjects
                 if ((monster.Info.Name != Settings.CloneName) || monster.Dead) continue;
                 if (monster.Node == null) continue;
 
-                action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, true);
-                //action = new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true);
-                CurrentMap.ActionList.Add(action);
+                //action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, true);
+                // [hack] reuse existing clone instead of creating a new one, to prevent clone spamming
+                action = new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true);
+                //CurrentMap.ActionList.Add(action);
+                monster.ActionList.Add(action);
 
                 // [hack] comment off this return to allow multiple clones
                 //return;
@@ -4456,6 +4458,7 @@ namespace Server.MirObjects
                 if ((monster.Info.Name != Settings.SkeletonName) || monster.Dead) continue;
                 if (monster.Node == null) continue;
                 monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
+
                 // [hack] comment off this return to allow multiple skeletons
                 //return;
             }
@@ -4488,62 +4491,6 @@ namespace Server.MirObjects
             DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
             CurrentMap.ActionList.Add(action);
         }
-
-        // [hack] assign nickname to pets
-        private string GivePetNickname(MonsterObject pet)
-        {
-            if(pet == null) return string.Empty;
-
-            string nickname;
-            // skeleton nicknames
-            if (pet.Info.Name == Settings.SkeletonName)
-            {
-                for(int i = 0; i < Settings.SkeletonNicknames.Length; i++)
-                {
-                    nickname = Settings.SkeletonNicknames[Envir.Random.Next(Settings.SkeletonNicknames.Length)];
-                    if(string.IsNullOrWhiteSpace(nickname) || nickname == Settings.SkeletonName) continue;
-                    //if(Pets.Any(p => p.Info.Nickname == Settings.SkeletonName)) continue;
-                    return nickname;
-                }
-                return Settings.SkeletonName;
-            }
-            // shinsu nicknames
-            if (pet.Info.Name == Settings.ShinsuName)
-            {
-                for(int i = 0; i < Settings.ShinsuNicknames.Length; i++)
-                {
-                    nickname = Settings.ShinsuNicknames[Envir.Random.Next(Settings.ShinsuNicknames.Length)];
-                    if(string.IsNullOrWhiteSpace(nickname) || nickname == Settings.ShinsuName) continue;
-                    //if(Pets.Any(p => p.Info.Nickname == Settings.ShinsuName)) continue;
-                    return nickname;
-                }
-                return Settings.ShinsuName;
-            }
-            // clone nicknames
-            if (pet.Info.Name == Settings.CloneName)
-            {
-                HumanObject owner = pet.Master as HumanObject;
-                MirGender gender = owner.Gender;
-                for (int i = 0; i < (gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length); i++)
-                {
-                    nickname = (gender == MirGender.Male ? Settings.BoysHeroNicknames : Settings.GirlsHeroNicknames)[Envir.Random.Next(gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length)];
-                    if(string.IsNullOrWhiteSpace(nickname) || nickname == Settings.CloneName) continue;
-                    //if(Pets.Any(p => p.Info.Nickname == Settings.CloneName)) continue;
-                    return nickname;
-                }
-                return Settings.CloneName;
-            }
-
-            return string.Empty;
-        }
-        private void Purification(MapObject target, UserMagic magic)
-        {
-            if (target == null || !target.IsFriendlyTarget(this)) return;
-
-            DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, magic, target);
-
-            ActionList.Add(action);
-        }
         private void SummonShinsu(UserMagic magic)
         {
             if (CurrentMap.Info.NoPets)
@@ -4558,7 +4505,9 @@ namespace Server.MirObjects
                 monster = Pets[i];
                 if ((monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
                 if (monster.Node == null) continue;
+                
                 monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
+
                 // [hack] comment off this return to allow multiple shinsu
                 //return;
             }
@@ -4590,6 +4539,61 @@ namespace Server.MirObjects
 
             DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
             CurrentMap.ActionList.Add(action);
+        }
+        // [hack] assign nickname to pets
+        private string GivePetNickname(MonsterObject pet)
+        {
+            if (pet == null) return string.Empty;
+
+            string nickname;
+            // skeleton nicknames
+            if (pet.Info.Name == Settings.SkeletonName)
+            {
+                for (int i = 0; i < Settings.SkeletonNicknames.Length; i++)
+                {
+                    nickname = Settings.SkeletonNicknames[Envir.Random.Next(Settings.SkeletonNicknames.Length)];
+                    if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.SkeletonName) continue;
+                    //if(Pets.Any(p => p.Info.Nickname == Settings.SkeletonName)) continue;
+                    return nickname;
+                }
+                return Settings.SkeletonName;
+            }
+            // shinsu nicknames
+            if (pet.Info.Name == Settings.ShinsuName)
+            {
+                for (int i = 0; i < Settings.ShinsuNicknames.Length; i++)
+                {
+                    nickname = Settings.ShinsuNicknames[Envir.Random.Next(Settings.ShinsuNicknames.Length)];
+                    if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.ShinsuName) continue;
+                    //if(Pets.Any(p => p.Info.Nickname == Settings.ShinsuName)) continue;
+                    return nickname;
+                }
+                return Settings.ShinsuName;
+            }
+            // clone nicknames
+            if (pet.Info.Name == Settings.CloneName)
+            {
+                HumanObject owner = pet.Master as HumanObject;
+                MirGender gender = owner.Gender;
+                for (int i = 0; i < (gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length); i++)
+                {
+                    nickname = (gender == MirGender.Male ? Settings.BoysHeroNicknames : Settings.GirlsHeroNicknames)[Envir.Random.Next(gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length)];
+                    if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.CloneName) continue;
+                    //if(Pets.Any(p => p.Info.Nickname == Settings.CloneName)) continue;
+                    return nickname;
+                }
+                return Settings.CloneName;
+            }
+
+            return string.Empty;
+        }
+        private void Purification(MapObject target, UserMagic magic)
+        {
+            if (target == null || !target.IsFriendlyTarget(this)) return;
+
+            DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, magic, target);
+
+            ActionList.Add(action);
         }
         private void Hiding(UserMagic magic)
         {
