@@ -1361,7 +1361,11 @@ namespace Server.MirObjects
             PMode = PetMode.Both;
 
             // Only teleport if needed
-            if (CurrentMap != Master.CurrentMap)
+            // [hack] comment off this if condition to enable pets recall in the same map
+            //        change recall conditions to distance > vire range || hp < 20% max health
+            // if (CurrentMap != Master.CurrentMap)
+            if (Functions.MaxDistance(CurrentLocation, Master.CurrentLocation) > Info.ViewRange || (int)Info.Stats[Stat.HP] <= MaxHealth * 0.25)
+            // [/hack]
             {
                 if (!Teleport(Master.CurrentMap, Master.Back))
                     Teleport(Master.CurrentMap, Master.CurrentLocation);
