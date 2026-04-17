@@ -23,6 +23,10 @@ namespace Server.MirObjects.Monsters
         {
             var packet = (S.ObjectMonster)base.GetInfo();
             packet.Extra = Summoned;
+
+            // [hack] 添加昵称显示
+            packet.Nickname = Info.Nickname;
+
             return packet;
         }
     }

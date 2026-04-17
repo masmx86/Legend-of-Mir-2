@@ -93,6 +93,10 @@ namespace Server.MirObjects.Monsters
             var packet = (S.ObjectMonster)base.GetInfo();
             packet.Image = Mode ? Monster.Shinsu1 : Monster.Shinsu;
             packet.Extra = Summoned;
+
+            // [hack] 添加昵称显示
+            packet.Nickname = Info.Nickname;
+
             return packet;
         }
     }

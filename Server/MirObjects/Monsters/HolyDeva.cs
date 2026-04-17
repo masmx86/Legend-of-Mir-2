@@ -36,7 +36,11 @@ namespace Server.MirObjects.Monsters
             ActionTime = Envir.Time + 300;
             AttackTime = Envir.Time + AttackSpeed;
 
-            int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
+            // [hack] 调整远程攻击伤害数值
+            //int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
+            PlayerObject player = Master as PlayerObject;
+            int damage = GetAttackPower(player.Stats[Stat.MinSC], player.Stats[Stat.MaxSC]);
+
             if (damage == 0) return;
 
             DelayedAction action = new DelayedAction(DelayedType.RangeDamage, Envir.Time + 500, Target, damage, DefenceType.MAC);
