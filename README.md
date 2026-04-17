@@ -66,6 +66,14 @@
 7、仓库购买额外存储空间时间限制由 10 天改成 1 年
 
    ```
+   Server.Library\MirObjects\HumanObject.cs
+   
+   public void Attack() :Thrusting
+   ```
+
+7、仓库购买额外存储空间时间限制由 10 天改成 1 年
+
+   ```
    Shared\Language.cs
    public static string ExtraStorage
    public static string ExtendYourRentalPeriod
@@ -103,7 +111,7 @@
    Server\Envir\Drops\*.txt
    ```                     
                      
-15、战士添加宝宝（正在验证中...）
+10. 主界面上添加时间、人物属性和装备持久显示
    ```
    Server.Library\MirObjects\PlayerObject.cs
    
@@ -163,27 +171,20 @@
    static Envir()
    ```
 
-17、修正在同一张地图中有时宝宝被卡住、不能召唤宝宝到身边的问题
-    
-      原来的逻辑是如果宝宝和主人不在同一张地图里的时候才可以召唤
-      现在修改成:
-      -  主人不在宝宝视线里的时候会召唤到主人身边，主人在宝宝视线里的时候则留在原地
-      -  宝宝血量 <= 25% 的时候回到主人身边，否则留在原地
-   
-   '''
-   Server\MirObjects\MonterObject.cs
-   public void PetRecall()
-   '''
-18、自动使用护身符和红蓝毒药
-
-   '''
-   \Server\MirObjects\HumanObject.cs
+12. 道士自动使用符、毒
+   ```
+   Server.Library\MirObjects\HumanObject.cs
+   protected UserItem GetAmulet()
    protected UserItem GetPoison()
-   private bool Poisoning()
-   '''
+   ```
 
-19、玩家满血的时候继续喝太阳水可以给宝宝加血
-20、更正了宝宝寻找目标时的判断逻辑
+##### TODO：
+
+自动整理包裹，物品自动归类排序
+
+宠物取小名
+
+战士添加宝宝
 
 ##### TODO：
 
