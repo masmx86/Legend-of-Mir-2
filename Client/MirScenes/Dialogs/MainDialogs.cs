@@ -27,7 +27,7 @@ namespace Client.MirScenes.Dialogs
         public MirLabel UserAttribLabel;
 
         // [hack] add equipment durability label
-        public MirLabel EquipmentDuraLabel;
+        public MirLabel userPetLabel;
 
         public HeroInfoPanel HeroInfoPanel;
         public HeroBehaviourPanel HeroBehaviourPanel;
@@ -269,7 +269,7 @@ namespace Client.MirScenes.Dialogs
             };
 
             // [hack] equipment durability label
-            EquipmentDuraLabel = new MirLabel
+            userPetLabel = new MirLabel
             {
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Parent = this,
@@ -381,10 +381,36 @@ namespace Client.MirScenes.Dialogs
                 ForeColour = Color.Yellow,
                 OutLineColour = Color.Black,
                 Parent = this,
-                Location = new Point(Settings.Resolution != 800 ? 899 : 675, Settings.Resolution != 800 ? -448 : -280),
+                 //[hack] 调整一下位置，原来的坐标在屏幕上看不到 -> 调整了还是看不到？ 
+                Location = new Point(Settings.Resolution != 800 ? 899 : 675, Settings.Resolution != 800 ? 448 : 280),
+                //Location = new Point(230, 145),
                 Visible = Settings.ModeView
             };
-
+            // [debug] label control does not have clicked() event handler
+            //AModeLabel.Click += (o, e) =>
+            //{
+            //    switch (GameScene.Scene.AMode)
+            //    {
+            //        case AttackMode.Peace:
+            //            GameScene.Scene.AMode = AttackMode.Group;
+            //            break;
+            //        case AttackMode.Group:
+            //            GameScene.Scene.AMode = AttackMode.Guild;
+            //            break;
+            //        case AttackMode.Guild:
+            //            GameScene.Scene.AMode = AttackMode.EnemyGuild;
+            //            break;
+            //        case AttackMode.EnemyGuild:
+            //            GameScene.Scene.AMode = AttackMode.RedBrown;
+            //            break;
+            //        case AttackMode.RedBrown:
+            //            GameScene.Scene.AMode = AttackMode.All;
+            //            break;
+            //        case AttackMode.All:
+            //            GameScene.Scene.AMode = AttackMode.Peace;
+            //            break;
+            //    }
+            //};
             PModeLabel = new MirLabel
             {
                 AutoSize = true,
@@ -394,6 +420,28 @@ namespace Client.MirScenes.Dialogs
                 Location = new Point(230, 125),
                 Visible = Settings.ModeView
             };
+            // [debug] label control does have clicked() event handler
+            //PModeLabel.Click += (o, e) =>
+            //{
+            //    switch (GameScene.Scene.PMode)
+            //    {
+            //        case PetMode.Both:
+            //            GameScene.Scene.PMode = PetMode.MoveOnly;
+            //            break;
+            //        case PetMode.MoveOnly:
+            //            GameScene.Scene.PMode = PetMode.AttackOnly;
+            //            break;
+            //        case PetMode.AttackOnly:
+            //            GameScene.Scene.PMode = PetMode.None;
+            //            break;
+            //        case PetMode.None:
+            //            GameScene.Scene.PMode = PetMode.FocusMasterTarget;
+            //            break;
+            //        case PetMode.FocusMasterTarget:
+            //            GameScene.Scene.PMode = PetMode.Both;
+            //            break;
+            //    }
+            //};
 
             SModeLabel = new MirLabel
             {
@@ -401,7 +449,7 @@ namespace Client.MirScenes.Dialogs
                 ForeColour = Color.LimeGreen,
                 OutLineColour = Color.Black,
                 Parent = this,
-                Location = new Point(Settings.Resolution != 800 ? 899 : 675, Settings.Resolution != 800 ? -463 : -295),
+                Location = new Point(Settings.Resolution != 800 ? 899 : 675, Settings.Resolution != 800 ? 463 : 295),
                 Visible = Settings.ModeView
             };
         }
@@ -489,7 +537,7 @@ namespace Client.MirScenes.Dialogs
             GameScene.Scene.ChatControl.ClockLabel.Location = new Point(GameScene.Scene.ChatControl.SizeButton.Location.X - GameScene.Scene.ChatControl.ClockLabel.Size.Width - 10, GameScene.Scene.ChatControl.ClockLabel.Location.Y);
 
             // [hack] adjust experience display to show current and max level experience
-            ExperienceLabel.Text = string.Format("{0:#0.####%}", User.Experience / (double)User.MaxExperience);
+            ExperienceLabel.Text = string.Format("{0:#0.####%}", (User.Experience / (double)User.MaxExperience));
 
             GameScene.Scene.ChatControl.CurrentExperienceValue.Text = User.Experience.ToString("#,##0");
             GameScene.Scene.ChatControl.CurrentExperienceValue.Location = new Point(GameScene.Scene.ChatControl.Size.Width / 2 - GameScene.Scene.ChatControl.CurrentExperienceValue.Size.Width - 15, GameScene.Scene.ChatControl.CurrentExperienceValue.Location.Y);
@@ -508,22 +556,49 @@ namespace Client.MirScenes.Dialogs
             //UserInfoLabel.Text = string.Format("攻击： {0} 魔法： {1} 道术： {2} 防御： {3} 魔御： {4} 幸运： {5} 准确： {6} 闪避： {7} 攻击速度：{8}",
             //    User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC], User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC],
             //    User.Stats[Stat.Luck], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility], User.Stats[Stat.AttackSpeed]);
-            UserAttribLabel.Text = string.Format("攻： {0} 魔： {1} 道： {2} 防： {3} 魔御： {4} 幸运： {5}",
+            UserAttribLabel.Text = string.Format("攻:{0} 魔:{1} 道:{2} 防:{3} 御:{4} 运:{5} 速{6}: 准{7}: 避:{8}",
                 User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC],
-                User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC], User.Stats[Stat.Luck]);
+                User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC], User.Stats[Stat.Luck],
+                User.Stats[Stat.AttackSpeed], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility]);
 
+            int clone_count = 0;
+            int shinshu_count = 0;
+            int skeleton_count = 0;
+            int tamed_count = 0;
+            int pet_hp = int.MaxValue;
+            foreach (var ob in MapControl.Objects.Values)
+            {
+                if ((ob.Race == ObjectType.Monster || (ob.Race == ObjectType.Player && ob.ObjectID != User.ObjectID)) && !ob.Dead)
+                {
+                    if (ob.Name.Contains(User.Name))
+                    {
+                        if (ob.Name.Contains(Settings.ShinsuName)) shinshu_count++;
+                        else if (ob.Name.Contains(Settings.SkeletonName)) skeleton_count++;
+                        else if (ob.Name == User.Name) clone_count++;
+                        else tamed_count++;
 
-            EquipmentDuraLabel.Text = string.Format("[W] {0:#0.00} [A] {1:#0.00} [H] {2:#0.00} [B] {3:#0.00} / {4:#0.00} [R] {5:#0.00} / {6:#0.00} [A] {7}",
-                User.Equipment[(int)EquipmentSlot.Weapon] != null ? (float)User.Equipment[(int)EquipmentSlot.Weapon].CurrentDura / 1000 : 0,
-                User.Equipment[(int)EquipmentSlot.Armour] != null ? (float)User.Equipment[(int)EquipmentSlot.Armour].CurrentDura / 1000 : 0,
-                User.Equipment[(int)EquipmentSlot.Helmet] != null ? (float)User.Equipment[(int)EquipmentSlot.Helmet].CurrentDura / 1000 : 0,
-                User.Equipment[(int)EquipmentSlot.BraceletL] != null ? (float)User.Equipment[(int)EquipmentSlot.BraceletL].CurrentDura / 1000 : 0,
-                User.Equipment[(int)EquipmentSlot.BraceletR] != null ? (float)User.Equipment[(int)EquipmentSlot.BraceletR].CurrentDura / 1000 : 0,
-                User.Equipment[(int)EquipmentSlot.RingL] != null ? (float)User.Equipment[(int)EquipmentSlot.RingL].CurrentDura / 1000 : 0,
-                User.Equipment[(int)EquipmentSlot.RingR] != null ? (float)User.Equipment[(int)EquipmentSlot.RingR].CurrentDura / 1000 : 0,
-                User.Equipment[(int)EquipmentSlot.Amulet] != null ? User.Equipment[(int)EquipmentSlot.Amulet].Count : 0
-                );
-            EquipmentDuraLabel.Location = new Point(ExperienceLabel.Location.X + ExperienceLabel.Size.Width + 20, UserAttribLabel.Location.Y);
+                        if (pet_hp > ob.PercentHealth) pet_hp = ob.PercentHealth;
+                    }
+                }
+            }
+            string pet_info = string.Empty;
+            userPetLabel.Text = string.Format("宝宝: {0} [分身:{1} 神兽:{2} 骷髅:{3} 召唤:{4}] ☠ 符|毒:[{5}] <HP {6}%>", 
+                clone_count + shinshu_count + skeleton_count + tamed_count, 
+                clone_count, shinshu_count, skeleton_count, tamed_count,
+                User.Equipment[(int)EquipmentSlot.Amulet] != null ? User.Equipment[(int)EquipmentSlot.Amulet].Count : "用完了",
+                (byte) pet_hp);
+            //userPetLabel.Text = string.Format("W {0:#0.00} A {1:#0.00} H {2:#0.00} B {3:#0.00} / {4:#0.00} R {5:#0.00} / {6:#0.00} A {7} Pet {8}",
+            //    User.Equipment[(int)EquipmentSlot.Weapon] != null ? (float)User.Equipment[(int)EquipmentSlot.Weapon].CurrentDura / 1000 : 0,
+            //    User.Equipment[(int)EquipmentSlot.Armour] != null ? (float)User.Equipment[(int)EquipmentSlot.Armour].CurrentDura / 1000 : 0,
+            //    User.Equipment[(int)EquipmentSlot.Helmet] != null ? (float)User.Equipment[(int)EquipmentSlot.Helmet].CurrentDura / 1000 : 0,
+            //    User.Equipment[(int)EquipmentSlot.BraceletL] != null ? (float)User.Equipment[(int)EquipmentSlot.BraceletL].CurrentDura / 1000 : 0,
+            //    User.Equipment[(int)EquipmentSlot.BraceletR] != null ? (float)User.Equipment[(int)EquipmentSlot.BraceletR].CurrentDura / 1000 : 0,
+            //    User.Equipment[(int)EquipmentSlot.RingL] != null ? (float)User.Equipment[(int)EquipmentSlot.RingL].CurrentDura / 1000 : 0,
+            //    User.Equipment[(int)EquipmentSlot.RingR] != null ? (float)User.Equipment[(int)EquipmentSlot.RingR].CurrentDura / 1000 : 0,
+            //    User.Equipment[(int)EquipmentSlot.Amulet] != null ? User.Equipment[(int)EquipmentSlot.Amulet].Count : 0,
+            //    petcount
+            //    );
+            userPetLabel.Location = new Point(ExperienceLabel.Location.X + ExperienceLabel.Size.Width, UserAttribLabel.Location.Y);
             // [/hack]
         }
 
@@ -1342,7 +1417,6 @@ namespace Client.MirScenes.Dialogs
                 OutLine = true,
                 NotControl = true,
             };
-            // [/hack]
 
             // [hack] adjust experience display to show current and max experience values
             CurrentExperienceValue = new MirLabel
@@ -1354,7 +1428,6 @@ namespace Client.MirScenes.Dialogs
                 OutLine = true,
                 Text = "0",
             };
-
             MaxExperienceValue = new MirLabel
             {
                 AutoSize = true,
@@ -1364,7 +1437,6 @@ namespace Client.MirScenes.Dialogs
                 OutLine = true,
                 Text = "0",
             };
-            // [/hack]
 
             SizeButton = new MirButton
             {
@@ -2637,6 +2709,11 @@ namespace Client.MirScenes.Dialogs
         public MirButton NameViewOn, NameViewOff;
         public MirButton HPViewOn, HPViewOff;
         public MirButton NewMoveOn, NewMoveOff;
+
+        // [hack] 锁红锁蓝
+        public MirLabel LockHP, LockMP;
+        public MirButton LockHPOn, LockHPOff, LockMPOn, LockMPOff;
+
         public MirButton ObserveOn, ObserveOff;
         public MirImageControl SoundBar, MusicSoundBar;
         public MirImageControl VolumeBar, MusicVolumeBar;
@@ -2887,6 +2964,99 @@ namespace Client.MirScenes.Dialogs
                 GameScene.Scene.ChatDialog.ReceiveChat(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.OldMovementStyle), ChatType.Hint);
             };
 
+            // [hack] 锁红锁蓝
+            LockHP = new MirLabel
+            {
+                AutoSize = true,
+                Parent = this,
+                Location = new Point(20, 43),
+                NotControl = true,
+                Text = "[*] Lock HP",
+            };
+            LockHPOn = new MirButton
+            {
+                Library = Libraries.Prguse2,
+                Location = new Point(159, 43),
+                Parent = this,
+                Sound = SoundList.ButtonA,
+                Size = new Size(36, 17),
+                PressedIndex = 460,
+            };
+            LockHPOn.Click += (o, e) =>
+            {
+                Settings.LockHP = true;
+                Network.Enqueue(new C.Chat
+                {
+                    Message = "@LOCKHP_ON",
+                });
+                GameScene.Scene.ChatDialog.ReceiveChat("HP locked", ChatType.Hint);
+            };
+
+            LockHPOff = new MirButton
+            {
+                Library = Libraries.Prguse2,
+                Location = new Point(201, 43),
+                Parent = this,
+                Sound = SoundList.ButtonA,
+                Size = new Size(36, 17),
+                PressedIndex = 457,
+            };
+            LockHPOff.Click += (o, e) =>
+            {
+                Settings.LockHP = false;
+                Network.Enqueue(new C.Chat
+                {
+                    Message = "@LOCKHP_OFF",
+                });
+                GameScene.Scene.ChatDialog.ReceiveChat("HP unlocked", ChatType.Hint);
+            };
+
+            LockMP = new MirLabel
+            {
+                AutoSize = true,
+                Parent = this,
+                Location = new Point(20, 321),
+                NotControl = true,
+                Text = "[*] Lock MP (Lock Pet HP)",
+            };
+            LockMPOn = new MirButton
+            {
+                Library = Libraries.Prguse2,
+                Location = new Point(159, 321),
+                Parent = this,
+                Sound = SoundList.ButtonA,
+                Size = new Size(36, 17),
+                PressedIndex = 457,
+            };
+            LockMPOn.Click += (o, e) =>
+            {
+                Settings.LockMP = true;
+                Network.Enqueue(new C.Chat
+                {
+                    Message = "@LOCKMP_ON",
+                });
+                GameScene.Scene.ChatDialog.ReceiveChat("MP locked", ChatType.Hint);
+            };
+
+            LockMPOff = new MirButton
+            {
+                Library = Libraries.Prguse2,
+                Location = new Point(201, 321),
+                Parent = this,
+                Sound = SoundList.ButtonA,
+                Size = new Size(36, 17),
+                PressedIndex = 460,
+            };
+            LockMPOff.Click += (o, e) =>
+            {
+                Settings.LockMP = false;
+                Network.Enqueue(new C.Chat
+                {
+                    Message = "@LOCKMP_OFF",
+                });
+                GameScene.Scene.ChatDialog.ReceiveChat("MP unlocked", ChatType.Hint);
+            };
+
             ObserveOn = new MirButton
             {
                 Library = Libraries.Prguse2,
@@ -3093,6 +3263,28 @@ namespace Client.MirScenes.Dialogs
             {
                 NewMoveOn.Index = 851;
                 NewMoveOff.Index = 850;
+            }
+
+            // [hack] 锁红锁蓝
+            if (Settings.LockHP)
+            {
+                LockHPOn.Index = 458;
+                LockHPOff.Index = 459;
+            }
+            else
+            {
+                LockHPOn.Index = 456;
+                LockHPOff.Index = 461;
+            }
+            if (Settings.LockMP)
+            {
+                LockMPOn.Index = 458;
+                LockMPOff.Index = 459;
+            }
+            else
+            {
+                LockMPOn.Index = 456;
+                LockMPOff.Index = 461;
             }
 
             if (GameScene.AllowObserve)

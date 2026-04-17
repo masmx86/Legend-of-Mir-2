@@ -74,6 +74,10 @@ namespace Client.MirObjects
         public void Load(S.ObjectMonster info, bool update = false)
         {
             Name = info.Name;
+
+            // [hack] add nickname
+            Nickname = info.Nickname;
+        
             NameColour = info.NameColour;
             BaseImage = info.Image;
 
@@ -5632,7 +5636,11 @@ namespace Client.MirObjects
 
             for (int s = 0; s < splitName.Count(); s++)
             {
-                CreateMonsterLabel(splitName[s], s);
+                // [hack] 用昵称替代名字
+                //if (splitName[s].Contains(Settings.CloneName) ||splitName[s].Contains(Settings.ShinsuName) ||splitName[s].Contains(Settings.SkeletonName))
+                //    CreateMonsterLabel(string.IsNullOrEmpty(Nickname) ? splitName[s] : Nickname, s);
+                //else 
+                    CreateMonsterLabel(splitName[s], s);
 
                 //TempLabel.Text = splitName[s];//When CreateLabel() is called, the name is already determined, so there's no need to assign it every time in DrawName.
                 TempLabel.Location = new Point(DisplayRectangle.X + (48 - TempLabel.Size.Width) / 2, DisplayRectangle.Y - (32 - TempLabel.Size.Height / 2) + (Dead ? 35 : 8) - (((splitName.Count() - 1) * 10) / 2) + (s * 12) + yOffset);

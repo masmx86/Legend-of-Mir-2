@@ -114,6 +114,10 @@ namespace Client.MirObjects
         public void Load(S.ObjectPlayer info)
         {
             Name = info.Name;
+
+            // [hack] load nickname
+            Nickname = info.Nickname;
+
             NameColour = info.NameColour;
             GuildName = info.GuildName;
             GuildRankName = info.GuildRankName;
@@ -5210,7 +5214,8 @@ namespace Client.MirObjects
                 ForeColour = NameColour,
                 OutLine = true,
                 OutLineColour = Color.Black,
-                Text = Name,
+                // [hack] 用昵称替代名字
+                Text = string.IsNullOrEmpty(Nickname) ? Name : Nickname,
             };
             NameLabel.Disposing += (o, e) => LabelList.Remove(NameLabel);
             LabelList.Add(NameLabel);

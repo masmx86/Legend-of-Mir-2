@@ -4390,10 +4390,9 @@ namespace Server.MirEnvir
             };
 
             // [hack] increase chance of hacked items with more random stats
-            UpgradeItem(item);
-            //UpgradeItemHacked(item);
-
-
+            UpgradeItemHacked(item);
+            // [debug] output item name for debugging item expiry parsing
+            //Settings.debugMsg(string.Format("New Drop Item: {0}", item.Info.Name), "Envir.CreateDropItem");
             UpdateItemExpiry(item);
 
             if (!info.NeedIdentify) item.Identified = true;
@@ -4417,6 +4416,9 @@ namespace Server.MirEnvir
 
         public void UpdateItemExpiry(UserItem item)
         {
+            // [debug] output item name for debugging item expiry parsing
+            //Settings.debugMsg(string.Format("Update Expiry: {0}", item.Info.Name), "Envir.UpdateItemExpiry");
+
             var expiryInfo = new ExpireInfo();
 
             var r = new Regex(@"\[(.*?)\]");
@@ -4457,6 +4459,8 @@ namespace Server.MirEnvir
                 }
 
                 item.ExpireInfo = expiryInfo;
+                // [debug] debug output drop item expiry time
+                //Settings.debugMsg(string.Format($"Item: {0} - Expiry: {1}{2}", item.Info.Name, num, alpha), "UpdateItemExpiry");
             }
         }
 
@@ -4505,9 +4509,7 @@ namespace Server.MirEnvir
             }
         }
 
-        // [hack] increase chance to get more stats on items by replacing
-        //        Random.Next(x) == 0 ==> Random.Next(x) % 2 == 0 and
-        //        RandomomRange()     ==> RandomomRangeHacked()
+        // [hack] increase chance to get more stats on items
         public void UpgradeItemHacked(UserItem item)
         {
             if (item.Info.RandomStats == null) return;
@@ -4523,9 +4525,9 @@ namespace Server.MirEnvir
 
             ItemGrade grade = item.Info.Grade;
 
-            bool hasDC = item.Info.Stats[Stat.MaxDC] > 0 ? true : false;
-            bool hasMC = item.Info.Stats[Stat.MaxMC] > 0 ? true : false;
-            bool hasSC = item.Info.Stats[Stat.MaxSC] > 0 ? true : false;
+            bool hasDC = item.Info.Stats[Stat.MaxDC] > 0;
+            bool hasMC = item.Info.Stats[Stat.MaxMC] > 0;
+            bool hasSC = item.Info.Stats[Stat.MaxSC] > 0;
 
             if (!hasDC && !hasMC && !hasSC)
             {
@@ -4562,123 +4564,123 @@ namespace Server.MirEnvir
                 (RandomomRange(stat.MaxScMaxStat - 1, stat.MaxScStatChance) + 1);
 
 
-            if (hasDC && stat.MaxDcChance > 0 && Random.Next(stat.MaxDcChance) % 2 == 0)
+            if (hasDC && stat.MaxDcChance > 0 && Random.Next(stat.MaxDcChance) == 0)
             {
                 item.AddedStats[Stat.MaxDC] = (byte)Math.Min(extraDC, stat.MaxDcMaxStat);
             }
-            if (hasMC && stat.MaxMcChance > 0 && Random.Next(stat.MaxMcChance) % 2 == 0)
+            if (hasMC && stat.MaxMcChance > 0 && Random.Next(stat.MaxMcChance) == 0)
             {
                 item.AddedStats[Stat.MaxMC] = (byte)Math.Min(extraMC, stat.MaxMcMaxStat);
             }
-            if (hasSC && stat.MaxScChance > 0 && Random.Next(stat.MaxScChance) % 2 == 0)
+            if (hasSC && stat.MaxScChance > 0 && Random.Next(stat.MaxScChance) == 0)
             {
                 item.AddedStats[Stat.MaxSC] = (byte)Math.Min(extraSC, stat.MaxScMaxStat);
             }
 
             // AC
-            if (stat.MaxAcChance > 0 && Random.Next(stat.MaxAcChance) % 2 == 0)
+            if (stat.MaxAcChance > 0 && Random.Next(stat.MaxAcChance) == 0)
                 item.AddedStats[Stat.MaxAC] = item.Info.Stats[Stat.MaxAC] > 0 ?
                     (byte)(RandomomRangeHacked(stat.MaxAcMaxStat - 1 + (byte)grade, stat.MaxAcStatChance) + 1) :
                     (byte)(RandomomRange(stat.MaxAcMaxStat - 1, stat.MaxAcStatChance) + 1);
 
             // MAC
-            if (stat.MaxMacChance > 0 && Random.Next(stat.MaxMacChance) % 2 == 0)
+            if (stat.MaxMacChance > 0 && Random.Next(stat.MaxMacChance) == 0)
                 item.AddedStats[Stat.MaxMAC] = item.Info.Stats[Stat.MaxMAC] > 0 ?
                     (byte)(RandomomRangeHacked(stat.MaxMacMaxStat - 1 + (byte)grade, stat.MaxMacStatChance) + 1) :
                     (byte)(RandomomRange(stat.MaxMacMaxStat - 1, stat.MaxMacStatChance) + 1);
 
             // Accuracy
-            if (stat.AccuracyChance > 0 && Random.Next(stat.AccuracyChance) % 2 == 0)
+            if (stat.AccuracyChance > 0 && Random.Next(stat.AccuracyChance) == 0)
                 item.AddedStats[Stat.Accuracy] = item.Info.Stats[Stat.Accuracy] > 0 ?
-                    (byte)(RandomomRangeHacked(stat.AccuracyMaxStat - 1 + (byte)grade, stat.AccuracyStatChance) + 1) + (byte)grade :
+                    (byte)(RandomomRangeHacked(stat.AccuracyMaxStat - 1 + (byte)grade, stat.AccuracyStatChance) + 1) :
                     (byte)(RandomomRange(stat.AccuracyMaxStat - 1, stat.AccuracyStatChance) + 1);
 
             // Agility
-            if (stat.AgilityChance > 0 && Random.Next(stat.AgilityChance) % 2 == 0)
+            if (stat.AgilityChance > 0 && Random.Next(stat.AgilityChance) == 0)
                 item.AddedStats[Stat.Agility] = item.Info.Stats[Stat.Agility] > 0 ?
-                    (byte)(RandomomRangeHacked(stat.AgilityMaxStat - 1 + (byte)grade, stat.AgilityStatChance) + 1) + (byte)grade :
+                    (byte)(RandomomRangeHacked(stat.AgilityMaxStat - 1 + (byte)grade, stat.AgilityStatChance) + 1) :
                     (byte)(RandomomRange(stat.AgilityMaxStat - 1, stat.AgilityStatChance) + 1);
 
             // HP
-            if (stat.HpChance > 0 && Random.Next(stat.HpChance) % 2 == 0)
+            if (stat.HpChance > 0 && Random.Next(stat.HpChance) == 0)
                 item.AddedStats[Stat.HP] = item.Info.Stats[Stat.HP] > 0 ?
                     (byte)(RandomomRangeHacked(stat.HpMaxStat - 1 + (byte)grade, stat.HpStatChance) + 1) :
                     (byte)(RandomomRange(stat.HpMaxStat - 1, stat.HpStatChance) + 1);
 
             // MP
-            if (stat.MpChance > 0 && Random.Next(stat.MpChance) % 2 == 0)
+            if (stat.MpChance > 0 && Random.Next(stat.MpChance) == 0)
                 item.AddedStats[Stat.MP] = item.Info.Stats[Stat.MP] > 0 ?
                     (byte)(RandomomRangeHacked(stat.MpMaxStat - 1 + (byte)grade, stat.MpStatChance) + 1) :
                     (byte)(RandomomRange(stat.MpMaxStat - 1, stat.MpStatChance) + 1);
 
             // Strength
-            if (stat.StrongChance > 0 && Random.Next(stat.StrongChance) % 2 == 0)
+            if (stat.StrongChance > 0 && Random.Next(stat.StrongChance) == 0)
                 item.AddedStats[Stat.Strong] = item.Info.Stats[Stat.Strong] > 0 ?
                     (byte)(RandomomRangeHacked(stat.StrongMaxStat - 1 + (byte)grade, stat.StrongStatChance) + 1) :
                     (byte)(RandomomRange(stat.StrongMaxStat - 1, stat.StrongStatChance) + 1);
 
             // Magic Resist
-            if (stat.MagicResistChance > 0 && Random.Next(stat.MagicResistChance) % 2 == 0)
+            if (stat.MagicResistChance > 0 && Random.Next(stat.MagicResistChance) == 0)
                 item.AddedStats[Stat.MagicResist] = item.Info.Stats[Stat.MagicResist] > 0 ?
-                    (byte)(RandomomRangeHacked(stat.MagicResistMaxStat - 1 + (byte)grade, stat.MagicResistStatChance) + 1) + (byte)grade :
+                    (byte)(RandomomRangeHacked(stat.MagicResistMaxStat - 1 + (byte)grade, stat.MagicResistStatChance) + 1) :
                     (byte)(RandomomRange(stat.MagicResistMaxStat - 1, stat.MagicResistStatChance) + 1);
 
             // Poison Resist
-            if (stat.PoisonResistChance > 0 && Random.Next(stat.PoisonResistChance) % 2 == 0)
+            if (stat.PoisonResistChance > 0 && Random.Next(stat.PoisonResistChance) == 0)
                 item.AddedStats[Stat.PoisonResist] = item.Info.Stats[Stat.PoisonResist] > 0 ?
-                    (byte)(RandomomRangeHacked(stat.PoisonResistMaxStat - 1 + (byte)grade, stat.PoisonResistStatChance) + 1) + (byte)grade :
+                    (byte)(RandomomRangeHacked(stat.PoisonResistMaxStat - 1 + (byte)grade, stat.PoisonResistStatChance) + 1) :
                     (byte)(RandomomRange(stat.PoisonResistMaxStat - 1, stat.PoisonResistStatChance) + 1);
 
             // HP Recovery
-            if (stat.HpRecovChance > 0 && Random.Next(stat.HpRecovChance) % 2 == 0)
+            if (stat.HpRecovChance > 0 && Random.Next(stat.HpRecovChance) == 0)
                 item.AddedStats[Stat.HealthRecovery] = item.Info.Stats[Stat.HealthRecovery] > 0 ?
                     (byte)(RandomomRangeHacked(stat.HpRecovMaxStat - 1 + (byte)grade, stat.HpRecovStatChance) + 1) :
                     (byte)(RandomomRange(stat.HpRecovMaxStat - 1, stat.HpRecovStatChance) + 1);
 
             // MP Recovery
-            if (stat.MpRecovChance > 0 && Random.Next(stat.MpRecovChance) % 2 == 0)
+            if (stat.MpRecovChance > 0 && Random.Next(stat.MpRecovChance) == 0)
                 item.AddedStats[Stat.SpellRecovery] = item.Info.Stats[Stat.SpellRecovery] > 0 ?
                     (byte)(RandomomRangeHacked(stat.MpRecovMaxStat - 1 + (byte)grade, stat.MpRecovStatChance) + 1) :
                     (byte)(RandomomRange(stat.MpRecovMaxStat - 1, stat.MpRecovStatChance) + 1);
 
             // Poison Recovery
-            if (stat.PoisonRecovChance > 0 && Random.Next(stat.PoisonRecovChance) % 2 == 0)
+            if (stat.PoisonRecovChance > 0 && Random.Next(stat.PoisonRecovChance) == 0)
                 item.AddedStats[Stat.PoisonRecovery] = item.Info.Stats[Stat.PoisonRecovery] > 0 ?
-                    (byte)(RandomomRangeHacked(stat.PoisonRecovMaxStat - 1 + (byte)grade, stat.PoisonRecovStatChance) + 1) + (byte)grade :
+                    (byte)(RandomomRangeHacked(stat.PoisonRecovMaxStat - 1 + (byte)grade, stat.PoisonRecovStatChance) + 1) :
                     (byte)(RandomomRange(stat.PoisonRecovMaxStat - 1, stat.PoisonRecovStatChance) + 1);
 
             // Critical Rate
-            if (stat.CriticalRateChance > 0 && Random.Next(stat.CriticalRateChance) % 2 == 0)
+            if (stat.CriticalRateChance > 0 && Random.Next(stat.CriticalRateChance) == 0)
                 item.AddedStats[Stat.CriticalRate] = item.Info.Stats[Stat.CriticalRate] > 0 ?
                     (byte)(RandomomRangeHacked(stat.CriticalRateMaxStat - 1 + (byte)grade, stat.CriticalRateStatChance) + 1) :
                     (byte)(RandomomRange(stat.CriticalRateMaxStat - 1, stat.CriticalRateStatChance) + 1);
 
             // Critical Damage
-            if (stat.CriticalDamageChance > 0 && Random.Next(stat.CriticalDamageChance) % 2 == 0)
+            if (stat.CriticalDamageChance > 0 && Random.Next(stat.CriticalDamageChance) == 0)
                 item.AddedStats[Stat.CriticalDamage] = item.Info.Stats[Stat.CriticalDamage] > 0 ?
                     (byte)(RandomomRangeHacked(stat.CriticalDamageMaxStat - 1 + (byte)grade, stat.CriticalDamageStatChance) + 1) :
                     (byte)(RandomomRange(stat.CriticalDamageMaxStat - 1, stat.CriticalDamageStatChance) + 1);
 
             // Freezing
-            if (stat.FreezeChance > 0 && Random.Next(stat.FreezeChance) % 2 == 0)
+            if (stat.FreezeChance > 0 && Random.Next(stat.FreezeChance) == 0)
                 item.AddedStats[Stat.Freezing] = item.Info.Stats[Stat.Freezing] > 0 ?
-                    (byte)(RandomomRangeHacked(stat.FreezeMaxStat - 1 + (byte)grade, stat.FreezeStatChance) + 1) + (byte)grade :
+                    (byte)(RandomomRangeHacked(stat.FreezeMaxStat - 1 + (byte)grade, stat.FreezeStatChance) + 1) :
                     (byte)(RandomomRange(stat.FreezeMaxStat - 1, stat.FreezeStatChance) + 1);
 
             //  Poison Attack
-            if (stat.PoisonAttackChance > 0 && Random.Next(stat.PoisonAttackChance) % 2 == 0)
+            if (stat.PoisonAttackChance > 0 && Random.Next(stat.PoisonAttackChance) == 0)
                 item.AddedStats[Stat.PoisonAttack] = item.Info.Stats[Stat.PoisonAttack] > 0 ?
-                    (byte)(RandomomRangeHacked(stat.PoisonAttackMaxStat - 1 + (byte)grade, stat.PoisonAttackStatChance) + 1) + (byte)grade :
+                    (byte)(RandomomRangeHacked(stat.PoisonAttackMaxStat - 1 + (byte)grade, stat.PoisonAttackStatChance) + 1) :
                     (byte)(RandomomRange(stat.PoisonAttackMaxStat - 1, stat.PoisonAttackStatChance) + 1);
 
             // Attack Speed
-            if (stat.AttackSpeedChance > 0 && Random.Next(stat.AttackSpeedChance) % 2 == 0)
+            if (stat.AttackSpeedChance > 0 && Random.Next(stat.AttackSpeedChance) == 0)
                 item.AddedStats[Stat.AttackSpeed] = item.Info.Stats[Stat.AttackSpeed] > 0 ?
-                    (sbyte)(RandomomRangeHacked(stat.AttackSpeedMaxStat - 1 + (byte)grade, stat.AttackSpeedStatChance) + 1) + (byte)grade :
+                    (sbyte)(RandomomRangeHacked(stat.AttackSpeedMaxStat - 1 + (byte)grade, stat.AttackSpeedStatChance) + 1) :
                     (byte)(RandomomRange(stat.AttackSpeedMaxStat - 1, stat.AttackSpeedStatChance) + 1);
 
             // Luck
-            if (stat.LuckChance > 0 && Random.Next(stat.LuckChance) % 2 == 0)
+            if (stat.LuckChance > 0 && Random.Next(stat.LuckChance) == 0)
                 item.AddedStats[Stat.Luck] = item.Info.Stats[Stat.Luck] > 0 ?
                     (sbyte)(RandomomRangeHacked(stat.LuckMaxStat - 1 + (byte)grade, stat.LuckStatChance) + 1) :
                     (byte)(RandomomRange(stat.LuckMaxStat - 1, stat.LuckStatChance) + 1);

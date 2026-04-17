@@ -1,9 +1,10 @@
 using System.Drawing;
-﻿using Server.MirDatabase;
+using System.Reflection.Metadata.Ecma335;
+using Server.MirDatabase;
 using Server.MirEnvir;
 using Server.MirNetwork;
 using Server.MirObjects.Monsters;
-using System.Numerics;
+//using System.Numerics;
 using S = ServerPackets;
 
 namespace Server.MirObjects
@@ -909,9 +910,15 @@ namespace Server.MirObjects
             HP = GMNeverDie ? Stats[Stat.HP] : HP;
 
             // [hack] protect hp so player never dies
-            //if (HP < 0) HP = 0;
-            //if (!Dead && HP == 0) Die();
-            ProtectHP();
+            if (!Settings.LockHP)
+            {
+                if (HP < 0) HP = 0;
+                if (!Dead && HP == 0) Die();
+            }
+            else
+            {
+                ProtectHP();
+            }
 
             // HealthChanged = true;
             SendHealthChanged();
@@ -921,7 +928,7 @@ namespace Server.MirObjects
         // [todo] read player name list from config and only protect those players
         private void ProtectHP()
         {
-            int hp_protection_val = (int) (Stats[Stat.HP] * 0.10);
+            int hp_protection_val = (int) (Stats[Stat.HP] * Settings.LockHPPercent / 100D);
             if (HP < hp_protection_val)
             {
                 HP = hp_protection_val + (int) Envir.Random.Next(0, hp_protection_val);
@@ -942,8 +949,14 @@ namespace Server.MirObjects
             MP = GMNeverDie ? Stats[Stat.MP] : MP;
 
             // [hack] MP protection
-            //if (MP < 0) MP = 0;
-            ProtectMP();
+            if (!Settings.LockMP)
+            {
+                if (MP < 0) MP = 0;
+            }
+            else
+            {
+                ProtectMP();
+            }
 
             // HealthChanged = true;
             SendHealthChanged();
@@ -952,7 +965,7 @@ namespace Server.MirObjects
         // [hack] MP protection set to 10~20% of max MP
         private void ProtectMP()
         {
-            int mp_protection_val = (int)(Stats[Stat.MP] * 0.10);
+            int mp_protection_val = (int)(Stats[Stat.MP] * Settings.LockMPPercent /100D);
             if (MP < mp_protection_val)
             {
                 MP = mp_protection_val + (int)Envir.Random.Next(0, mp_protection_val);
@@ -2547,11 +2560,11 @@ namespace Server.MirObjects
         }
         public bool Run(MirDirection dir)
         {
-            if (CurrentBagWeight > Stats[Stat.BagWeight])
-            {
-                // [hack] bypass bag weight limit restrictions
+            // [hack] bypass bag weight limit restrictions
+            //if (CurrentBagWeight > Stats[Stat.BagWeight])
+            //{
                 //Walk(dir);
-            }
+            //}
 
             var steps = RidingMount || ActiveSwiftFeet && !Sneaking ? 3 : 2;
 
@@ -4303,6 +4316,7 @@ namespace Server.MirObjects
             DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, damage, CurrentLocation);
             CurrentMap.ActionList.Add(action);
         }
+        // [hack] allow magics to summon shinsu & skeleton pets, in addition to clones, with dynamic chances based on magic level
         private void Mirroring(UserMagic magic)
         {
             if (CurrentMap.Info.NoPets)
@@ -4312,43 +4326,159 @@ namespace Server.MirObjects
             }
             
             MonsterObject monster;
-            DelayedAction action;
+
             for (int i = 0; i < Pets.Count; i++)
             {
                 monster = Pets[i];
-                if ((monster.Info.Name != Settings.CloneName) || monster.Dead) continue;
+
+                // [hack] add shinsu & skeleton to recall list
+                if ((monster.Info.Name != Settings.CloneName) || (monster.Info.Name != Settings.SkeletonName) || (monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
                 if (monster.Node == null) continue;
 
-                //action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, true);
-                // [hack] reuse existing clone instead of creating a new one, to prevent clone spamming
-                action = new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true);
-                //CurrentMap.ActionList.Add(action);
-                monster.ActionList.Add(action);
-
-                // [hack] comment off this return to allow multiple clones
-                //return;
+                if (monster.Info.Name == Settings.CloneName)
+                {
+                    CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true));
+                }
+                else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+                {
+                    monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
+                }
             }
 
-            // [hack] limit pets max count to 10
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= 10) return;
+            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int) (magic.Level * 3 + 1)) return;
 
-            MonsterInfo info = Envir.GetMonsterInfo(Settings.CloneName);
+            MonsterInfo info = (Envir.Random.Next(magic.Level) == 0) ? Envir.GetMonsterInfo(Settings.CloneName) : 
+                                ((Envir.Random.Next(magic.Level) <= Envir.Random.Next(magic.Level)) ? 
+                                Envir.GetMonsterInfo(Settings.SkeletonName) : Envir.GetMonsterInfo(Settings.ShinsuName));
             if (info == null) return;
+
+            UserItem item = null;
+            if (info.Name == Settings.ShinsuName)
+            {
+                item = GetAmulet(5);
+                if (item == null) return;
+            }
+            else if (info.Name == Settings.SkeletonName)
+            {
+                item = GetAmulet(1);
+                if (item == null) return;
+            }
 
             LevelMagic(magic);
 
+            if (info.Name == Settings.ShinsuName)
+            {
+                ConsumeItem(item, 5);
+            }
+            else if (info.Name == Settings.SkeletonName)
+            {
+                ConsumeItem(item, 1);
+            }
+
             monster = MonsterObject.GetMonster(info);
             monster.Master = this;
+
+            monster.PetLevel = magic.Level;
+            if (monster.Info.Name == Settings.CloneName || monster.Info.Name == Settings.ShinsuName)
+            {
+                monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
+            }
+            else if (monster.Info.Name == Settings.SkeletonName)
+            {
+                monster.MaxPetLevel = (byte)(4 + magic.Level);
+            }
+
+            if (monster.Info.Name == Settings.ShinsuName) monster.Direction = Direction; // 原文件中只有Shinsu会面向玩家方向，Clone和Skeleton默认朝向
             monster.ActionTime = Envir.Time + 1000;
             monster.RefreshNameColour(false);
 
-            // [hack] assign nickname to clone
             monster.Info.Nickname = GivePetNickname(monster);
 
-            Pets.Add(monster);
+            // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
+            if (monster.Info.Name == Settings.CloneName) Pets.Add(monster); 
 
-            action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false);
-            CurrentMap.ActionList.Add(action);
+            // [debug] debug output monster info
+            Settings.debugSpawn(string.Format("{0}/{1} - Level: {2}", monster.Info.Name, monster.Info.Nickname, monster.PetLevel), "Server.HumanObject.Mirroring");
+            for (int i = 0; i < Pets.Count; i++)
+            {
+                MonsterObject pet = Pets[i];
+                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}/{3} [{4}]", i, Pets.Count, pet.Info.Name, pet.Info.Nickname, pet.Dead ? "--" : pet.HP), "Server.HumanObject.Mirroring");
+            }
+
+            CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false));
+        }
+        // [hack] a wrapper function to summon shinsu or skeleton so that all the hacks can be done within just one function to avoid coding in multiple places
+        private void Summon_Skeleton_Shinsu(UserMagic magic, string pet_name)
+        {
+            if (CurrentMap.Info.NoPets)
+            {
+                ReceiveChat("You cannot summon pets on this map.", ChatType.System);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(pet_name) || (pet_name != Settings.ShinsuName && pet_name != Settings.SkeletonName)) return;
+
+            MonsterObject monster;
+            //DelayedAction action = null;
+
+            for (int i = 0; i < Pets.Count; i++)
+            {
+                monster = Pets[i];
+                if ((monster.Info.Name != Settings.ShinsuName) || (monster.Info.Name != Settings.CloneName) || monster.Info.Name != Settings.SkeletonName || monster.Dead) continue;
+                if (monster.Node == null) continue;
+
+                if (monster.Info.Name == Settings.CloneName)
+                {
+                    //action = new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true);
+                    CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true));
+                }
+                else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+                {
+                    //action = new DelayedAction(DelayedType.Recall, Envir.Time + 500);
+                    monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
+                }
+            }
+
+            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
+
+            MonsterInfo info = magic.Level <= 1 ? Envir.GetMonsterInfo(pet_name == Settings.ShinsuName ? Settings.ShinsuName : Settings.SkeletonName) :
+                ((Envir.Random.Next(magic.Level) == 0) ? Envir.GetMonsterInfo(Settings.CloneName) : Envir.GetMonsterInfo(pet_name == Settings.ShinsuName ? Settings.ShinsuName : Settings.SkeletonName));
+            if (info == null) return;
+
+            UserItem item = (info.Name == Settings.ShinsuName) ? GetAmulet(5) : GetAmulet(1);
+            if (item == null) return;
+
+            LevelMagic(magic);
+
+            if (info.Name == Settings.ShinsuName)
+                ConsumeItem(item, 5);
+            else
+                ConsumeItem(item, 1);
+
+            monster = MonsterObject.GetMonster(info);
+            monster.Master = this;
+
+            monster.PetLevel = magic.Level;
+            monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
+
+            if (monster.Info.Name == Settings.ShinsuName) monster.Direction = Direction; // 原文件中只有Shinsu会面向玩家方向，Clone和Skeleton默认朝向
+            monster.ActionTime = Envir.Time + 1000;
+            monster.RefreshNameColour(false);
+
+            monster.Info.Nickname = GivePetNickname(monster);
+
+            //Pets.Add(monster); // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，导致无法被召回，所以这里都加入Pets列表
+
+            // [debug] debug output monster info
+            Settings.debugSpawn(string.Format("{0}[{1}] ({2}) - Level: {3}", monster.Info.Name, monster.ObjectID, monster.Info.Nickname, monster.PetLevel), "Server.HumanObject." + (pet_name == Settings.ShinsuName ? "SummonShinsu" : "SummonSkeleton"));
+            for (int i = 0; i < Pets.Count; i++)
+            {
+                MonsterObject pet = Pets[i];
+                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}[{3}] ({4}) hp=[{5}]", i, Pets.Count, pet.Info.Name, pet.ObjectID, pet.Info.Nickname, pet.Dead ? "--" : pet.HP), "Server.HumanObject." + (pet_name == Settings.ShinsuName ? "SummonShinsu" : "SummonSkeleton"));
+            }
+
+            //action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
+            CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front));
         }
         private void Blizzard(UserMagic magic, Point location, out bool cast)
         {
@@ -4413,14 +4543,18 @@ namespace Server.MirObjects
         {
             if (target == null || !target.IsAttackTarget(this)) return false;
 
-            UserItem item = GetPoison(1);
-            if (item == null) return false;
+            // [hack] use green & red poison at one spell cast
+            for (int i = 0; i < 2; i++)
+            {
+                UserItem item = GetPoison(1);
+                if (item == null) return false;
 
-            int power = magic.GetDamage(GetAttackPower(Stats[Stat.MinSC], Stats[Stat.MaxSC]));
+                int power = magic.GetDamage(GetAttackPower(Stats[Stat.MinSC], Stats[Stat.MaxSC]));
 
-            DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, magic, power, target, item);
-            ActionList.Add(action);
-            ConsumeItem(item, 1);
+                DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, magic, power, target, item);
+                ActionList.Add(action);
+                ConsumeItem(item, 1);
+            }
             return true;
         }
         private bool SoulFireball(MapObject target, UserMagic magic, out bool cast)
@@ -4445,133 +4579,212 @@ namespace Server.MirObjects
         }
         private void SummonSkeleton(UserMagic magic)
         {
-            if (CurrentMap.Info.NoPets)
-            {
-                ReceiveChat("You cannot summon pets on this map.", ChatType.System);
-                return;
-            }
+            // [hack] call modified summon function to allow clones to be summoned
+            Summon_Skeleton_Shinsu(magic, Settings.SkeletonName);
+            return;
+
+            //if (CurrentMap.Info.NoPets)
+            //{
+            //    ReceiveChat("You cannot summon pets on this map.", ChatType.System);
+            //    return;
+            //}
             
-            MonsterObject monster;
-            for (int i = 0; i < Pets.Count; i++)
-            {
-                monster = Pets[i];
-                if ((monster.Info.Name != Settings.SkeletonName) || monster.Dead) continue;
-                if (monster.Node == null) continue;
-                monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
+            //MonsterObject monster;
+            //DelayedAction action = null;
 
-                // [hack] comment off this return to allow multiple skeletons
-                //return;
-            }
+            //for (int i = 0; i < Pets.Count; i++)
+            //{
+            //    monster = Pets[i];
+            //    if ((monster.Info.Name != Settings.SkeletonName) || monster.Info.Name != Settings.CloneName || monster.Info.Name != Settings.CloneName || monster.Dead) continue;
+            //    if (monster.Node == null) continue;
 
-            // [hack] allow multiple skeletons up to 10
-            //if (Pets.Count(x => x.Race == ObjectType.Monster) >= 2) return;
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= 10) return;
+            //    if (monster.Info.Name == Settings.CloneName)
+            //    {
+            //        action = new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true);
+            //        CurrentMap.ActionList.Add(action);
+            //    }
+            //    else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+            //    {
+            //        action = new DelayedAction(DelayedType.Recall, Envir.Time + 500);
+            //        monster.ActionList.Add(action);
+            //    }
 
-            UserItem item = GetAmulet(1);
-            if (item == null) return;
+            //    // [hack] comment off this return to allow multiple skeletons
+            //    //return;
+            //}
 
-            MonsterInfo info = Envir.GetMonsterInfo(Settings.SkeletonName);
-            if (info == null) return;
+            //// [hack] allow multiple skeletons up to magic.Level * 2 + 1
+            ////if (Pets.Count(x => x.Race == ObjectType.Monster) >= 2) return;
+            //if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int) (magic.Level * 3 + 1)) return;
 
-            LevelMagic(magic);
-            ConsumeItem(item, 1);
+            //UserItem item = GetAmulet(1);
+            //if (item == null) return;
 
-            monster = MonsterObject.GetMonster(info);
-            monster.PetLevel = magic.Level;
-            monster.Master = this;
-            monster.MaxPetLevel = (byte)(4 + magic.Level);
-            monster.ActionTime = Envir.Time + 1000;
-            monster.RefreshNameColour(false);
+            //// [hack] dynamic chances to summon a clone of the player
+            ////MonsterInfo info = Envir.GetMonsterInfo(Settings.ShinsuName);
+            //MonsterInfo info = (Envir.Random.Next(magic.Level) == 0) ? Envir.GetMonsterInfo(Settings.CloneName) : Envir.GetMonsterInfo(Settings.SkeletonName);
+            //if (info == null) return;
 
-            // [hack] assign nickname to clone
-            monster.Info.Nickname = GivePetNickname(monster);
+            //LevelMagic(magic);
+            //ConsumeItem(item, 1);
 
-            //Pets.Add(monster);
+            //monster = MonsterObject.GetMonster(info);
+            //monster.Master = this;
 
-            DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
-            CurrentMap.ActionList.Add(action);
+            //// [hack] add max level restrict to pet skeleton
+            //monster.PetLevel = magic.Level;
+            //if (monster.Info.Name == Settings.CloneName)
+            //{
+            //    monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
+            //}
+            //else if (monster.Info.Name == Settings.SkeletonName)
+            //{
+            //    monster.MaxPetLevel = (byte)(4 + magic.Level);
+            //}
+
+            //monster.ActionTime = Envir.Time + 1000;
+            //monster.RefreshNameColour(false);
+
+            //// [hack] assign nickname to clone
+            //monster.Info.Nickname = GivePetNickname(monster);
+
+            //if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
+            //if (monster.Info.Name == Settings.SkeletonName) Pets.Add(monster);
+            //// [debug]
+            //Settings.debugSpawn(string.Format("{0}/{1} - Level: {2}", monster.Info.Name, monster.Info.Nickname, monster.PetLevel), "Server.HumanObject.Mirroring");
+            //for (int i = 0; i < Pets.Count; i++)
+            //{
+            //    MonsterObject pet = Pets[i];
+            //    Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}/{3} [{4}]", i, Pets.Count, pet.Info.Name, pet.Info.Nickname, pet.Dead ? "--" : pet.HP), "Server.HumanObject.Mirroring");
+            //}
+
+            //if (monster.Info.Name == Settings.CloneName)
+            //{
+            //    action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false);
+            //}
+            //else if (monster.Info.Name == Settings.SkeletonName)
+            //{
+            //    action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
+            //}
+            //if (action != null) CurrentMap.ActionList.Add(action);
         }
         private void SummonShinsu(UserMagic magic)
         {
-            if (CurrentMap.Info.NoPets)
-            {
-                ReceiveChat("You cannot summon pets on this map.", ChatType.System);
-                return;
-            }
+            // [hack] call modified summon function to allow clones to avoid coding in multiple places
+            Summon_Skeleton_Shinsu(magic, Settings.ShinsuName);
+            return;
+
+            //if (CurrentMap.Info.NoPets)
+            //{
+            //    ReceiveChat("You cannot summon pets on this map.", ChatType.System);
+            //    return;
+            //}
             
-            MonsterObject monster;
-            for (int i = 0; i < Pets.Count; i++)
-            {
-                monster = Pets[i];
-                if ((monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
-                if (monster.Node == null) continue;
-                
-                monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
+            //MonsterObject monster;
+            //DelayedAction action = null;
 
-                // [hack] comment off this return to allow multiple shinsu
-                //return;
-            }
+            //for (int i = 0; i < Pets.Count; i++)
+            //{
+            //    monster = Pets[i];
+            //    // [hack] allow summon a clone of the player
+            //    //if ((monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
+            //    if ((monster.Info.Name != Settings.ShinsuName) || (monster.Info.Name != Settings.CloneName) || monster.Info.Name != Settings.SkeletonName || monster.Dead) continue;
+            //    if (monster.Node == null) continue;
 
-            // [hack] allow multiple shinsu up to 10
-            //if (Pets.Count(x => x.Race == ObjectType.Monster) >= 2) return;
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= 10) return;
+            //    if (monster.Info.Name == Settings.CloneName)
+            //    {
+            //        action = new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic, monster, Front, true);
+            //        CurrentMap.ActionList.Add(action);
+            //    }
+            //    else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+            //    {
+            //        action = new DelayedAction(DelayedType.Recall, Envir.Time + 500);
+            //        monster.ActionList.Add(action);
+            //    }
 
-            UserItem item = GetAmulet(5);
-            if (item == null) return;
+            //    // [hack] comment off this return to allow multiple pets
+            //    //return;
+            //}
 
-            MonsterInfo info = Envir.GetMonsterInfo(Settings.ShinsuName);
-            if (info == null) return;
+            //// [hack] allow multiple pets up to magic.Level * 2 + 1
+            ////if (Pets.Count(x => x.Race == ObjectType.Monster) >= 2) return;
+            //if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int) (magic.Level * 3 + 1)) return;
 
-            LevelMagic(magic);
-            ConsumeItem(item, 5);
+            //// [hack] dynamic chances to summon a clone of the player
+            ////MonsterInfo info = Envir.GetMonsterInfo(Settings.ShinsuName);
+            //MonsterInfo info = magic.Level <= 1 ? Envir.GetMonsterInfo(Settings.ShinsuName) : 
+            //    ((Envir.Random.Next(magic.Level) == 0) ? Envir.GetMonsterInfo(Settings.CloneName) : Envir.GetMonsterInfo(Settings.ShinsuName));
+            //if (info == null) return;
 
-            monster = MonsterObject.GetMonster(info);
-            monster.PetLevel = magic.Level;
-            monster.Master = this;
-            monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
-            monster.Direction = Direction;
-            monster.ActionTime = Envir.Time + 1000;
+            //UserItem item = (info.Name == Settings.ShinsuName) ? GetAmulet(5) : GetAmulet(1);
+            //if (item == null) return;
 
-            // [hack] assign nickname to clone
-            monster.Info.Nickname = GivePetNickname(monster);
+            //LevelMagic(magic);
+            
+            //if (info.Name == Settings.ShinsuName)
+            //    ConsumeItem(item, 5);
+            //else 
+            //    ConsumeItem(item, 1);
 
-            //Pets.Add(monster);
+            //monster = MonsterObject.GetMonster(info);
+            //monster.Master = this;
 
-            DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
-            CurrentMap.ActionList.Add(action);
+            //// [hack] add max level restrict to pet shinsu
+            //monster.PetLevel = magic.Level;
+            //monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
+
+            //if (monster.Info.Name == Settings.ShinsuName) monster.Direction = Direction; // 原文件中只有Shinsu会面向玩家方向，Clone和Skeleton默认朝向
+            //monster.ActionTime = Envir.Time + 1000;
+            //monster.RefreshNameColour(false);
+
+            //monster.Info.Nickname = GivePetNickname(monster);
+
+            //Pets.Add(monster); // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，导致无法被召回，所以这里都加入Pets列表
+
+            //// [debug] debug output monster info
+            //Settings.debugSpawn(string.Format("{0}[{1}] ({2}) - Level: {3}", monster.Info.Name, monster.ObjectID, monster.Info.Nickname, monster.PetLevel), "Server.HumanObject.Mirroring");
+            //for (int i = 0; i < Pets.Count; i++)
+            //{
+            //    MonsterObject pet = Pets[i];
+            //    Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}[{3}] ({4}) hp=[{5}]", i, Pets.Count, pet.Info.Name, pet.ObjectID, pet.Info.Nickname, pet.Dead ? "--" : pet.HP), "Server.HumanObject.Mirroring");
+            //}
+
+            //if (monster.Info.Name == Settings.CloneName)
+            //{
+            //    action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false);
+            //}
+            //else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+            //{
+            //    action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
+            //}
+            //if (action != null) CurrentMap.ActionList.Add(action);
         }
         // [hack] assign nickname to pets
         private string GivePetNickname(MonsterObject pet)
         {
             if (pet == null) return string.Empty;
 
-            string nickname;
-            // skeleton nicknames
+            string nickname = string.Empty;
+
             if (pet.Info.Name == Settings.SkeletonName)
             {
                 for (int i = 0; i < Settings.SkeletonNicknames.Length; i++)
                 {
                     nickname = Settings.SkeletonNicknames[Envir.Random.Next(Settings.SkeletonNicknames.Length)];
                     if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.SkeletonName) continue;
-                    //if(Pets.Any(p => p.Info.Nickname == Settings.SkeletonName)) continue;
-                    return nickname;
+                    break;
                 }
-                return Settings.SkeletonName;
             }
-            // shinsu nicknames
-            if (pet.Info.Name == Settings.ShinsuName)
+            else if (pet.Info.Name == Settings.ShinsuName)
             {
                 for (int i = 0; i < Settings.ShinsuNicknames.Length; i++)
                 {
                     nickname = Settings.ShinsuNicknames[Envir.Random.Next(Settings.ShinsuNicknames.Length)];
                     if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.ShinsuName) continue;
-                    //if(Pets.Any(p => p.Info.Nickname == Settings.ShinsuName)) continue;
-                    return nickname;
+                    break;
                 }
-                return Settings.ShinsuName;
             }
-            // clone nicknames
-            if (pet.Info.Name == Settings.CloneName)
+            else if (pet.Info.Name == Settings.CloneName)
             {
                 HumanObject owner = pet.Master as HumanObject;
                 MirGender gender = owner.Gender;
@@ -4579,13 +4792,14 @@ namespace Server.MirObjects
                 {
                     nickname = (gender == MirGender.Male ? Settings.BoysHeroNicknames : Settings.GirlsHeroNicknames)[Envir.Random.Next(gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length)];
                     if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.CloneName) continue;
-                    //if(Pets.Any(p => p.Info.Nickname == Settings.CloneName)) continue;
-                    return nickname;
+                    break;
                 }
-                return Settings.CloneName;
             }
 
-            return string.Empty;
+            // [debug]
+            Settings.debugSpawn(string.Format("Nicknamed picked up by {0}[{1}] - {2}", pet.Info.Name, pet.ObjectID, nickname), "Server.HumanObject.GivePetNickname");
+
+            return nickname;
         }
         private void Purification(MapObject target, UserMagic magic)
         {
@@ -4822,8 +5036,8 @@ namespace Server.MirObjects
                 monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
                 return;
             }
-
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= 2) return;
+            // [hack] allow multiple pets
+            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
 
             UserItem item = GetAmulet(2);
             if (item == null) return;
@@ -6998,7 +7212,7 @@ namespace Server.MirObjects
                     {
                         if (item.Info.Shape == 1 || item.Info.Shape == 2)
                         {
-                            lastUsedPoison = (PoisonType) item.Info.Shape;
+                            LastUsedPoison = (PoisonType) item.Info.Shape;
                             return item;
                         }
                     }
@@ -7006,7 +7220,7 @@ namespace Server.MirObjects
                     {
                         if (item.Info.Shape == shape)
                         {
-                            lastUsedPoison = (PoisonType) item.Info.Shape;
+                            LastUsedPoison = (PoisonType) item.Info.Shape;
                             return item;
                         }
                     }
@@ -7016,7 +7230,7 @@ namespace Server.MirObjects
             // if last used poison is green poison, then find red poison next
             // vise versa
             // so the green and red poison will be used alternately
-            PoisonType next_poison_type = lastUsedPoison == PoisonType.Green ? PoisonType.Red : PoisonType.Green;
+            PoisonType next_poison_type = LastUsedPoison == PoisonType.Green ? PoisonType.Red : PoisonType.Green;
 
             for (int i = 0; i < Info.Inventory.Length; i++)
             {
@@ -7025,7 +7239,7 @@ namespace Server.MirObjects
                 {
                     if ((PoisonType) item.Info.Shape == next_poison_type)
                     {
-                        lastUsedPoison = (PoisonType) item.Info.Shape;
+                        LastUsedPoison = (PoisonType) item.Info.Shape;
                         return item;
                     }
                 }
@@ -7038,7 +7252,7 @@ namespace Server.MirObjects
                 {
                     if ((PoisonType) item.Info.Shape == lastUsedPoison)
                     {
-                        lastUsedPoison = (PoisonType) item.Info.Shape;
+                        LastUsedPoison = (PoisonType) item.Info.Shape;
                         return item;
                     }
                 }

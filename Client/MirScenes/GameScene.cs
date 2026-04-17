@@ -402,7 +402,8 @@ namespace Client.MirScenes
                     BackColour = Color.Transparent,
                     Font = new Font(Settings.FontName, 10F),
                     ForeColour = Color.LimeGreen,
-                    Location = new Point(20, 25 + i * 13),
+                    // [hack] 将屏幕信息显示位置移到屏幕底部以避免遮挡物品窗口
+                    Location = new Point(20, i * 15 + Settings.ScreenHeight - 170),
                     OutLine = true,
                 };
 

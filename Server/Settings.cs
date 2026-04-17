@@ -1,13 +1,39 @@
-﻿using System.Collections.Generic;
+﻿//using System.Collections.Generic;
 using System.Security.Cryptography;
 using Server.MirDatabase;
 using Server.MirObjects;
-using Shared;
+//using Shared;
+//using Server;
 
 namespace Server
 {
     public static class Settings
     {
+        // [hack] debug mode switch, not the same variable - Client.Settings.DebugMode
+        public static bool isDebugMode = true;  
+
+        // [hack] add debug message method
+        public static void debugMsg(string message, string function_name)     
+        {
+            if (isDebugMode)
+            {
+                if(function_name != null)
+                    Logger.GetLogger(LogType.Debug).Debug(string.Format("{0}() - {1}", function_name, message));
+                else
+                    Logger.GetLogger(LogType.Debug).Debug(string.Format("{0}", message));
+            }
+        }
+        // [hack] add debug spawn message method
+        public static void debugSpawn(string message, string function_name = null)   
+        {
+            if (isDebugMode)
+            {
+                if (function_name != null)
+                    Logger.GetLogger(LogType.Spawn).Debug(string.Format("{0}() - {1}", function_name, message));
+                else
+                    Logger.GetLogger(LogType.Spawn).Debug(string.Format("{0}", message));
+            }
+        }
         private static MessageQueue MessageQueue
         {
             get { return MessageQueue.Instance; }
@@ -58,7 +84,7 @@ namespace Server
         public static string StrongboxDropFilename = "00Strongbox";
         public static string BlackstoneDropFilename = "00Blackstone";
 
-        public static string Language = "English";
+        public static string Language = "Chinese";  // [hack] 切换界面语言
 
         //Network
         public static string IPAddress = "127.0.0.1";
@@ -111,7 +137,7 @@ namespace Server
         public static float DropRate = 1F, ExpRate = 1F;
         public static int TeleportToNPCCost = 3000;
 
-        public static int ItemTimeOut = 30,
+        public static int ItemTimeOut = 5,   // [hack] change dropped item timeout from 30 minutes to 5 minutes to reduce lag and free up map space
                           PlayerDiedItemTimeOut = 120,
                           DropRange = 4,
                           DropStackSize = 5,
@@ -320,12 +346,18 @@ namespace Server
 
         public static bool AllowObserve;
 
+        // [hack] lock hp & mp flag
+        public static bool LockHP = false;
+        public static bool LockMP = false;
+        public static int LockHPPercent = 10;
+        public static int LockMPPercent = 10;
+
         // [hack] add pet and hero nicknames
-        public static string[] SkeletonNicknames = new string[0];
-        public static string[] ShinsuNicknames = new string[0];
-        public static string[] HeroTitles = new string[0];
-        public static string[] BoysHeroNicknames = new string[0];
-        public static string[] GirlsHeroNicknames = new string[0];
+        public static string[] SkeletonNicknames = { "硬骨头", "软骨头" };
+        public static string[] ShinsuNicknames = { "大狗", "二狗"};
+        public static string[] HeroTitles = {"霸道总裁","好狗不当道","磨磨鸡鸡", "精神小伙"};
+        public static string[] BoysHeroNicknames = {"玩世不出恭", "霸道总裁", "好狗不当道", "磨磨鸡鸡"};
+        public static string[] GirlsHeroNicknames = {"精神小妹", "小太妹"};
 
         //Guild related settings
         public static bool NewbieGuildBuffEnabled = true;

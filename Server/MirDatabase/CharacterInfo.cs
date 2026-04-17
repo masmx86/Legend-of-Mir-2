@@ -104,7 +104,8 @@ namespace Server.MirDatabase
         public Dictionary<int, int> GSpurchases = new Dictionary<int, int>();
         public int[] Rank = new int[2];//dont save this in db!(and dont send it to clients :p)
         
-        public int MaximumHeroCount = 1;
+        // [hack] change max hero count from 1 to 9
+        public int MaximumHeroCount = 9;
         public HeroInfo[] Heroes;
         public int CurrentHeroIndex;
         public bool HeroSpawned;

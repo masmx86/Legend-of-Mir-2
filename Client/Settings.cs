@@ -158,7 +158,16 @@ namespace Client
             DisplayBodyName = false,
             NewMove = false;
 
-        public static string Language = "English";
+        public static string Language = "Chinese";  // [hack] 切换界面语言
+
+        // [hack] 添加三个宠物宝宝的名字
+        public static string SkeletonName = "BoneFamiliar";
+        public static string ShinsuName = "Shinsu";
+        public static string CloneName = "Clone";
+
+        // [hack] 锁红锁蓝
+        public static bool LockHP = true;
+        public static bool LockMP = false;
 
         public static int[,] SkillbarLocation = new int[2, 2] { { 0, 0 }, { 216, 0 } };
 

@@ -60,6 +60,10 @@ namespace Client.MirObjects
 
         public uint ObjectID;
         public string Name = string.Empty;
+
+        // [hack] add nickname
+        public string Nickname = string.Empty;
+
         public Point CurrentLocation, MapLocation;
         public MirDirection Direction;
         public bool Dead, Hidden, SitDown, Sneaking;
@@ -414,13 +418,11 @@ namespace Client.MirObjects
                 ForeColour = NameColour,
                 OutLine = true,
                 OutLineColour = Color.Black,
-                Text = Name,
+                // [hack] 用昵称替代名字
+                Text = string.IsNullOrEmpty(Nickname) ?  Name : Nickname,
             };
             NameLabel.Disposing += (o, e) => LabelList.Remove(NameLabel);
-            LabelList.Add(NameLabel);
-
-
-
+            LabelList.Add(NameLabel);         
         }
         public virtual void DrawName()
         {

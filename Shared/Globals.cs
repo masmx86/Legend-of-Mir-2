@@ -20,8 +20,9 @@
 
         MaxGroup = 15,
 
-        // [hack] change from 5 to 10 to allow more pets
-        MaxPets = 10,
+        
+        MaxPets = 10,   // [hack] change from 5 to 10 to allow more pets
+        PetRecallHPPercent = 10,    // [hack] add global variable for pet recall HP percent
 
         MaxAttackRange = 9,
 

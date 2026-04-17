@@ -969,14 +969,9 @@ namespace Server.MirObjects
                                 case ObjectType.Player:
                                 case ObjectType.Hero:
                                     // [hack] add BugBagMaggot to hero's attck target
-                                    if (ob is BugBagMaggot)
+                                    if (!ob.Dead && (ob is BugBagMaggot || ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName))
                                     {
                                         targets.Add(ob);
-                                        continue;
-                                    }
-                                    else if (ob.Master != null && (ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName))
-                                    {
-                                        Target = ob.Master;
                                         continue;
                                     }
                                     // [/hack]
@@ -1096,26 +1091,13 @@ namespace Server.MirObjects
                             {
                                 case ObjectType.Monster:
                                 case ObjectType.Hero:
-                                    // [hack] add BugBagMaggot to hero's attck target
-                                    if (ob is BugBagMaggot)
-                                    {
-                                        Target = ob;
-                                        continue;
-                                    }
-                                    if(ob.Master != null && (ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName))
-                                    {
-                                        Target = ob.Master;
-                                        continue;
-                                    }
-                                    // [/hack]
-
                                     if (ob is TownArcher) continue;
                                     if (!ob.IsAttackTarget(Owner)) continue;
                                     if (ob.Hidden && (!CoolEye || Level < ob.Level)) continue;
                                     if (ob.Master != null && Target != ob) continue;
                                     if (Owner.Info.HeroBehaviour == HeroBehaviour.CounterAttack && ob.Target != this && ob.Target != Owner) continue;
 
-                                    Target = ob;
+                                    Target ??= ob;
                                     return;
                                 case ObjectType.Player:
                                     PlayerObject playerob = (PlayerObject)ob;

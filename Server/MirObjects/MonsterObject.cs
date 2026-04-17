@@ -1,16 +1,26 @@
-using System;
-using System.Drawing;
-﻿using Server.MirDatabase;
+﻿using ClientPackets;
+using Server.MirDatabase;
 using Server.MirEnvir;
+using Server.MirNetwork;
 using Server.MirObjects.Monsters;
-using System.Diagnostics.Eventing.Reader;
-using Shared;
+//using Shared;
+//using System;
+//using System.Diagnostics.Eventing.Reader;
+using System.Drawing;
 using S = ServerPackets;
 
 namespace Server.MirObjects
 {
     public class MonsterObject : MapObject
     {
+        // [hack] add debug output function
+        protected MirConnection connection;
+        public virtual MirConnection Connection
+        {
+            get { return connection; }
+            set { connection = value; }
+        }
+        // [/hack]
         public static MonsterObject GetMonster(MonsterInfo info)
         {
             if (info == null) return null;
@@ -497,9 +507,9 @@ namespace Server.MirObjects
         {
             get { return ObjectType.Monster; }
         }
-        
+
         public virtual bool IgnoresNoPetRestriction => false;
-        
+
         public MonsterInfo Info;
         public MapRespawn Respawn;
         public MonsterType MonsterType { get; private set; } = MonsterType.Normal;
@@ -557,11 +567,11 @@ namespace Server.MirObjects
         }
 
         public int HealthPercent
-        { 
-            get 
-            { 
-                return (Health * 100) / MaxHealth; 
-            } 
+        {
+            get
+            {
+                return (Health * 100) / MaxHealth;
+            }
         }
 
         public int HP;
@@ -635,13 +645,13 @@ namespace Server.MirObjects
         {
             get
             {
-                return 
-                    !Dead && 
-                    Envir.Time > MoveTime && 
-                    Envir.Time > ActionTime && 
+                return
+                    !Dead &&
+                    Envir.Time > MoveTime &&
+                    Envir.Time > ActionTime &&
                     Envir.Time > ShockTime &&
-                    (Master == null || Master.PMode == PetMode.MoveOnly || Master.PMode == PetMode.Both || Master.PMode == PetMode.FocusMasterTarget) && 
-                    !CurrentPoison.HasFlag(PoisonType.Paralysis) && 
+                    (Master == null || Master.PMode == PetMode.MoveOnly || Master.PMode == PetMode.Both || Master.PMode == PetMode.FocusMasterTarget) &&
+                    !CurrentPoison.HasFlag(PoisonType.Paralysis) &&
                     !CurrentPoison.HasFlag(PoisonType.LRParalysis) &&
                     !CurrentPoison.HasFlag(PoisonType.Frozen) &&
                     (!CurrentPoison.HasFlag(PoisonType.Stun) || (Info.Light == 10 || Info.Light == 5));
@@ -651,7 +661,7 @@ namespace Server.MirObjects
         {
             get
             {
-                return 
+                return
                     !Dead &&
                     Envir.Time > AttackTime &&
                     Envir.Time > ActionTime &&
@@ -737,7 +747,7 @@ namespace Server.MirObjects
 
             if (Info.HasSpawnScript && (Envir.MonsterNPC != null))
             {
-                Envir.MonsterNPC.Call(this,string.Format("[@_SPAWN({0})]",Info.Index));
+                Envir.MonsterNPC.Call(this, string.Format("[@_SPAWN({0})]", Info.Index));
             }
 
             base.Spawned();
@@ -920,9 +930,21 @@ namespace Server.MirObjects
 
             HP += amount;
 
-            if (HP < 0) HP = 0;
+            // [hack] 锁蓝的时候保护宠物血量
+            if (Master != null && Settings.LockMP)
+            {
+                int hp_protection_val = (int)(Stats[Stat.HP] * Settings.LockHPPercent / 100D);
+                if (HP < hp_protection_val)
+                {
+                    HP = hp_protection_val + (int)Envir.Random.Next(0, hp_protection_val);
+                }
+            }
+            else
+            {
+                if (HP < 0) HP = 0;
+                if (!Dead && HP == 0) Die();
+            }
 
-            if (!Dead && HP == 0) Die();
 
             // HealthChanged = true;
             BroadcastHealthChange();
@@ -962,6 +984,25 @@ namespace Server.MirObjects
             return true;
         }
 
+        // [hack] add debug output function
+        public virtual void Enqueue(Packet p)
+        {
+            if (Connection == null) return;
+            Connection.Enqueue(p);
+
+            //MessageQueue.EnqueueDebugging(((ServerPacketIds)p.Index).ToString());
+        }
+        public virtual void Enqueue(Packet p, MirConnection c)
+        {
+            if (c == null)
+            {
+                Enqueue(p);
+                return;
+            }
+
+            c.Enqueue(p);
+        }
+        // [/hack]
 
         public override void Die()
         {
@@ -1002,7 +1043,7 @@ namespace Server.MirObjects
             PoisonList.Clear();
             Envir.MonsterCount--;
             if (CurrentMap != null)
-            CurrentMap.MonsterCount--;
+                CurrentMap.MonsterCount--;
         }
 
         public MapObject GetAttacker(MapObject attacker)
@@ -1361,15 +1402,25 @@ namespace Server.MirObjects
             PMode = PetMode.Both;
 
             // Only teleport if needed
-            if (CurrentMap != Master.CurrentMap)
+            // [hack] change recall conditions and when hp < 10% max health
+            if (CurrentMap != Master.CurrentMap ||
+               (CurrentMap == Master.CurrentMap && 
+               (!Functions.InRange(CurrentLocation, Master.CurrentLocation, Globals.DataRange))) ||
+               (int)Info.Stats[Stat.HP] <= (int)(MaxHealth * Globals.PetRecallHPPercent / 100))
+            // [/hack]
             {
                 if (!Teleport(Master.CurrentMap, Master.Back))
+                {
                     Teleport(Master.CurrentMap, Master.CurrentLocation);
+                    // [hack] reset pet target to prevent going a long distance back to previous target
+                    Target = null;
+                    // [/hack]
+                }
 
                 // Only show message if returning from frozen/waiting state
                 if (wasFrozen)
                 {
-                    Master.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.HasReturnedToYourSide,Name), ChatType.System);
+                    Master.ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.HasReturnedToYourSide, Name), ChatType.System);
                 }
             }
         }
@@ -1420,7 +1471,6 @@ namespace Server.MirObjects
             if (CanRegen)
             {
                 RegenTime = Envir.Time + RegenDelay;
-
 
                 if (HP < Stats[Stat.HP])
                     healthRegen += (int)(Stats[Stat.HP] * 0.022F) + 1;
@@ -1849,6 +1899,8 @@ namespace Server.MirObjects
 
                 if (Target != null && Target.Dead)
                 {
+                    // [hack] if target died, reset target
+                    Target = null;
                     FindTarget();
                 }
 
@@ -1939,37 +1991,47 @@ namespace Server.MirObjects
                             {
                                 case ObjectType.Monster:
                                 case ObjectType.Hero:
-
-                                    // [hack] add bugbatmaggot to pet's target
-                                    if (this.Master != null && (this.Info.Name == Settings.ShinsuName || this.Info.Name == Settings.SkeletonName || this.Info.Name == Settings.CloneName))
+                                    // [hack] add more check conditions to prevent targeting non-attackable objects and sharing targets with master
+                                    if (ob == this) continue;
+                                    if (!ob.IsAttackTarget(this))
                                     {
-                                        if (ob is BugBagMaggot) 
-                                        { 
-                                            Target = ob; 
-                                            continue; 
-                                        }
-                                        else if(ob.Master != null && (ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName)) 
-                                        { 
-                                            Target = ob.Master; 
-                                            continue;
-                                        }
-                                    }
-                                    // [/hack]
+                                        //if (Master != null)
+                                        //{
+                                        //    PlayerObject player = Master as PlayerObject;
 
-                                    if (!ob.IsAttackTarget(this)) continue;
+                                        //    for (int k = 0; k < player.Pets.Count; k++)
+                                        //    {
+                                        //        MonsterObject pet = player.Pets[k];
+                                        //        if (!ob.IsAttackTarget(pet)) continue;
+                                        //        if (pet != this)
+                                        //        {
+                                        //            Target ??= pet.Target;
+                                        //            break;
+                                        //        }
+                                        //    }
+
+                                        //    HeroObject hero = player.Hero as HeroObject;
+                                        //    if (player.HasHero && hero != null)
+                                        //    {
+                                        //        if (ob.IsAttackTarget(hero))
+                                        //        {
+                                        //            Target ??= hero.Target;
+                                        //            return;
+                                        //        }
+                                        //    }
+                                        //}
+                                        continue;
+                                    }
+
                                     if (ob.Hidden && (!CoolEye || Level < ob.Level)) continue;
                                     if (this is TrapRock && ob.InTrapRock) continue;
 
-                                    if (ob.Race == ObjectType.Monster && 
-                                        ob is StoneTrap)
+                                    if (ob.Race == ObjectType.Monster && ob is StoneTrap)
                                     {
-                                        if (Target is null || 
-                                            (Target is not null &&
-                                            Target is not StoneTrap))
+                                        if (Target is null || (Target is not null && Target is not StoneTrap))
                                         {
                                             Target = ob;
                                         }
-                                        
                                         return;
                                     }
                                     else
@@ -1977,7 +2039,7 @@ namespace Server.MirObjects
                                         Target ??= ob;
                                     }
                                     continue;
-                                    
+
                                 case ObjectType.Player:
 
                                     if (Target != null)
@@ -2182,6 +2244,27 @@ namespace Server.MirObjects
             AttackTime = Envir.Time + AttackSpeed;
 
             int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
+
+            // [hack] increase pets attack power
+            if (Master != null)
+            {
+                PlayerObject ob_master = Master as PlayerObject;
+                switch (ob_master.Class)
+                {
+                    case MirClass.Wizard:
+                        damage = GetAttackPower(ob_master.Stats[Stat.MinMC], ob_master.Stats[Stat.MaxMC]);
+                        break;
+                    case MirClass.Taoist:
+                        damage = GetAttackPower(ob_master.Stats[Stat.MinSC], ob_master.Stats[Stat.MaxSC]);
+                        break;
+                    case MirClass.Warrior:
+                        damage = GetAttackPower(ob_master.Stats[Stat.MinDC], ob_master.Stats[Stat.MaxDC]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             if (damage == 0) return;
 
             DelayedAction action = new DelayedAction(DelayedType.Damage, Envir.Time + 300, Target, damage, DefenceType.ACAgility);
@@ -2443,10 +2526,12 @@ namespace Server.MirObjects
             return targets;
         }
 
+        // [comment] This method is used by monsters to determine if a HumanObject is a valid target, so it needs to consider the Master's attack mode and other factors
         public override bool IsAttackTarget(HumanObject attacker)
         {
             if (attacker == null || attacker.Node == null) return false;
             if (Dead) return false;
+            // [comment] this is wild monster, so anu human will be its target
             if (Master == null) return true;
 
             if (attacker.Race == ObjectType.Hero)
@@ -2540,14 +2625,31 @@ namespace Server.MirObjects
                 if (Envir.Time < ShockTime) //Shocked
                     return false;
 
-                for (int i = 0; i < attacker.Master.Pets.Count; i++)
+                // [hack] check if attacker' master has pets or hero when attacker is pet
+                PlayerObject player = attacker.Master as PlayerObject;
+
+                // [hack] add missing condition
+                if (attacker == Target || attacker.Target == this) return true;
+
+                if (Target == player)
+                    return true;
+
+                for (int i = 0; i < player.Pets.Count; i++)
                 {
-                    MonsterObject ob = attacker.Master.Pets[i];
-                    if (ob == Target || ob.Target == this) return true;
+                    MonsterObject ob = player.Pets[i];
+                    if (ob == Target || ob.Target == this) 
+                        return true;
                 }
 
-                if (Target == attacker.Master)
-                    return true;
+                if (player != null)
+                {
+                    HeroObject hero = player.Hero as HeroObject;
+                    if (player.HasHero && hero != null)
+                    { 
+                        if (hero == Target || hero.Target == this)
+                        return true;
+                    }
+                }
             }
 
             if (Envir.Time < attacker.HallucinationTime) return true;
@@ -2696,18 +2798,27 @@ namespace Server.MirObjects
             BroadcastDamageIndicator(DamageType.Hit, armour - damage);
 
             ChangeHP(armour - damage);
+            // [hack] pet auto recall to Master if HP < 10%
+            if (Master != null && HP <= (int) (MaxHealth * Globals.PetRecallHPPercent / 100))
+            {
+                // [debug]
+                //Settings.debugMsg(string.Format("{0}({1}) being attacked by {2} - HP [{3}] <= [{4}] * 10% -> protection triggered", 
+                //    Master.Name, Info.Name, attacker.Info.Name, HP, MaxHealth), 
+                //    "Server/MonsterObject/Attacked");
+                PetRecall();
+            }
             return damage - armour;
         }
 
         public override int Attacked(MonsterObject attacker, int damage, DefenceType type = DefenceType.ACAgility)
         {
             if (Target == null && attacker.IsAttackTarget(this))
+            {
                 Target = attacker;
-
+            }
 
             var armour = GetArmour(type, attacker, out bool hit);
-            if (!hit)
-                return 0;
+            if (!hit) return 0;
 
             armour = (int)Math.Max(int.MinValue, (Math.Min(int.MaxValue, (decimal)(armour * ArmourRate))));
             damage = (int)Math.Max(int.MinValue, (Math.Min(int.MaxValue, (decimal)(damage * DamageRate))));
@@ -2719,7 +2830,9 @@ namespace Server.MirObjects
             }
 
             if (Target != this && attacker.IsAttackTarget(this))
+            {
                 Target = attacker;
+            }
 
             if (BindingShotCenter) ReleaseBindingShot();
             ShockTime = 0;
@@ -2760,6 +2873,12 @@ namespace Server.MirObjects
             BroadcastDamageIndicator(DamageType.Hit, armour - damage);
 
             ChangeHP(armour - damage);
+            // [hack] pet auto recall to Master if HP < 10%
+            if (Master != null && HP <= (int)(MaxHealth * Globals.PetRecallHPPercent / 100))
+            {
+                PetRecall();
+            }
+
             return damage - armour;
         }
 
@@ -2824,7 +2943,7 @@ namespace Server.MirObjects
                 if ((PoisonList[i].PType == PoisonType.Green) && (PoisonList[i].Value > p.Value)) return;//cant cast weak poison to cancel out strong poison
                 if ((PoisonList[i].PType != PoisonType.Green) && ((PoisonList[i].Duration - PoisonList[i].Time) > p.Duration)) return;//cant cast 1 second poison to make a 1minute poison go away!
                 if (p.PType == PoisonType.DelayedExplosion) return;
-                if ((PoisonList[i].PType == PoisonType.Frozen) || (PoisonList[i].PType == PoisonType.Slow) || (PoisonList[i].PType == PoisonType.Paralysis)|| (PoisonList[i].PType == PoisonType.LRParalysis)) return;//prevents mobs from being perma frozen/slowed
+                if ((PoisonList[i].PType == PoisonType.Frozen) || (PoisonList[i].PType == PoisonType.Slow) || (PoisonList[i].PType == PoisonType.Paralysis) || (PoisonList[i].PType == PoisonType.LRParalysis)) return;//prevents mobs from being perma frozen/slowed
                 PoisonList[i] = p;
                 return;
             }
@@ -2891,13 +3010,15 @@ namespace Server.MirObjects
                 BindingShotCenter = BindingShotCenter,
                 Buffs = Buffs.Where(d => d.Info.Visible).Select(e => e.Type).ToList(),
                 MasterObjectId = Master?.ObjectID ?? 0,
-                Rarity= MonsterType
+                Rarity = MonsterType
             };
         }
 
         public override void ReceiveChat(string text, ChatType type)
         {
-            throw new NotSupportedException();
+            // [hack] add debug output function
+            Enqueue(new S.Chat { Message = text, Type = type });
+            //throw new NotSupportedException();
         }
 
         public void RemoveObjects(MirDirection dir, int count)
@@ -3519,7 +3640,8 @@ namespace Server.MirObjects
         {
             if (PetLevel >= MaxPetLevel) return;
 
-            if (Info.Name == Settings.SkeletonName || Info.Name == Settings.ShinsuName || Info.Name == Settings.AngelName)
+            // [hack] allow clone to gain experience
+            if (Info.Name == Settings.SkeletonName || Info.Name == Settings.ShinsuName || Info.Name == Settings.AngelName || Info.Name == Settings.CloneName)
                 amount *= 3;
 
             PetExperience += amount;
@@ -3674,7 +3796,7 @@ namespace Server.MirObjects
 
             var startPoints = new List<Point>
             {
-                CurrentLocation 
+                CurrentLocation
             };
 
             var half = (width - 1) / 2;
@@ -3844,9 +3966,9 @@ namespace Server.MirObjects
                         break;
                     }
                 }
-            }     
+            }
         }
-    
+
         protected virtual void ProjectileAttack(int damage, DefenceType type = DefenceType.ACAgility, int additionalDelay = 500)
         {
             int delay = Functions.MaxDistance(CurrentLocation, Target.CurrentLocation) * 50 + additionalDelay;

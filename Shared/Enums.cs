@@ -270,6 +270,7 @@ public enum Monster : ushort
     EvilCentipede = 41,
     BugBat = 42,
     BugBatMaggot = 43,
+    BugBagMaggot = 43,  // [hack] fix naming error
     WedgeMoth = 44,
     RedBoar = 45,
     BlackBoar = 46,

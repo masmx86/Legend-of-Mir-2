@@ -831,6 +831,10 @@ namespace ServerPackets
 
         public uint ObjectID;
         public string Name = string.Empty;
+
+        // [hack] add nickname
+        public string Nickname = string.Empty;
+
         public string GuildName = string.Empty;
         public string GuildRankName = string.Empty;
         public Color NameColour;
@@ -2219,6 +2223,10 @@ namespace ServerPackets
 
         public uint ObjectID;
         public string Name = string.Empty;
+
+        // [hack] add nickname
+        public string Nickname = string.Empty;
+
         public Color NameColour;
         public Point Location;
         public Monster Image;
