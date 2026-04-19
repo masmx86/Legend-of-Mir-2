@@ -15,8 +15,8 @@ namespace Server.MirDatabase
         public int Index;
         public string Name;
 
-        // [hack] add nickname to charactor
-        public string Nickname = string.Empty;
+        //// [hack] add nickname to charactor
+        //public string Nickname = string.Empty;
 
         public ushort Level;
         public MirClass Class;
@@ -104,8 +104,8 @@ namespace Server.MirDatabase
         public Dictionary<int, int> GSpurchases = new Dictionary<int, int>();
         public int[] Rank = new int[2];//dont save this in db!(and dont send it to clients :p)
         
-        // [hack] change max hero count from 1 to 9
-        public int MaximumHeroCount = 9;
+        // [hack] change max hero count from 1 to 10
+        public int MaximumHeroCount = Globals.MaxHeroes;
         public HeroInfo[] Heroes;
         public int CurrentHeroIndex;
         public bool HeroSpawned;

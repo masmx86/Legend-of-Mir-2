@@ -242,6 +242,7 @@ namespace Server.MirObjects
 
         public int GetAttackPower(int min, int max)
         {
+            // [hack] 根据血量调整攻击值
             if (min < 0) min = 0;
             if (min > max) max = min;
 
@@ -256,7 +257,7 @@ namespace Server.MirObjects
                     return min;
             }
 
-            return Envir.Random.Next(min, max + 1);
+            return Envir.Random.Next(min, max + 1) * PercentHealth / 100;
         }
 
         public int GetRangeAttackPower(int min, int max, int range)
@@ -273,10 +274,11 @@ namespace Server.MirObjects
 
         public int GetDefencePower(int min, int max)
         {
+            // [hack] 根据血量调整防御值
             if (min < 0) min = 0;
             if (min > max) max = min;
 
-            return Envir.Random.Next(min, max + 1);
+            return Envir.Random.Next(min, max + 1) * PercentHealth / 100;
         }
 
         public virtual void Remove(HumanObject player)
@@ -459,6 +461,7 @@ namespace Server.MirObjects
 
         public virtual int GetArmour(DefenceType type, MapObject attacker, out bool hit)
         {
+            // [hack] 根据血量调整防御值
             var armour = 0;
             hit = true;
             switch (type)
@@ -503,7 +506,7 @@ namespace Server.MirObjects
                     }
                     break;
             }
-            return armour;
+            return armour * PercentHealth / 100;
         }
 
         public virtual void ApplyNegativeEffects(HumanObject attacker, DefenceType type, ushort levelOffset)

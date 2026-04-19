@@ -347,10 +347,8 @@ namespace Server
         public static bool AllowObserve;
 
         // [hack] lock hp & mp flag
-        public static bool LockHP = false;
+        public static bool LockHP = true;
         public static bool LockMP = false;
-        public static int LockHPPercent = 10;
-        public static int LockMPPercent = 10;
 
         // [hack] add pet and hero nicknames
         public static string[] SkeletonNicknames = { "硬骨头", "软骨头" };

@@ -21,8 +21,11 @@
         MaxGroup = 15,
 
         
-        MaxPets = 10,   // [hack] change from 5 to 10 to allow more pets
-        PetRecallHPPercent = 10,    // [hack] add global variable for pet recall HP percent
+        MaxPets = 10,               // [hack] 允许的最大宝宝数量，从5增加到10
+        MaxHeroes = 10,
+        PetRecallHPPercent = 10,    // [hack] 宠物血量低于这个百分比就召唤回到主人身边
+        LockHPPercent = 10,         // [hack] 锁红百分比
+        LockMPPercent = 10,         // [hack] 锁蓝百分比
 
         MaxAttackRange = 9,
 

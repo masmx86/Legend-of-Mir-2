@@ -22,6 +22,8 @@ namespace Server.MirObjects
 
         public HeroInfo HInfo;
         public new PlayerObject Owner;
+        // [hack] add nickname to hero
+        public string Nickname = string.Empty;
         public override int PotionBeltMinimum => 0;
         public override int PotionBeltMaximum => 2;
         public override int AmuletBeltMinimum => 1;

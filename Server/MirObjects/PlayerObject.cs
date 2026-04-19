@@ -281,6 +281,11 @@ namespace Server.MirObjects
             {
                 MonsterObject pet = Pets[i];
 
+                // [debug]
+                if (pet == null || pet.Node == null) continue;
+                Logger.GetLogger(LogType.Spawn).Debug(string.Format("saving Pet: [{0}/{1}] {2}:{3}({4})[{5}] <{6}> Level={7}",
+                    i, Pets.Count, pet.Name, pet.Info.Name, string.IsNullOrEmpty(pet.Nickname) ? "-" : pet.Nickname, pet.ObjectID, pet.Race, pet.Level));
+
                 if (pet.Race == ObjectType.Creature)
                 {
                     //dont save Creatures they will miss alot of AI-Info when they get spawned on login
@@ -342,8 +347,8 @@ namespace Server.MirObjects
                             break;
                     }
                     // [debug]
-                    Logger.GetLogger(LogType.Spawn).Debug(string.Format("saving Pet: [{0}/{1}] {2} Level = {3} TameTime = {4}",
-                        i, Pets.Count, pet.Info.Name, pet.Level, pet.TameTime - Envir.Time));
+                    //Logger.GetLogger(LogType.Spawn).Debug(string.Format("saving Pet: [{0}/{1}] {2}:{3}[{4}] <{5}> Level={6}",
+                        //i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Race, pet.Level));
 
                     Envir.MonsterCount--;
                     pet.CurrentMap.MonsterCount--;
@@ -1221,6 +1226,13 @@ namespace Server.MirObjects
             Enqueue(new S.GuildBuffList() { GuildBuffs = Settings.Guild_BuffList });
             RequestedGuildBuffInfo = true;
 
+            // [hack] 自动给战士英雄打开刺杀和半月
+            if (Master != null && Class == MirClass.Warrior)
+            {
+                Info.Thrusting = true;
+                Info.HalfMoon = true;
+            }
+
             if (Info.Thrusting) Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.Thrusting, CanUse = true });
             if (Info.HalfMoon) Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.HalfMoon, CanUse = true });
             if (Info.CrossHalfMoon) Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.CrossHalfMoon, CanUse = true });
@@ -1243,6 +1255,10 @@ namespace Server.MirObjects
                 monster.MaxPetLevel = info.MaxPetLevel;
                 monster.PetExperience = info.Experience;
                 monster.Master = this;
+                // [hack] 这里添加这一条不知道能不能解决服务器重启宝宝叛变的问题
+                monster.Owner = this;   
+                // [hack] 给宝宝添加昵称
+                monster.Nickname = GivePetNickname(monster);
 
                 switch (Settings.PetSave)
                 {
@@ -1286,7 +1302,8 @@ namespace Server.MirObjects
                 monster.SetHP(info.HP);
 
                 // [debug]
-                Logger.GetLogger(LogType.Spawn).Debug(string.Format("Re-spawning Pet: {0} [{1}/{2}]", monster.Info.Name, i, Info.Pets.Count));
+                Logger.GetLogger(LogType.Spawn).Debug(string.Format("Re-spawning Pet: [{0}/{1}] {2}:{3}({4})[{5}] <{6}> Level={7} HP={8}",
+                    i, Pets.Count, monster.Name, monster.Info.Name, string.IsNullOrEmpty(monster.Nickname) ? "-" : monster.Nickname, monster.ObjectID, monster.Race, monster.Level, monster.HP));
             }
 
             Info.Pets.Clear();
@@ -3700,21 +3717,21 @@ namespace Server.MirObjects
                         {
                             if (!HasHero) return;
 
-                        if (!HeroSpawned)
-                                SummonHero();
-                        else if (Hero != null)
-                        {
-                            long remaining = Hero.LogTime - Envir.Time;
-                            if (remaining > 0)
+                            if (!HeroSpawned)
+                                    SummonHero();
+                            else if (Hero != null)
                             {
-                                int remainingSeconds = (int)Math.Ceiling(remaining / 1000D);
-                                ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.HeroDesummonCountdown, remainingSeconds), ChatType.System);
-                                return;
-                            }
+                                long remaining = Hero.LogTime - Envir.Time;
+                                if (remaining > 0)
+                                {
+                                    int remainingSeconds = (int)Math.Ceiling(remaining / 1000D);
+                                    ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.HeroDesummonCountdown, remainingSeconds), ChatType.System);
+                                    return;
+                                }
 
-                            DespawnHero();
-                            Info.HeroSpawned = false;
-                        }
+                                DespawnHero();
+                                Info.HeroSpawned = false;
+                            }
                         }
                         break;
 
@@ -5772,7 +5789,7 @@ namespace Server.MirObjects
             Enqueue(p);
         }
         // [hack] 补红补蓝的时候，如果所需的量超过自身的需要，多余的部分优先补充给血量最低的宠物
-        public void HealPets(UserItem item)
+        public void HealPetsHero(UserItem item)
         {
             if (item.Info.Type != ItemType.Potion) return;
             switch (item.Info.Shape)
@@ -5785,36 +5802,27 @@ namespace Server.MirObjects
                     int usr_mp_need = Stats[Stat.MP] - MP;
                     int excess_hp = volume_hp - usr_hp_need;
                     int excess_mp = volume_mp - usr_mp_need;
+                    int excess_amount = excess_hp > 0 ? excess_hp : 0 + excess_mp > 0 ? excess_mp : 0;
 
-                    // [comment] HP
-                    for (int i = 0; excess_hp > 0 && i < this.Pets.Count; i++)
+                    // [hack]  循环给血量最低的宝宝加血
+                    for (int i = 0; excess_amount > 0 && i < Pets.Count; i++)
                     {
-                        // [hack]  循环给血量最低的宝宝加血
                         MonsterObject pet = Pets.Where(p => p.Dead == false).OrderBy(p => p.HP).FirstOrDefault();
                         int pet_hp_need = pet.Info.Stats[Stat.HP] - pet.HP;
                         if (pet_hp_need <= 0) break;
-                        pet.ChangeHP((ushort)Math.Min(pet_hp_need, excess_hp));
+                        int amount = Math.Min(pet_hp_need, excess_amount);
+                        pet.ChangeHP((ushort) amount);
                         ReceiveChat(string.Format("healing {0}[{1}] with {2}(+{3})",
-                            string.IsNullOrEmpty(pet.Info.Nickname) ? pet.Info.Name : pet.Info.Nickname,
+                            string.IsNullOrEmpty(pet.Nickname) ? pet.Info.Name : pet.Nickname,
                             pet.ObjectID, item.Info.Name,
-                            (ushort)Math.Min(pet_hp_need, excess_hp)),
+                            (ushort)amount),
                             ChatType.Hint);
-                        excess_hp -= pet_hp_need;
+                        excess_amount -= pet_hp_need;
                     }
-                    // [comment] MP
-                    for (int i = 0; excess_mp > 0 && i < this.Pets.Count; i++)
+                    // [hack] 再有剩余的部分加给Hero
+                    if (excess_amount > 0 && HasHero && HeroSpawned)
                     {
-                        // [hack]  循环给血量最低的宝宝加血
-                        MonsterObject pet = Pets.Where(p => p.Dead == false).OrderBy(p => p.HP).FirstOrDefault();
-                        int pet_hp_need = pet.Info.Stats[Stat.HP] - pet.HP;
-                        if (pet_hp_need <= 0) break;
-                        pet.ChangeHP((ushort)Math.Min(pet_hp_need, excess_mp));
-                        ReceiveChat(string.Format("healing {0}[{1}] with {2}(+{3})",
-                            string.IsNullOrEmpty(pet.Info.Nickname) ? pet.Info.Name : pet.Info.Nickname,
-                            pet.ObjectID, item.Info.Name,
-                            (ushort)Math.Min(pet_hp_need, excess_mp)),
-                            ChatType.Hint);
-                        excess_mp -= pet_hp_need;
+                        Hero.ChangeHP(excess_amount);
                     }
                     break;
             }
@@ -5856,14 +5864,14 @@ namespace Server.MirObjects
                             PotManaAmount = (ushort)Math.Min(ushort.MaxValue, PotManaAmount + item.Info.Stats[Stat.MP]);
 
                             // [hack] 补红补蓝的时候，如果所需的量超过自身的需要，多余的部分优先补充给血量最低的宠物
-                            HealPets(item);
+                            HealPetsHero(item);
                             break;
                         case 1: //SunPotion
                             ChangeHP(item.Info.Stats[Stat.HP]);
                             ChangeMP(item.Info.Stats[Stat.MP]);
 
                             // [hack] 补红补蓝的时候，如果所需的量超过自身的需要，多余的部分优先补充给血量最低的宠物
-                            HealPets(item);
+                            HealPetsHero(item);
                             break;
                         case 2: //MysteryWater
                             if (UnlockCurse)
@@ -6147,6 +6155,9 @@ namespace Server.MirObjects
                 case ItemType.Pets:
                     if (item.Info.Shape >= 20)
                     {
+                        // [debug]
+                        ReceiveChat(string.Format("PlayerObject.UseItem.ItemType.Pets.item({0}).Info.Shape={1}", item.Info.Name, item.Info.Shape), ChatType.Hint);
+
                         switch (item.Info.Shape)
                         {
                             case 20://Mirror
@@ -6298,6 +6309,9 @@ namespace Server.MirObjects
                     break;
                 case ItemType.MonsterSpawn:
 
+                    // [debug]
+                    ReceiveChat(string.Format("PlayerObject.UseItem.ItemType.monsterSpawn.item({0}).Info.Stats[Stat.HP]={1}", item.Info.Name, item.Info.Stats[Stat.HP]), ChatType.Hint);
+
                     var monsterID = item.Info.Stats[Stat.HP];
                     var spawnAsPet = item.Info.Shape == 1;
                     var conquestOnly = item.Info.Shape == 2;
@@ -6320,6 +6334,9 @@ namespace Server.MirObjects
                         monster.Master = this;
                         monster.PetLevel = 0;
                         monster.MaxPetLevel = 7;
+
+                        // [debug]
+                        ReceiveChat(string.Format("PlayerObject.UseItem.ItemType.monsterSpawn.Pet({0})[{1}]", monster.Name, monster.ObjectID), ChatType.Hint);
 
                         Pets.Add(monster);
                     }
@@ -14497,7 +14514,7 @@ namespace Server.MirObjects
                 SpawnHero(hero);
 
             // [hack] assign nickname to hero
-            hero.Info.Nickname = GiveHeroNickname(hero);
+            hero.Nickname = GiveHeroNickname(hero);
 
             Hero = hero;
             Info.HeroSpawned = true;
@@ -14515,7 +14532,8 @@ namespace Server.MirObjects
                 MirGender gender = owner.Gender;
                 for (int i = 0; i < (gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length); i++)
                 {
-                    nickname = (gender == MirGender.Male ? Settings.BoysHeroNicknames : Settings.GirlsHeroNicknames)[Envir.Random.Next(gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length)];
+                    nickname = (gender == MirGender.Male ? Settings.BoysHeroNicknames : Settings.GirlsHeroNicknames)
+                        [Envir.Random.Next(gender == MirGender.Male ? Settings.BoysHeroNicknames.Length : Settings.GirlsHeroNicknames.Length)];
                     if (string.IsNullOrWhiteSpace(nickname) || nickname == Settings.HeroName) continue;
                     return nickname;
                 }

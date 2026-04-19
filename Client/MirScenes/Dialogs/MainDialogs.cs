@@ -556,7 +556,7 @@ namespace Client.MirScenes.Dialogs
             //UserInfoLabel.Text = string.Format("攻击： {0} 魔法： {1} 道术： {2} 防御： {3} 魔御： {4} 幸运： {5} 准确： {6} 闪避： {7} 攻击速度：{8}",
             //    User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC], User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC],
             //    User.Stats[Stat.Luck], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility], User.Stats[Stat.AttackSpeed]);
-            UserAttribLabel.Text = string.Format("攻:{0} 魔:{1} 道:{2} 防:{3} 御:{4} 运:{5} 速{6}: 准{7}: 避:{8}",
+            UserAttribLabel.Text = string.Format("攻{0} 魔{1} 道{2} 防{3} 御{4} 运{5} 速{6} 准{7} 避{8}",
                 User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC],
                 User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC], User.Stats[Stat.Luck],
                 User.Stats[Stat.AttackSpeed], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility]);
@@ -577,16 +577,16 @@ namespace Client.MirScenes.Dialogs
                         else if (ob.Name == User.Name) clone_count++;
                         else tamed_count++;
 
-                        if (pet_hp > ob.PercentHealth) pet_hp = ob.PercentHealth;
+                        pet_hp = Math.Min(pet_hp, ob.PercentHealth);
                     }
                 }
             }
             string pet_info = string.Empty;
-            userPetLabel.Text = string.Format("宝宝: {0} [分身:{1} 神兽:{2} 骷髅:{3} 召唤:{4}] ☠ 符|毒:[{5}] <HP {6}%>", 
+            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] ☠ 符|毒[{5}] <HP {6}%>", 
                 clone_count + shinshu_count + skeleton_count + tamed_count, 
                 clone_count, shinshu_count, skeleton_count, tamed_count,
-                User.Equipment[(int)EquipmentSlot.Amulet] != null ? User.Equipment[(int)EquipmentSlot.Amulet].Count : "用完了",
-                (byte) pet_hp);
+                User.Equipment[(int)EquipmentSlot.Amulet] != null ? User.Equipment[(int)EquipmentSlot.Amulet].Count : "无",
+                (byte) (pet_hp == int.MaxValue ? 0 : pet_hp));
             //userPetLabel.Text = string.Format("W {0:#0.00} A {1:#0.00} H {2:#0.00} B {3:#0.00} / {4:#0.00} R {5:#0.00} / {6:#0.00} A {7} Pet {8}",
             //    User.Equipment[(int)EquipmentSlot.Weapon] != null ? (float)User.Equipment[(int)EquipmentSlot.Weapon].CurrentDura / 1000 : 0,
             //    User.Equipment[(int)EquipmentSlot.Armour] != null ? (float)User.Equipment[(int)EquipmentSlot.Armour].CurrentDura / 1000 : 0,

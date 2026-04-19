@@ -5637,9 +5637,9 @@ namespace Client.MirObjects
             for (int s = 0; s < splitName.Count(); s++)
             {
                 // [hack] 用昵称替代名字
-                //if (splitName[s].Contains(Settings.CloneName) ||splitName[s].Contains(Settings.ShinsuName) ||splitName[s].Contains(Settings.SkeletonName))
-                //    CreateMonsterLabel(string.IsNullOrEmpty(Nickname) ? splitName[s] : Nickname, s);
-                //else 
+                if (splitName[s].Contains(Settings.CloneName) ||splitName[s].Contains(Settings.ShinsuName) ||splitName[s].Contains(Settings.SkeletonName))
+                    CreateMonsterLabel(string.IsNullOrEmpty(Nickname) ? splitName[s] : Nickname, s);
+                else
                     CreateMonsterLabel(splitName[s], s);
 
                 //TempLabel.Text = splitName[s];//When CreateLabel() is called, the name is already determined, so there's no need to assign it every time in DrawName.

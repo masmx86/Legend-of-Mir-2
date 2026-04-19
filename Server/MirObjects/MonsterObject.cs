@@ -523,7 +523,8 @@ namespace Server.MirObjects
             }
             set { throw new NotSupportedException(); }
         }
-
+        // [hack] add nickname to monter
+        public string Nickname = string.Empty;
         public override int CurrentMapIndex { get; set; }
         public override Point CurrentLocation { get; set; }
         public override sealed MirDirection Direction { get; set; }
@@ -933,7 +934,7 @@ namespace Server.MirObjects
             // [hack] 锁蓝的时候保护宠物血量
             if (Master != null && Settings.LockMP)
             {
-                int hp_protection_val = (int)(Stats[Stat.HP] * Settings.LockHPPercent / 100D);
+                int hp_protection_val = (int)(Stats[Stat.HP] * Globals.LockHPPercent / 100D);
                 if (HP < hp_protection_val)
                 {
                     HP = hp_protection_val + (int)Envir.Random.Next(0, hp_protection_val);
@@ -1405,16 +1406,14 @@ namespace Server.MirObjects
             // [hack] change recall conditions and when hp < 10% max health
             if (CurrentMap != Master.CurrentMap ||
                (CurrentMap == Master.CurrentMap && 
-               (!Functions.InRange(CurrentLocation, Master.CurrentLocation, Globals.DataRange))) ||
+               ((!Functions.InRange(CurrentLocation, Master.CurrentLocation, Globals.DataRange))) && Target == null) ||
                (int)Info.Stats[Stat.HP] <= (int)(MaxHealth * Globals.PetRecallHPPercent / 100))
-            // [/hack]
             {
                 if (!Teleport(Master.CurrentMap, Master.Back))
                 {
                     Teleport(Master.CurrentMap, Master.CurrentLocation);
                     // [hack] reset pet target to prevent going a long distance back to previous target
                     Target = null;
-                    // [/hack]
                 }
 
                 // Only show message if returning from frozen/waiting state

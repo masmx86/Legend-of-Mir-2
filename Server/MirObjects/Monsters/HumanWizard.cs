@@ -1,4 +1,5 @@
 ﻿using Server.MirDatabase;
+using System.Numerics;
 using S = ServerPackets;
 
 namespace Server.MirObjects.Monsters
@@ -37,11 +38,19 @@ namespace Server.MirObjects.Monsters
             ActionTime = Envir.Time + 300;
             AttackTime = Envir.Time + AttackSpeed;
 
-            // [hack] 根据玩家的魔法攻击力计算伤害
-            //int damage = GetAttackPower(Stats[Stat.MinMC], Stats[Stat.MaxMC]);
+            // [hack] 根据玩家的攻击力计算伤害
             PlayerObject player = Master as PlayerObject;
-            int damage = GetAttackPower(player.Stats[Stat.MinMC], player.Stats[Stat.MaxMC]);
-
+            int damage = 0;
+            if (player != null)
+            {
+                List<int> min_attack = [player.Stats[Stat.MinDC], player.Stats[Stat.MinMC], player.Stats[Stat.MinSC]];
+                List<int> max_attack = [player.Stats[Stat.MaxDC], player.Stats[Stat.MaxMC], player.Stats[Stat.MaxSC]];
+                int min_limit = min_attack[Envir.Random.Next(min_attack.Count)];
+                int max_limit = max_attack[Envir.Random.Next(max_attack.Count)];
+                damage = GetAttackPower(min_limit, max_limit) * HealthPercent / 100;
+            }
+            else
+                damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
             if (damage == 0) return;
 
             DelayedAction action = new DelayedAction(DelayedType.Damage, Envir.Time + 500, Target, damage, DefenceType.MAC);
@@ -182,7 +191,7 @@ namespace Server.MirObjects.Monsters
                 Name = master != null ? master.Name : Name,
 
                 // [hack] 添加昵称显示
-                Nickname = master != null ? Info.Nickname : string.Empty,
+                Nickname = master != null ? Nickname : string.Empty,
 
                 NameColour = NameColour,
                 Class = master != null ? master.Class : MirClass.Wizard,
