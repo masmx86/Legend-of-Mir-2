@@ -167,7 +167,7 @@ namespace Client
 
         // [hack] 锁红锁蓝
         public static bool LockHP = true;
-        public static bool LockMP = false;
+        public static bool LockMP = true;
 
         public static int[,] SkillbarLocation = new int[2, 2] { { 0, 0 }, { 216, 0 } };
 

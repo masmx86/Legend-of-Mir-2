@@ -2323,7 +2323,11 @@ namespace Client.MirScenes
             ChatDialog.ReceiveChat(p.Text, p.Type);
 
             if (MapControl.Objects.TryGetValue(p.ObjectID, out MapObject ob))
+            {
                 ob.Chat(RegexFunctions.CleanChatString(p.Text));
+                // [debug]
+                ob.Chat(p.Text);
+            }
         }
 
         private void NewMonsterInfo(S.NewMonsterInfo info)

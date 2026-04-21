@@ -310,8 +310,8 @@ namespace Server
         public static uint GoodsBuyBackMaxStored = 20;
         public static bool GoodsHideAddedStats = true;
 
-        public static BaseStats[] ClassBaseStats = new BaseStats[5] { new BaseStats(MirClass.Warrior), new BaseStats(MirClass.Wizard), new BaseStats(MirClass.Taoist), new BaseStats(MirClass.Assassin), new BaseStats(MirClass.Archer) };
-        public static BaseStats[] HeroBaseStats = new BaseStats[5] { new BaseStats(MirClass.Warrior), new BaseStats(MirClass.Wizard), new BaseStats(MirClass.Taoist), new BaseStats(MirClass.Assassin), new BaseStats(MirClass.Archer) };
+        public static BaseStats[] ClassBaseStats = [new BaseStats(MirClass.Warrior), new BaseStats(MirClass.Wizard), new BaseStats(MirClass.Taoist), new BaseStats(MirClass.Assassin), new BaseStats(MirClass.Archer)];
+        public static BaseStats[] HeroBaseStats = [new BaseStats(MirClass.Warrior), new BaseStats(MirClass.Wizard), new BaseStats(MirClass.Taoist), new BaseStats(MirClass.Assassin), new BaseStats(MirClass.Archer)];
 
         public static List<RandomItemStat> RandomItemStatsList = new List<RandomItemStat>();
         public static List<MineSet> MineSetList = new List<MineSet>();
@@ -339,23 +339,26 @@ namespace Server
         //Hero related settings
         public static bool AllowNewHero = true;
         public static byte Hero_RequiredLevel = 22;
-        public static bool[] Hero_CanCreateClass = new bool[0];
+        public static bool[] Hero_CanCreateClass = [];
         public static string HeroSealItemName = "SealedHero";
         public static ushort HeroMaximumSealCount = 5;
         public static byte MaximumHeroCount = 9;
 
         public static bool AllowObserve;
 
-        // [hack] lock hp & mp flag
+        // [hack] 锁红锁蓝标志
         public static bool LockHP = true;
-        public static bool LockMP = false;
+        public static bool LockMP = true;
 
-        // [hack] add pet and hero nicknames
-        public static string[] SkeletonNicknames = { "硬骨头", "软骨头" };
-        public static string[] ShinsuNicknames = { "大狗", "二狗"};
-        public static string[] HeroTitles = {"霸道总裁","好狗不当道","磨磨鸡鸡", "精神小伙"};
-        public static string[] BoysHeroNicknames = {"玩世不出恭", "霸道总裁", "好狗不当道", "磨磨鸡鸡"};
-        public static string[] GirlsHeroNicknames = {"精神小妹", "小太妹"};
+        // [hack] 给宠物和英雄添加昵称
+        public static string[] SkeletonNicknames = ["硬骨头", "软骨头"];
+        public static string[] ShinsuNicknames = ["大狗", "二狗"];
+        public static string[] HeroTitles = ["霸道总裁","好狗不当道","磨磨鸡鸡", "精神小伙"];
+        public static string[] BoysHeroNicknames = ["玩世不出恭", "霸道总裁", "好狗不当道", "磨磨鸡鸡"];
+        public static string[] GirlsHeroNicknames = ["精神小妹", "小太妹"];
+
+        // [hack] 掉血超过一定数值时喊出来的话
+        public static string[] HealthDropMessages = ["哎吆~~~", "你小子玩真的啊", "你是认真的吗", "可以啊", "wc 你使这么大劲儿啊"];
 
         //Guild related settings
         public static bool NewbieGuildBuffEnabled = true;
@@ -653,7 +656,9 @@ namespace Server
             LoadWorldMap();
             LoadHeroSettings();
 
+            // [hack] 加载自定义内容
             LoadNicknames();
+            LoadHealthDropShoutOutLoudMessage();
 
             string languageDirectory = @".\Localization\";
             if (!Directory.Exists(languageDirectory))
@@ -953,7 +958,7 @@ namespace Server
             {
                 if (!File.Exists(Path.Combine(ConfigPath, $"BaseStats{ClassBaseStats[i].Job}.ini")))
                 {
-                    SaveBaseStats(new BaseStats[1] { new BaseStats(ClassBaseStats[i].Job) });
+                    SaveBaseStats([new BaseStats(ClassBaseStats[i].Job)]);
                     continue;
                 }
 
@@ -993,7 +998,7 @@ namespace Server
             {
                 if (!File.Exists(Path.Combine(ConfigPath, $"HeroBaseStats{HeroBaseStats[i].Job}.ini")))
                 {
-                    SaveHeroBaseStats(new BaseStats[1] { new BaseStats(HeroBaseStats[i].Job) });
+                    SaveHeroBaseStats([new BaseStats(HeroBaseStats[i].Job)]);
                     continue;
                 }
 
@@ -1364,7 +1369,7 @@ namespace Server
             reader.Write("Hero", "MaximumSealCount", HeroMaximumSealCount);
         }
 
-        // [hack] Load nicknames from ini files
+        // [hack] 加载昵称
         public static void LoadNicknames()
         {
             if (!File.Exists(Path.Combine(ConfigPath, "PetNicknames.ini")))
@@ -1376,7 +1381,7 @@ namespace Server
                 return;
             }
 
-            // load pet nicknames
+            // 加载宠物昵称
             InIReader petReader = new InIReader(Path.Combine(ConfigPath, "PetNicknames.ini"));
             
             for(int i  = 0; i < 10; i++)
@@ -1391,7 +1396,7 @@ namespace Server
                 ShinsuNicknames.Append(nickname);
             }
 
-            // load hero nicknames
+            // 加载英雄昵称
             InIReader heroReader = new InIReader(Path.Combine(ConfigPath, "HeroNicknames.ini"));
 
             for (int i = 0; i < 10; i++)
@@ -1411,7 +1416,22 @@ namespace Server
                 GirlsHeroNicknames.Append(nickname);
             }
         }
+        // [hack] 掉血超过一定数值的时候会大喊
+        public static void LoadHealthDropShoutOutLoudMessage()
+        {
+            if (!File.Exists(Path.Combine(ConfigPath, "HealthDropMessage.ini")))
+            {
+                return;
+            }
 
+            InIReader shoutReader = new InIReader(Path.Combine(ConfigPath, "HealthDropMessage.ini"));
+
+            for (int i = 0; i < 10; i++)
+            {
+                string msg = shoutReader.ReadString("Message", "message" + i.ToString(), "Message");
+                HealthDropMessages.Append(msg);
+            }
+        }
         public static void LoadGuildSettings()
         {
             if (!File.Exists(Path.Combine(ConfigPath, "GuildSettings.ini")))

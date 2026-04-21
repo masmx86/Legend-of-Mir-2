@@ -257,7 +257,8 @@ namespace Server.MirObjects
                     return min;
             }
 
-            return Envir.Random.Next(min, max + 1) * PercentHealth / 100;
+            //int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
+            return Envir.Random.Next(min, max + 1); //* percent / 100;
         }
 
         public int GetRangeAttackPower(int min, int max, int range)
@@ -278,7 +279,8 @@ namespace Server.MirObjects
             if (min < 0) min = 0;
             if (min > max) max = min;
 
-            return Envir.Random.Next(min, max + 1) * PercentHealth / 100;
+            //int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
+            return Envir.Random.Next(min, max + 1); // * percent / 100;
         }
 
         public virtual void Remove(HumanObject player)
@@ -506,7 +508,9 @@ namespace Server.MirObjects
                     }
                     break;
             }
-            return armour * PercentHealth / 100;
+
+            //int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
+            return armour; // * percent / 100;
         }
 
         public virtual void ApplyNegativeEffects(HumanObject attacker, DefenceType type, ushort levelOffset)

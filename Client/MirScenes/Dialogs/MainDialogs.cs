@@ -386,31 +386,7 @@ namespace Client.MirScenes.Dialogs
                 //Location = new Point(230, 145),
                 Visible = Settings.ModeView
             };
-            // [debug] label control does not have clicked() event handler
-            //AModeLabel.Click += (o, e) =>
-            //{
-            //    switch (GameScene.Scene.AMode)
-            //    {
-            //        case AttackMode.Peace:
-            //            GameScene.Scene.AMode = AttackMode.Group;
-            //            break;
-            //        case AttackMode.Group:
-            //            GameScene.Scene.AMode = AttackMode.Guild;
-            //            break;
-            //        case AttackMode.Guild:
-            //            GameScene.Scene.AMode = AttackMode.EnemyGuild;
-            //            break;
-            //        case AttackMode.EnemyGuild:
-            //            GameScene.Scene.AMode = AttackMode.RedBrown;
-            //            break;
-            //        case AttackMode.RedBrown:
-            //            GameScene.Scene.AMode = AttackMode.All;
-            //            break;
-            //        case AttackMode.All:
-            //            GameScene.Scene.AMode = AttackMode.Peace;
-            //            break;
-            //    }
-            //};
+
             PModeLabel = new MirLabel
             {
                 AutoSize = true,
@@ -420,28 +396,6 @@ namespace Client.MirScenes.Dialogs
                 Location = new Point(230, 125),
                 Visible = Settings.ModeView
             };
-            // [debug] label control does have clicked() event handler
-            //PModeLabel.Click += (o, e) =>
-            //{
-            //    switch (GameScene.Scene.PMode)
-            //    {
-            //        case PetMode.Both:
-            //            GameScene.Scene.PMode = PetMode.MoveOnly;
-            //            break;
-            //        case PetMode.MoveOnly:
-            //            GameScene.Scene.PMode = PetMode.AttackOnly;
-            //            break;
-            //        case PetMode.AttackOnly:
-            //            GameScene.Scene.PMode = PetMode.None;
-            //            break;
-            //        case PetMode.None:
-            //            GameScene.Scene.PMode = PetMode.FocusMasterTarget;
-            //            break;
-            //        case PetMode.FocusMasterTarget:
-            //            GameScene.Scene.PMode = PetMode.Both;
-            //            break;
-            //    }
-            //};
 
             SModeLabel = new MirLabel
             {

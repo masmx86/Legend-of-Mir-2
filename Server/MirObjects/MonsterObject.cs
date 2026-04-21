@@ -7,6 +7,7 @@ using Server.MirObjects.Monsters;
 //using System;
 //using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
+using static System.Net.Mime.MediaTypeNames;
 using S = ServerPackets;
 
 namespace Server.MirObjects
@@ -934,7 +935,7 @@ namespace Server.MirObjects
             // [hack] 锁蓝的时候保护宠物血量
             if (Master != null && Settings.LockMP)
             {
-                int hp_protection_val = (int)(Stats[Stat.HP] * Globals.LockHPPercent / 100D);
+                int hp_protection_val = (byte)(Stats[Stat.HP] * Globals.LockHPPercent / 100D);
                 if (HP < hp_protection_val)
                 {
                     HP = hp_protection_val + (int)Envir.Random.Next(0, hp_protection_val);
@@ -2244,7 +2245,7 @@ namespace Server.MirObjects
 
             int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
 
-            // [hack] increase pets attack power
+            // [hack] 根据职业调整宝宝攻击力
             if (Master != null)
             {
                 PlayerObject ob_master = Master as PlayerObject;
@@ -2262,6 +2263,8 @@ namespace Server.MirObjects
                     default:
                         break;
                 }
+                int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
+                damage = (int) (damage * percent / 100);
             }
 
             if (damage == 0) return;
@@ -2685,6 +2688,14 @@ namespace Server.MirObjects
 
         public override int Attacked(HumanObject attacker, int damage, DefenceType type = DefenceType.ACAgility, bool damageWeapon = true)
         {
+            // [debug]
+            //Logger.GetLogger(LogType.Debug).Debug(string.Format("attacker={0}[{1}] is attacking monster={2}[{3}] by damage={4} (defencetype={5} target={6}[{7}]) at map={8} [{9},{10}]",
+            //    attacker == null ? "-" : attacker.Name, attacker == null ? 0 : attacker.ObjectID,
+            //    Name, ObjectID,
+            //    damage, type,
+            //    Target == null ? "-" : Target.Name, Target == null ? 0 : Target.ObjectID,
+            //    CurrentMap.Info.Title, CurrentLocation.X, CurrentLocation.Y));
+
             if (Target == null && attacker.IsAttackTarget(this))
             {
                 Target = attacker;
@@ -2797,20 +2808,22 @@ namespace Server.MirObjects
             BroadcastDamageIndicator(DamageType.Hit, armour - damage);
 
             ChangeHP(armour - damage);
-            // [hack] pet auto recall to Master if HP < 10%
-            if (Master != null && HP <= (int) (MaxHealth * Globals.PetRecallHPPercent / 100))
-            {
-                // [debug]
-                //Settings.debugMsg(string.Format("{0}({1}) being attacked by {2} - HP [{3}] <= [{4}] * 10% -> protection triggered", 
-                //    Master.Name, Info.Name, attacker.Info.Name, HP, MaxHealth), 
-                //    "Server/MonsterObject/Attacked");
-                PetRecall();
-            }
+            // [hack] 掉血超过一定数值的时候会大喊出来
+            MonsterHealthDropShout(damage - armour);
+
             return damage - armour;
         }
 
         public override int Attacked(MonsterObject attacker, int damage, DefenceType type = DefenceType.ACAgility)
         {
+            // [debug]
+            //Logger.GetLogger(LogType.Debug).Debug(string.Format("attacker={0}[{1}] is attacking monster={2}[{3}] by damage={4} (defencetype={5} target={6}[{7}]) at map={8} [{9},{10}]",
+            //    attacker == null ? "-" : attacker.Name, attacker == null ? 0 : attacker.ObjectID,
+            //    Name, ObjectID,
+            //    damage, type,
+            //    Target == null ? "-" : Target.Name, Target == null ? 0 : Target.ObjectID,
+            //    CurrentMap.Info.Title, CurrentLocation.X, CurrentLocation.Y));
+
             if (Target == null && attacker.IsAttackTarget(this))
             {
                 Target = attacker;
@@ -2868,19 +2881,37 @@ namespace Server.MirObjects
             }
 
             Broadcast(new S.ObjectStruck { ObjectID = ObjectID, AttackerID = attacker.ObjectID, Direction = Direction, Location = CurrentLocation });
-
             BroadcastDamageIndicator(DamageType.Hit, armour - damage);
 
             ChangeHP(armour - damage);
-            // [hack] pet auto recall to Master if HP < 10%
-            if (Master != null && HP <= (int)(MaxHealth * Globals.PetRecallHPPercent / 100))
-            {
-                PetRecall();
-            }
+            // [hack] 掉血超过一定数值的时候会大喊出来
+            MonsterHealthDropShout(damage - armour);
 
             return damage - armour;
         }
-
+        // [hack] 掉血超过一定数值的时候会大喊出来或者回到主人身边
+        public void MonsterHealthDropShout(int healthdrop)
+        {
+            PlayerObject ob = Master as PlayerObject;
+            if (healthdrop > Globals.HealthDropShoutOutLoud)
+            {
+                if (ob != null && Envir.Random.Next(Globals.HealthDropShoutOutLoud) == 0)
+                {
+                    string msg = Settings.HealthDropMessages[Envir.Random.Next(Settings.HealthDropMessages.Length)];
+                    // [debug]
+                    Enqueue(new S.ObjectChat { ObjectID = ObjectID, Text = msg, Type = ChatType.Normal });
+                    ob.ReceiveChat(string.Format("{0}[{1}]: {2}", Name, ObjectID, msg), ChatType.Normal);
+                    //Logger.GetLogger(LogType.Chat).Debug(string.Format("{0}[{1}]: {2}", Name, ObjectID, msg));
+                }
+            }
+            if (Master != null && PercentHealth <= (byte)Globals.PetRecallHPPercent)
+            {
+                PetRecall();
+                // [debug]
+                //ob.ReceiveChat(string.Format("{0}[{1}]: {2}", Name, ObjectID, "溜了溜了~~~"), ChatType.Normal);
+                //Logger.GetLogger(LogType.Chat).Debug(string.Format("{0}[{1}]: {2}", Name, ObjectID, "溜了溜了~~~"));
+            }
+        }
         public override int Struck(int damage, DefenceType type = DefenceType.ACAgility)
         {
             int armour = 0;

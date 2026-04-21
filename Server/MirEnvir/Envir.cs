@@ -4389,7 +4389,7 @@ namespace Server.MirEnvir
                 CurrentDura = (ushort)Math.Min(info.Durability, Random.Next(info.Durability) + 1000)
             };
 
-            // [hack] increase chance of hacked items with more random stats
+            // [hack] 增加掉落物品的极品属性
             UpgradeItemHacked(item);
             // [debug] output item name for debugging item expiry parsing
             //Settings.debugMsg(string.Format("New Drop Item: {0}", item.Info.Name), "Envir.CreateDropItem");
@@ -4549,7 +4549,7 @@ namespace Server.MirEnvir
 
             if (item.Info.Type == ItemType.Weapon)
             {
-                // weapons get extra MC|SC only
+                // 带有魔法或者道术的武器只增加魔法或者道术属性
                 if (hasMC || hasSC) hasDC = false;
             }
 
@@ -4566,15 +4566,15 @@ namespace Server.MirEnvir
 
             if (hasDC && stat.MaxDcChance > 0 && Random.Next(stat.MaxDcChance) == 0)
             {
-                item.AddedStats[Stat.MaxDC] = (byte)Math.Min(extraDC, stat.MaxDcMaxStat);
+                item.AddedStats[Stat.MaxDC] = extraDC; // (byte)Math.Min(extraDC, stat.MaxDcMaxStat);
             }
             if (hasMC && stat.MaxMcChance > 0 && Random.Next(stat.MaxMcChance) == 0)
             {
-                item.AddedStats[Stat.MaxMC] = (byte)Math.Min(extraMC, stat.MaxMcMaxStat);
+                item.AddedStats[Stat.MaxMC] = extraMC; // (byte)Math.Min(extraMC, stat.MaxMcMaxStat);
             }
             if (hasSC && stat.MaxScChance > 0 && Random.Next(stat.MaxScChance) == 0)
             {
-                item.AddedStats[Stat.MaxSC] = (byte)Math.Min(extraSC, stat.MaxScMaxStat);
+                item.AddedStats[Stat.MaxSC] = extraSC; // (byte)Math.Min(extraSC, stat.MaxScMaxStat);
             }
 
             // AC
@@ -4707,7 +4707,7 @@ namespace Server.MirEnvir
             for (var i = 0; i < count; i++) if (Random.Next(rate) == 0) x++;
             return x;
         }
-        // [hack] increase chance to get more stats on items
+        // [hack] 提高物品增加极品属性的几率
         public int RandomomRangeHacked(int count, int rate)
         {
             var x = 0;

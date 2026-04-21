@@ -75,16 +75,16 @@ namespace Server.MirObjects.Monsters
             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
             Broadcast(new S.ObjectAttack { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation });
 
-            PlayerObject player = Master as PlayerObject;
+            PlayerObject ob = Master as PlayerObject;
             int damage = 0;
-            if (player != null)
+            if (ob != null)
             {
                 // [hack] 根据玩家的攻击力计算伤害
-                List<int> min_attack = [player.Stats[Stat.MinDC], player.Stats[Stat.MinMC], player.Stats[Stat.MinSC]];
-                List<int> max_attack = [player.Stats[Stat.MaxDC], player.Stats[Stat.MaxMC], player.Stats[Stat.MaxSC]];
+                List<int> min_attack = [ob.Stats[Stat.MinDC], ob.Stats[Stat.MinMC], ob.Stats[Stat.MinSC]];
+                List<int> max_attack = [ob.Stats[Stat.MaxDC], ob.Stats[Stat.MaxMC], ob.Stats[Stat.MaxSC]];
                 int min_limit = min_attack[Envir.Random.Next(min_attack.Count)];
                 int max_limit = max_attack[Envir.Random.Next(max_attack.Count)];
-                damage = GetAttackPower(min_limit, max_limit) * Math.Min(Level, MaxPetLevel) / MaxPetLevel * HealthPercent / 100;
+                damage = GetAttackPower(min_limit, max_limit); // * Math.Min(Level, MaxPetLevel) / MaxPetLevel; // * HealthPercent / 100;
             }
             else
                 damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);

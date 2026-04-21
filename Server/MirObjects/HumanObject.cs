@@ -4467,7 +4467,7 @@ namespace Server.MirObjects
 
             monster.Nickname = GivePetNickname(monster);
 
-            //Pets.Add(monster); // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，导致无法被召回，所以这里都加入Pets列表
+            //Pets.Add(monster); // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致影子宠物从而无法被召回，所以这里不能加入Pets列表
 
             // [debug] debug output monster info
             Settings.debugSpawn(string.Format("{0}[{1}] ({2}) - Level: {3}", monster.Info.Name, monster.ObjectID, monster.Nickname, monster.PetLevel), "Server.HumanObject." + (pet_name == Settings.ShinsuName ? "SummonShinsu" : "SummonSkeleton"));
@@ -4796,7 +4796,7 @@ namespace Server.MirObjects
                 }
             }
 
-            // [debug]
+            // [debug] 给宠物添加昵称
             Settings.debugSpawn(string.Format("Nicknamed picked up by {0}[{1}]: {2}", pet.Info.Name, pet.ObjectID, nickname), "Server.HumanObject.GivePetNickname");
 
             return nickname;
@@ -5488,27 +5488,27 @@ namespace Server.MirObjects
                 ReceiveChat("You cannot summon pets on this map.", ChatType.System);
                 return;
             }
-            UserMagic magic2 = new UserMagic(Spell.Mirroring);
+            UserMagic mirroring = new UserMagic(Spell.Mirroring);
 
             MonsterObject monster;
 
-            for (int i = 0; i < Pets.Count; i++)
-            {
-                monster = Pets[i];
+            //for (int i = 0; i < Pets.Count; i++)
+            //{
+            //    monster = Pets[i];
 
-                // [hack] add shinsu & skeleton to recall list
-                if ((monster.Info.Name != Settings.CloneName) || (monster.Info.Name != Settings.SkeletonName) || (monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
-                if (monster.Node == null) continue;
+            //    // [hack] add shinsu & skeleton to recall list
+            //    if ((monster.Info.Name != Settings.CloneName) || (monster.Info.Name != Settings.SkeletonName) || (monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
+            //    if (monster.Node == null) continue;
 
-                if (monster.Info.Name == Settings.CloneName)
-                {
-                    CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic2, monster, Front, true));
-                }
-                else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
-                {
-                    monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
-                }
-            }
+            //    if (monster.Info.Name == Settings.CloneName)
+            //    {
+            //        CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic2, monster, Front, true));
+            //    }
+            //    else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+            //    {
+            //        monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
+            //    }
+            //}
 
             if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
 
@@ -5562,17 +5562,18 @@ namespace Server.MirObjects
 
             // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
             if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
-            if (monster.Info.Name == Settings.SkeletonName || monster.Info.Name == Settings.ShinsuName) Pets.Add(monster); // 加上这一句看看能不能出宝宝
+            // 战士分身功能，不加这一句的话没办法用 PlayerPbject->HealPetHero() 给宝宝加血
+            if (Class == MirClass.Warrior && (monster.Info.Name == Settings.SkeletonName || monster.Info.Name == Settings.ShinsuName)) Pets.Add(monster); 
 
             // [debug] debug output monster info
-            Settings.debugSpawn(string.Format("summon {0}:{1}[{2}] Level={3}", monster.Info.Name, monster.Nickname, monster.ObjectID, monster.PetLevel), "Server.HumanObject.ShoulderDashMirroring");
+            Settings.debugSpawn(string.Format("\nsummon {0}:{1}[{2}] Level={3}", monster.Info.Name, monster.Nickname, monster.ObjectID, monster.PetLevel), "Server.HumanObject.ShoulderDashMirroring");
             for (int i = 0; i < Pets.Count; i++)
             {
                 MonsterObject pet = Pets[i];
-                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}:{3}[{4}] HP={5} [{6},{7}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Dead ? 0 : pet.HP, pet.CurrentLocation.X, pet.CurrentLocation.Y), "Server.HumanObject.ShoulderDashMirroring");
+                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}:{3}[{4}] level={5} hp={6} [{7},{8}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Level, pet.Dead ? 0 : pet.HP, pet.CurrentLocation.X, pet.CurrentLocation.Y), "Server.HumanObject.ShoulderDashMirroring");
             }
 
-            CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic2, monster, Back, false));
+            CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, mirroring, monster, Back, false));
         }
         private void SlashingBurst(UserMagic magic)
         {
