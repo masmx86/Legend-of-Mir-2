@@ -23,10 +23,10 @@ namespace Client.MirScenes.Dialogs
         public MirControl HealthOrb;
         public MirLabel HealthLabel, ManaLabel, TopLabel, BottomLabel, LevelLabel, CharacterName, ExperienceLabel, GoldLabel, WeightLabel, SpaceLabel, AModeLabel, PModeLabel, SModeLabel;
 
-        // [hack] add user attribute label to display extra info
+        // [hack] 添加玩家信息显示
         public MirLabel UserAttribLabel;
 
-        // [hack] add equipment durability label
+        // [hack] 添加宠物信息显示
         public MirLabel userPetLabel;
 
         public HeroInfoPanel HeroInfoPanel;
@@ -268,7 +268,7 @@ namespace Client.MirScenes.Dialogs
                 NotControl = true,
             };
 
-            // [hack] equipment durability label
+            // [hack] 宠物信息标签
             userPetLabel = new MirLabel
             {
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
@@ -486,11 +486,11 @@ namespace Client.MirScenes.Dialogs
 
             LevelLabel.Text = User.Level.ToString();
 
-            // [kack] update time display
+            // [kack] 在主界面上显示时间
             GameScene.Scene.ChatControl.ClockLabel.Text = DateTime.Now.ToString("HH:mm:ss");
             GameScene.Scene.ChatControl.ClockLabel.Location = new Point(GameScene.Scene.ChatControl.SizeButton.Location.X - GameScene.Scene.ChatControl.ClockLabel.Size.Width - 10, GameScene.Scene.ChatControl.ClockLabel.Location.Y);
 
-            // [hack] adjust experience display to show current and max level experience
+            // [hack] 在主界面上显示当前经验值和升级所需经验值
             ExperienceLabel.Text = string.Format("{0:#0.####%}", (User.Experience / (double)User.MaxExperience));
 
             GameScene.Scene.ChatControl.CurrentExperienceValue.Text = User.Experience.ToString("#,##0");
@@ -498,7 +498,6 @@ namespace Client.MirScenes.Dialogs
 
             GameScene.Scene.ChatControl.MaxExperienceValue.Text = User.MaxExperience.ToString("#,##0");
             GameScene.Scene.ChatControl.MaxExperienceValue.Location = new Point((GameScene.Scene.ChatControl.Size.Width / 2) + 18, GameScene.Scene.ChatControl.MaxExperienceValue.Location.Y);
-            // [/hack]
 
             ExperienceLabel.Location = new Point((ExperienceBar.Size.Width / 2) - 20, -10);
             GoldLabel.Text = GameScene.Gold.ToString("###,###,##0");
@@ -506,7 +505,7 @@ namespace Client.MirScenes.Dialogs
             SpaceLabel.Text = User.Inventory.Count(t => t == null).ToString();
             WeightLabel.Text = (MapObject.User.Stats[Stat.BagWeight] - MapObject.User.CurrentBagWeight).ToString();
 
-            // [hack] update user info display
+            // [hack] 更新用户信息
             //UserInfoLabel.Text = string.Format("攻击： {0} 魔法： {1} 道术： {2} 防御： {3} 魔御： {4} 幸运： {5} 准确： {6} 闪避： {7} 攻击速度：{8}",
             //    User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC], User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC],
             //    User.Stats[Stat.Luck], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility], User.Stats[Stat.AttackSpeed]);
@@ -519,7 +518,8 @@ namespace Client.MirScenes.Dialogs
             int shinshu_count = 0;
             int skeleton_count = 0;
             int tamed_count = 0;
-            int pet_hp = int.MaxValue;
+            int pet_hp = int.MaxValue;  // 血量最少的宠物的血量值
+            MonsterObject monster = null;
             foreach (var ob in MapControl.Objects.Values)
             {
                 if ((ob.Race == ObjectType.Monster || (ob.Race == ObjectType.Player && ob.ObjectID != User.ObjectID)) && !ob.Dead)
@@ -531,29 +531,50 @@ namespace Client.MirScenes.Dialogs
                         else if (ob.Name == User.Name) clone_count++;
                         else tamed_count++;
 
-                        pet_hp = Math.Min(pet_hp, ob.PercentHealth);
+                        if (ob.PercentHealth < pet_hp)
+                        {
+                            monster = (MonsterObject)ob;
+                            pet_hp = ob.PercentHealth;
+                        }
                     }
                 }
             }
-            string pet_info = string.Empty;
-            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] ☠ 符|毒[{5}] <HP {6}%>", 
+            int amulet_count = 0;
+            int green_poison_count = 0;
+            int red_poison_count = 0;
+
+            if (User.Equipment[(int)EquipmentSlot.Amulet] != null)
+            {
+                if (User.Equipment[(int)(EquipmentSlot.Amulet)].Info.Type == ItemType.Amulet)
+                {
+                    switch (User.Equipment[(int)EquipmentSlot.Amulet].Info.Shape)
+                    {
+                        case (short)PoisonType.None: amulet_count++; break;
+                        case (short) PoisonType.Green: green_poison_count++; break;
+                        case (short) PoisonType.Red: red_poison_count++; break;
+                    }
+                }
+            }
+            for (int i = 0; i < User.Inventory.Length; i++)
+            {
+                UserItem item = User.Inventory[i];
+                if (item != null && item.Info.Type == ItemType.Amulet && item.Count > 0)
+                {
+                    switch (item.Info.Shape)
+                    {
+                        case (short)PoisonType.None: amulet_count++; break;
+                        case (short)PoisonType.Green: green_poison_count++; break;
+                        case (short)PoisonType.Red: red_poison_count++; break;
+                    }
+                }
+            }
+            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] ☠ 符[{5}] 毒[{6}|{7}] <HP {8} {9}%>", 
                 clone_count + shinshu_count + skeleton_count + tamed_count, 
                 clone_count, shinshu_count, skeleton_count, tamed_count,
-                User.Equipment[(int)EquipmentSlot.Amulet] != null ? User.Equipment[(int)EquipmentSlot.Amulet].Count : "无",
+                amulet_count, red_poison_count, green_poison_count,
+                monster == null ? "-" : (string.IsNullOrEmpty(monster.Nickname) ? monster.Name : monster.Nickname),
                 (byte) (pet_hp == int.MaxValue ? 0 : pet_hp));
-            //userPetLabel.Text = string.Format("W {0:#0.00} A {1:#0.00} H {2:#0.00} B {3:#0.00} / {4:#0.00} R {5:#0.00} / {6:#0.00} A {7} Pet {8}",
-            //    User.Equipment[(int)EquipmentSlot.Weapon] != null ? (float)User.Equipment[(int)EquipmentSlot.Weapon].CurrentDura / 1000 : 0,
-            //    User.Equipment[(int)EquipmentSlot.Armour] != null ? (float)User.Equipment[(int)EquipmentSlot.Armour].CurrentDura / 1000 : 0,
-            //    User.Equipment[(int)EquipmentSlot.Helmet] != null ? (float)User.Equipment[(int)EquipmentSlot.Helmet].CurrentDura / 1000 : 0,
-            //    User.Equipment[(int)EquipmentSlot.BraceletL] != null ? (float)User.Equipment[(int)EquipmentSlot.BraceletL].CurrentDura / 1000 : 0,
-            //    User.Equipment[(int)EquipmentSlot.BraceletR] != null ? (float)User.Equipment[(int)EquipmentSlot.BraceletR].CurrentDura / 1000 : 0,
-            //    User.Equipment[(int)EquipmentSlot.RingL] != null ? (float)User.Equipment[(int)EquipmentSlot.RingL].CurrentDura / 1000 : 0,
-            //    User.Equipment[(int)EquipmentSlot.RingR] != null ? (float)User.Equipment[(int)EquipmentSlot.RingR].CurrentDura / 1000 : 0,
-            //    User.Equipment[(int)EquipmentSlot.Amulet] != null ? User.Equipment[(int)EquipmentSlot.Amulet].Count : 0,
-            //    petcount
-            //    );
             userPetLabel.Location = new Point(ExperienceLabel.Location.X + ExperienceLabel.Size.Width, UserAttribLabel.Location.Y);
-            // [/hack]
         }
 
         private void Label_SizeChanged(object sender, EventArgs e)

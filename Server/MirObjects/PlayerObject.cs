@@ -5807,7 +5807,7 @@ namespace Server.MirObjects
                 if (pet_hp_need <= 0) continue;
                 int amount = Math.Min(pet_hp_need, excess_amount);
                 pet.ChangeHP((ushort) amount);
-                ReceiveChat(string.Format("healing {0}[{1}] with {2}(+{3})",
+                ReceiveChat(string.Format("healing {0}[{1}] with {2} (hp +{3})",
                     string.IsNullOrEmpty(pet.Nickname) ? pet.Name : pet.Nickname, pet.ObjectID, item, (ushort)amount), 
                     ChatType.Hint);
                 excess_amount -= amount;

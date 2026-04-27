@@ -4543,7 +4543,7 @@ namespace Server.MirObjects
         {
             if (target == null || !target.IsAttackTarget(this)) return false;
 
-            // [hack] use green & red poison at one spell cast
+            // [hack] 施毒术同时释放红毒和绿毒
             for (int i = 0; i < 2; i++)
             {
                 UserItem item = GetPoison(1);
@@ -7360,6 +7360,29 @@ namespace Server.MirObjects
             for (int i = 0; i < Info.Equipment.Length; i++)
             {
                 UserItem item = Info.Equipment[i];
+                if (item != null && item.Info.Type == ItemType.Amulet && item.Count >= count)
+                {
+                    if (shape == 0)
+                    {
+                        if (item.Info.Shape != (ushort)LastUsedPoison && (item.Info.Shape == (ushort)PoisonType.Green || item.Info.Shape == (ushort)PoisonType.Red))
+                        {
+                            LastUsedPoison = (PoisonType)item.Info.Shape;
+                            return item;
+                        }
+                    }
+                    else
+                    {
+                        if (item.Info.Shape == shape)
+                        {
+                            LastUsedPoison = (PoisonType)item.Info.Shape;
+                            return item;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < Info.Inventory.Length; i++)
+            {
+                UserItem item = Info.Inventory[i];
                 if (item != null && item.Info.Type == ItemType.Amulet && item.Count >= count)
                 {
                     if (shape == 0)
