@@ -287,11 +287,51 @@ namespace Server.MirEnvir
 
         private void FillMagicInfoList()
         {
+            // [hack] 添加三职业通用魔法技能
+            if (!MagicExists(Spell.Mercenary))
+                MagicInfoList.Add(new MagicInfo
+                {
+                    Name = "Mercenary",
+                    Spell = Spell.Mercenary,
+                    Icon = 16,
+                    Level1 = 7,
+                    Level2 = 12,
+                    Level3 = 18,
+                    Need1 = 400,
+                    Need2 = 800,
+                    Need3 = 1200,
+                    BaseCost = 12,
+                    LevelCost = 4,
+                    Range = 0
+                });
             //Warrior
             if (!MagicExists(Spell.Fencing))
-                MagicInfoList.Add(new MagicInfo { Name = "Fencing", Spell = Spell.Fencing, Icon = 2, Level1 = 7, Level2 = 9, Level3 = 12, Need1 = 270, Need2 = 600, Need3 = 1300, Range = 0 });
+                MagicInfoList.Add(new MagicInfo 
+                { 
+                    Name = "Fencing", 
+                    Spell = Spell.Fencing, 
+                    Icon = 2, 
+                    Level1 = 7, 
+                    Level2 = 9, 
+                    Level3 = 12, 
+                    Need1 = 270, 
+                    Need2 = 600, 
+                    Need3 = 1300, 
+                    Range = 0 
+                });
             if (!MagicExists(Spell.Slaying))
-                MagicInfoList.Add(new MagicInfo { Name = "Slaying", Spell = Spell.Slaying, Icon = 6, Level1 = 15, Level2 = 17, Level3 = 20, Need1 = 500, Need2 = 1100, Need3 = 1800, Range = 0 });
+                MagicInfoList.Add(new MagicInfo 
+                { 
+                    Name = "Slaying", 
+                    Spell = Spell.Slaying, 
+                    Icon = 6, Level1 = 15, 
+                    Level2 = 17, 
+                    Level3 = 20, 
+                    Need1 = 500, 
+                    Need2 = 1100, 
+                    Need3 = 1800, 
+                    Range = 0 
+                });
             if (!MagicExists(Spell.Thrusting))
                 MagicInfoList.Add(new MagicInfo
                 {

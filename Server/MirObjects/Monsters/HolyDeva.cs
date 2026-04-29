@@ -112,6 +112,8 @@ namespace Server.MirObjects.Monsters
             var packet = (S.ObjectMonster)base.GetInfo();
             packet.Image = Monster.HolyDeva;
             packet.Extra = Summoned;
+            // [hack] 添加昵称
+            packet.Nickname = Nickname;
             return packet;
         }
     }

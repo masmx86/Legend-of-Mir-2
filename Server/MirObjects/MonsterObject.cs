@@ -3025,6 +3025,8 @@ namespace Server.MirObjects
             {
                 ObjectID = ObjectID,
                 Name = Name,
+                // [hack] 添加昵称
+                Nickname = Nickname,
                 NameColour = NameColour,
                 Location = CurrentLocation,
                 Image = Info.Image,

@@ -29,6 +29,12 @@ namespace Server.MirObjects
             get { return Info.Name; }
             set { /*Check if Name exists.*/ }
         }
+        // [hack] 添加昵称
+        public string Nickname
+        {
+            get { return Info.Nickname; }
+            set {  Info.Nickname = value; }
+        }
         public override int CurrentMapIndex
         {
             get { return Info.CurrentMapIndex; }

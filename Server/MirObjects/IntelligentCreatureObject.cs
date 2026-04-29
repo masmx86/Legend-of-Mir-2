@@ -853,6 +853,8 @@ namespace Server.MirObjects
         {
             var packet=(S.ObjectMonster)base.GetInfo();
             packet.Extra = Summoned;
+            // [hack] 添加昵称
+            packet.Nickname = Nickname;
             return packet;
         }
     }

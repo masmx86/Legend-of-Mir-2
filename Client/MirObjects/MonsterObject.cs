@@ -69,6 +69,9 @@ namespace Client.MirObjects
 
         public MonsterType Rarity;
 
+        // [hack] add nickname
+        public string Nickname = string.Empty;
+
         public MonsterObject(uint objectID) : base(objectID) { }
 
         public void Load(S.ObjectMonster info, bool update = false)
@@ -5637,7 +5640,8 @@ namespace Client.MirObjects
             for (int s = 0; s < splitName.Count(); s++)
             {
                 // [hack] 用昵称替代名字
-                if (splitName[s].Contains(Settings.CloneName) ||splitName[s].Contains(Settings.ShinsuName) ||splitName[s].Contains(Settings.SkeletonName))
+                //if (splitName[s].Contains(Settings.CloneName) ||splitName[s].Contains(Settings.ShinsuName) ||splitName[s].Contains(Settings.SkeletonName))
+                if (splitName[s].Contains(User.Name))
                     CreateMonsterLabel(string.IsNullOrEmpty(Nickname) ? splitName[s] : Nickname, s);
                 else
                     CreateMonsterLabel(splitName[s], s);

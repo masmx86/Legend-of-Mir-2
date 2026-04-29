@@ -1284,7 +1284,10 @@ public enum Spell : byte
     DarkOmaKingNuke = 215,
     HornedSorcererDustTornado = 216,
     HornedCommanderRockFall = 217,
-    HornedCommanderRockSpike = 218
+    HornedCommanderRockSpike = 218,
+
+    // [hack] 自定义三职业通用魔法
+    Mercenary = 250
 }
 
 public enum SpellEffect : byte

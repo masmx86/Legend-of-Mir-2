@@ -28,6 +28,11 @@ namespace Client.MirObjects
         public bool RentalItemLocked;
         public uint RentalGoldAmount;
 
+        // [hack] 符毒计数
+        public int AmuletCount = 0;
+        public int RedPoisonCount = 0;
+        public int GreenPoisonCount = 0;
+
         public SpecialItemMode ItemMode;
 
         public BaseStats CoreStats = new BaseStats(0);
@@ -192,6 +197,17 @@ namespace Client.MirObjects
                 if (item != null)
                 {
                     CurrentBagWeight += item.Weight;
+
+                    // [hack] 刷新符毒计数
+                    if (item.Info.Type == ItemType.Amulet && item.Count > 0)
+                    {
+                        switch (item.Info.Shape)
+                        {
+                            case (short)PoisonType.None: AmuletCount += item.Count; continue;
+                            case (short)PoisonType.Green: GreenPoisonCount += item.Count; continue;
+                            case (short)PoisonType.Red: RedPoisonCount += item.Count; continue;
+                        }
+                    }
                 }
             }
         }
@@ -241,6 +257,17 @@ namespace Client.MirObjects
                 if (realItem.Type == ItemType.Mount)
                 {
                     MountType = realItem.Shape;
+                }
+
+                // [hack] 刷新符毒计数
+                if (realItem.Type == ItemType.Amulet && temp.Count > 0)
+                {
+                    switch (realItem.Shape)
+                    {
+                        case (short)PoisonType.None: AmuletCount += temp.Count; continue;
+                        case (short)PoisonType.Green: GreenPoisonCount += temp.Count; continue;
+                        case (short)PoisonType.Red: RedPoisonCount += temp.Count; continue;
+                    }
                 }
 
                 if (temp.Info.IsFishingRod) continue;

@@ -12,7 +12,7 @@ namespace Server.MirObjects.Monsters
             Direction = MirDirection.DownLeft;
         }
 
-        // [hack] 从神兽复制过来的
+        // [hack] 从神兽复制过来的逻辑
         protected override void Attack()
         {
             if (!Target.IsAttackTarget(this))

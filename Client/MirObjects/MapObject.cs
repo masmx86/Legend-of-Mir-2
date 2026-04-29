@@ -62,7 +62,7 @@ namespace Client.MirObjects
         public string Name = string.Empty;
 
         // [hack] add nickname
-        public string Nickname = string.Empty;
+        //public string Nickname = string.Empty;
 
         public Point CurrentLocation, MapLocation;
         public MirDirection Direction;
@@ -418,8 +418,7 @@ namespace Client.MirObjects
                 ForeColour = NameColour,
                 OutLine = true,
                 OutLineColour = Color.Black,
-                // [hack] 用昵称替代名字
-                Text = string.IsNullOrEmpty(Nickname) ?  Name : Nickname,
+                Text = Name 
             };
             NameLabel.Disposing += (o, e) => LabelList.Remove(NameLabel);
             LabelList.Add(NameLabel);         

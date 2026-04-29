@@ -258,7 +258,7 @@ namespace Client.MirScenes.Dialogs
                 Size = new Size(90, 16)
             };
 
-            // [hack] user attribute label
+            // [hack] 玩家信息标签
             UserAttribLabel = new MirLabel
             {
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
@@ -382,8 +382,8 @@ namespace Client.MirScenes.Dialogs
                 OutLineColour = Color.Black,
                 Parent = this,
                  //[hack] 调整一下位置，原来的坐标在屏幕上看不到 -> 调整了还是看不到？ 
-                Location = new Point(Settings.Resolution != 800 ? 899 : 675, Settings.Resolution != 800 ? 448 : 280),
-                //Location = new Point(230, 145),
+                //Location = new Point(Settings.Resolution != 800 ? 899 : 675, Settings.Resolution != 800 ? 448 : 280),
+                Location = new Point(230, 145),
                 Visible = Settings.ModeView
             };
 
@@ -506,9 +506,6 @@ namespace Client.MirScenes.Dialogs
             WeightLabel.Text = (MapObject.User.Stats[Stat.BagWeight] - MapObject.User.CurrentBagWeight).ToString();
 
             // [hack] 更新用户信息
-            //UserInfoLabel.Text = string.Format("攻击： {0} 魔法： {1} 道术： {2} 防御： {3} 魔御： {4} 幸运： {5} 准确： {6} 闪避： {7} 攻击速度：{8}",
-            //    User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC], User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC],
-            //    User.Stats[Stat.Luck], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility], User.Stats[Stat.AttackSpeed]);
             UserAttribLabel.Text = string.Format("攻{0} 魔{1} 道{2} 防{3} 御{4} 运{5} 速{6} 准{7} 避{8}",
                 User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC],
                 User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC], User.Stats[Stat.Luck],
@@ -539,41 +536,13 @@ namespace Client.MirScenes.Dialogs
                     }
                 }
             }
-            int amulet_count = 0;
-            int green_poison_count = 0;
-            int red_poison_count = 0;
-
-            if (User.Equipment[(int)EquipmentSlot.Amulet] != null)
-            {
-                if (User.Equipment[(int)(EquipmentSlot.Amulet)].Info.Type == ItemType.Amulet)
-                {
-                    switch (User.Equipment[(int)EquipmentSlot.Amulet].Info.Shape)
-                    {
-                        case (short)PoisonType.None: amulet_count++; break;
-                        case (short) PoisonType.Green: green_poison_count++; break;
-                        case (short) PoisonType.Red: red_poison_count++; break;
-                    }
-                }
-            }
-            for (int i = 0; i < User.Inventory.Length; i++)
-            {
-                UserItem item = User.Inventory[i];
-                if (item != null && item.Info.Type == ItemType.Amulet && item.Count > 0)
-                {
-                    switch (item.Info.Shape)
-                    {
-                        case (short)PoisonType.None: amulet_count++; break;
-                        case (short)PoisonType.Green: green_poison_count++; break;
-                        case (short)PoisonType.Red: red_poison_count++; break;
-                    }
-                }
-            }
-            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] ☠ 符[{5}] 毒[{6}|{7}] <HP {8} {9}%>", 
+            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] [符{5} 毒{6}|{7}] <HP {8}% {9}>", 
                 clone_count + shinshu_count + skeleton_count + tamed_count, 
                 clone_count, shinshu_count, skeleton_count, tamed_count,
-                amulet_count, red_poison_count, green_poison_count,
-                monster == null ? "-" : (string.IsNullOrEmpty(monster.Nickname) ? monster.Name : monster.Nickname),
-                (byte) (pet_hp == int.MaxValue ? 0 : pet_hp));
+                User.AmuletCount, User.RedPoisonCount, User.GreenPoisonCount,
+                (byte) (pet_hp == int.MaxValue ? 0 : pet_hp), 
+                monster == null ? "-" : (string.IsNullOrEmpty(monster.Nickname) ? monster.Name : monster.Nickname));
+
             userPetLabel.Location = new Point(ExperienceLabel.Location.X + ExperienceLabel.Size.Width, UserAttribLabel.Location.Y);
         }
 

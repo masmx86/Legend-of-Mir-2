@@ -105,6 +105,9 @@ namespace Client.MirObjects
 
         public LevelEffects LevelEffects;
 
+        // [hack] 添加昵称
+        public string Nickname = string.Empty;
+
         public PlayerObject() { }
         public PlayerObject(uint objectID) : base(objectID)
         {

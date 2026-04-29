@@ -15,8 +15,8 @@ namespace Server.MirDatabase
         public int Index;
         public string Name;
 
-        //// [hack] add nickname to charactor
-        //public string Nickname = string.Empty;
+        // [hack] add nickname to charactor
+        public string Nickname = string.Empty;
 
         public ushort Level;
         public MirClass Class;
@@ -116,6 +116,7 @@ namespace Server.MirDatabase
         public CharacterInfo(ClientPackets.NewCharacter p, MirConnection c)
         {
             Name = p.Name;
+            Nickname = p.Nickname;
             Class = p.Class;
             Gender = p.Gender;
             Heroes = new HeroInfo[MaximumHeroCount];

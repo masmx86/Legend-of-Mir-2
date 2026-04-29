@@ -136,17 +136,25 @@ namespace ClientPackets
         public override short Index { get { return (short)ClientPacketIds.NewCharacter; } }
 
         public string Name = string.Empty;
+        // [hack] 添加昵称
+        public string Nickname = string.Empty;
+
         public MirGender Gender;
         public MirClass Class;
         protected override void ReadPacket(BinaryReader reader)
         {
             Name = reader.ReadString();
+            // [hack] 读取昵称
+            Nickname = reader.ReadString();
             Gender = (MirGender)reader.ReadByte();
             Class = (MirClass)reader.ReadByte();
         }
         protected override void WritePacket(BinaryWriter writer)
         {
             writer.Write(Name);
+            // [hack] 保存昵称
+            writer.Write(Nickname);
+
             writer.Write((byte)Gender);
             writer.Write((byte)Class);
         }
@@ -1145,17 +1153,23 @@ namespace ClientPackets
         public override short Index { get { return (short)ClientPacketIds.NewHero; } }
 
         public string Name = string.Empty;
+        // [hack] 添加昵称
+        public string Nickname = string.Empty;
         public MirGender Gender;
         public MirClass Class;
         protected override void ReadPacket(BinaryReader reader)
         {
             Name = reader.ReadString();
+            // [hack] 读取昵称
+            Nickname = reader.ReadString();
             Gender = (MirGender)reader.ReadByte();
             Class = (MirClass)reader.ReadByte();
         }
         protected override void WritePacket(BinaryWriter writer)
         {
             writer.Write(Name);
+            // [hack] 保存昵称
+            writer.Write(Nickname);
             writer.Write((byte)Gender);
             writer.Write((byte)Class);
         }

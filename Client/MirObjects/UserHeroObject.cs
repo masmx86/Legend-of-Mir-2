@@ -23,6 +23,8 @@ namespace Client.MirObjects
         public override void Load(S.UserInformation info)
         {
             Name = info.Name;
+            // [hack] 添加昵称
+            Nickname = info.Nickname;
             NameColour = info.NameColour;
             Class = info.Class;
             Gender = info.Gender;
