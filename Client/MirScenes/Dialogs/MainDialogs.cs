@@ -510,7 +510,7 @@ namespace Client.MirScenes.Dialogs
                 User.Stats[Stat.MaxDC], User.Stats[Stat.MaxMC], User.Stats[Stat.MaxSC],
                 User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC], User.Stats[Stat.Luck],
                 User.Stats[Stat.AttackSpeed], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility]);
-
+            // [hack] 更新宠物信息
             int clone_count = 0;
             int shinshu_count = 0;
             int skeleton_count = 0;
@@ -536,7 +536,7 @@ namespace Client.MirScenes.Dialogs
                     }
                 }
             }
-            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] [符{5} 毒{6}|{7}] <HP {8}% {9}>", 
+            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] [符{5:#,##0} 毒{6:#,##0}|{7:#,##0}] <HP {8}% {9}>", 
                 clone_count + shinshu_count + skeleton_count + tamed_count, 
                 clone_count, shinshu_count, skeleton_count, tamed_count,
                 User.AmuletCount, User.RedPoisonCount, User.GreenPoisonCount,
@@ -1337,10 +1337,10 @@ namespace Client.MirScenes.Dialogs
     {
         public MirButton SizeButton, SettingsButton, NormalButton, ShoutButton, WhisperButton, LoverButton, MentorButton, GroupButton, GuildButton, ReportButton, TradeButton;
 
-        // [hack] add time display to main ui
+        // [hack] 主界面添加时间显示
         public MirLabel ClockLabel;
 
-        // [hack] add experience display to main ui
+        // [hack] 主界面添加经验值显示
         public MirLabel CurrentExperienceValue;
         public MirLabel MaxExperienceValue;
 
@@ -1350,7 +1350,7 @@ namespace Client.MirScenes.Dialogs
             Library = Libraries.Prguse;
             Location = new Point(GameScene.Scene.MainDialog.Location.X + 230, Settings.ScreenHeight - 112);
 
-            // [hack] add time display to main UI
+            // [hack] 时间显示
             ClockLabel = new MirLabel
             {
 
@@ -1362,7 +1362,7 @@ namespace Client.MirScenes.Dialogs
                 NotControl = true,
             };
 
-            // [hack] adjust experience display to show current and max experience values
+            // [hack] 当前经验值显示
             CurrentExperienceValue = new MirLabel
             {
                 AutoSize = true,
@@ -1372,6 +1372,7 @@ namespace Client.MirScenes.Dialogs
                 OutLine = true,
                 Text = "0",
             };
+            // [hack] 升级所需经验值显示
             MaxExperienceValue = new MirLabel
             {
                 AutoSize = true,
@@ -3665,7 +3666,8 @@ namespace Client.MirScenes.Dialogs
                 (Magic.Key - 1) % 8 + 1);
 
             switch (magic.Spell)
-            {  //Warrior
+            {
+                //Warrior
                 case Spell.Fencing:
                     SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.FencingSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0);
                     break;
@@ -3983,7 +3985,10 @@ namespace Client.MirScenes.Dialogs
                 case Spell.OneWithNature:
                     SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.OneWithNatureSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
                     break;
-
+                // [hack] 三职业通用魔法
+                case Spell.Mercenary:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.MercenarySkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                    break;
 
                 default:
 

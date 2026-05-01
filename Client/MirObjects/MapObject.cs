@@ -61,8 +61,8 @@ namespace Client.MirObjects
         public uint ObjectID;
         public string Name = string.Empty;
 
-        // [hack] add nickname
-        //public string Nickname = string.Empty;
+        // [hack] 添加昵称
+        public string Nickname = string.Empty;
 
         public Point CurrentLocation, MapLocation;
         public MirDirection Direction;

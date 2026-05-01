@@ -22,8 +22,8 @@ namespace Server.MirObjects
 
         public HeroInfo HInfo;
         public new PlayerObject Owner;
-        // [hack] add nickname to hero
-        //public string Nickname = string.Empty;
+        // [hack] 英雄添加昵称
+        public new string Nickname = string.Empty;
         public override int PotionBeltMinimum => 0;
         public override int PotionBeltMaximum => 2;
         public override int AmuletBeltMinimum => 1;
@@ -970,13 +970,12 @@ namespace Server.MirObjects
                                 case ObjectType.Monster:
                                 case ObjectType.Player:
                                 case ObjectType.Hero:
-                                    // [hack] add BugBagMaggot to hero's attck target
+                                    // [hack] 优先处理角蝇类目标
                                     if (!ob.Dead && (ob is BugBagMaggot || ob.Name == Settings.BugBatName || ob.Name == Settings.BombSpiderName))
                                     {
                                         targets.Add(ob);
                                         continue;
                                     }
-                                    // [/hack]
 
                                     if (!ob.IsAttackTarget(this)) continue;
                                     if (ob.Hidden && (!CoolEye || Level < ob.Level) && needSight) continue;

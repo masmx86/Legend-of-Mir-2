@@ -14,14 +14,13 @@ namespace Server.MirObjects
 {
     public class MonsterObject : MapObject
     {
-        // [hack] add debug output function
+        // [hack] 添加调试输出功能
         protected MirConnection connection;
         public virtual MirConnection Connection
         {
             get { return connection; }
             set { connection = value; }
         }
-        // [/hack]
         public static MonsterObject GetMonster(MonsterInfo info)
         {
             if (info == null) return null;
@@ -524,7 +523,7 @@ namespace Server.MirObjects
             }
             set { throw new NotSupportedException(); }
         }
-        // [hack] add nickname to monter
+        // [hack] 添加昵称
         public string Nickname = string.Empty;
         public override int CurrentMapIndex { get; set; }
         public override Point CurrentLocation { get; set; }
@@ -986,7 +985,7 @@ namespace Server.MirObjects
             return true;
         }
 
-        // [hack] add debug output function
+        // [hack] 添加调试输出功能
         public virtual void Enqueue(Packet p)
         {
             if (Connection == null) return;
@@ -1404,7 +1403,7 @@ namespace Server.MirObjects
             PMode = PetMode.Both;
 
             // Only teleport if needed
-            // [hack] change recall conditions and when hp < 10% max health
+            // [hack] 添加召唤限制条件 hp < 10% max health
             if (CurrentMap != Master.CurrentMap ||
                (CurrentMap == Master.CurrentMap && 
                ((!Functions.InRange(CurrentLocation, Master.CurrentLocation, Globals.DataRange))) && Target == null) ||
@@ -1413,7 +1412,7 @@ namespace Server.MirObjects
                 if (!Teleport(Master.CurrentMap, Master.Back))
                 {
                     Teleport(Master.CurrentMap, Master.CurrentLocation);
-                    // [hack] reset pet target to prevent going a long distance back to previous target
+                    // [hack] 重置攻击目标以免宠物重新回到以前的攻击位置
                     Target = null;
                 }
 
@@ -1899,7 +1898,7 @@ namespace Server.MirObjects
 
                 if (Target != null && Target.Dead)
                 {
-                    // [hack] if target died, reset target
+                    // [hack] 更正程序逻辑错误，如果目标死亡则重置攻击目标
                     Target = null;
                     FindTarget();
                 }
@@ -1991,7 +1990,7 @@ namespace Server.MirObjects
                             {
                                 case ObjectType.Monster:
                                 case ObjectType.Hero:
-                                    // [hack] add more check conditions to prevent targeting non-attackable objects and sharing targets with master
+                                    // [hack] 共享攻击目标
                                     if (ob == this) continue;
                                     if (!ob.IsAttackTarget(this))
                                     {
@@ -2627,10 +2626,10 @@ namespace Server.MirObjects
                 if (Envir.Time < ShockTime) //Shocked
                     return false;
 
-                // [hack] check if attacker' master has pets or hero when attacker is pet
+                // [hack] 如果攻击者是宠物的话，检查其是主人是否有宠物或者英雄
                 PlayerObject player = attacker.Master as PlayerObject;
 
-                // [hack] add missing condition
+                // [hack] 添加确实判定条件
                 if (attacker == Target || attacker.Target == this) return true;
 
                 if (Target == player)
@@ -2808,7 +2807,7 @@ namespace Server.MirObjects
             BroadcastDamageIndicator(DamageType.Hit, armour - damage);
 
             ChangeHP(armour - damage);
-            // [hack] 掉血超过一定数值的时候会大喊出来
+            // [hack] 掉血超过一定数值的时候会随机输出一些聊天信息
             MonsterHealthDropShout(damage - armour);
 
             return damage - armour;
@@ -2884,12 +2883,12 @@ namespace Server.MirObjects
             BroadcastDamageIndicator(DamageType.Hit, armour - damage);
 
             ChangeHP(armour - damage);
-            // [hack] 掉血超过一定数值的时候会大喊出来
+            // [hack] 掉血超过一定数值的时候会随机输出一些聊天信息
             MonsterHealthDropShout(damage - armour);
 
             return damage - armour;
         }
-        // [hack] 掉血超过一定数值的时候会大喊出来或者回到主人身边
+        // [hack] 掉血超过一定数值的时候会随机输出一些聊天信息或者回到主人身边
         public void MonsterHealthDropShout(int healthdrop)
         {
             PlayerObject ob = Master as PlayerObject;
@@ -3048,7 +3047,7 @@ namespace Server.MirObjects
 
         public override void ReceiveChat(string text, ChatType type)
         {
-            // [hack] add debug output function
+            // [hack] 添加调试输出功能
             Enqueue(new S.Chat { Message = text, Type = type });
             //throw new NotSupportedException();
         }
@@ -3672,7 +3671,7 @@ namespace Server.MirObjects
         {
             if (PetLevel >= MaxPetLevel) return;
 
-            // [hack] allow clone to gain experience
+            // [hack] 分身也可以增加经验值
             if (Info.Name == Settings.SkeletonName || Info.Name == Settings.ShinsuName || Info.Name == Settings.AngelName || Info.Name == Settings.CloneName)
                 amount *= 3;
 

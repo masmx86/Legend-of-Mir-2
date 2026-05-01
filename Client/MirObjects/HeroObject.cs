@@ -34,7 +34,7 @@ namespace Client.MirObjects
         {
             Load((S.ObjectPlayer)info);
             OwnerName = info.OwnerName;
-            // [hack] 添加昵称
+            // [hack] 英雄添加昵称
             Nickname = info.Nickname;
 
             if (info.ObjectID == Hero?.ObjectID)
@@ -64,8 +64,9 @@ namespace Client.MirObjects
                 ForeColour = NameColour,
                 OutLine = true,
                 OutLineColour = Color.Black,
-                // [hack] display nickname
-                Text = string.IsNullOrEmpty(Nickname) ? ownerText : Nickname,
+                // [hack] 显示昵称
+                //Text = string.IsNullOrEmpty(Nickname) ? ownerText : Nickname,
+                Text = ownerText,
             };
             OwnerLabel.Disposing += (o, e) => LabelList.Remove(OwnerLabel);
             LabelList.Add(OwnerLabel);

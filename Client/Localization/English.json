@@ -564,6 +564,8 @@
     "FlameDisruptorSkillDescription": "Flame Disruptor\n\nInstant Casting\nMana Cost {2}\n\nFlame from the underground will be brought\ninto surface to attack the mobs.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "FrostCrunchSkillDescription": "Frost Crunch\n\nInstant Casting\nMana Cost {2}\n\nFreeze the elements in the air around the \nmonster to slow them down\n\nCurrent Skill Level {0}\nNext Level {1}",
     "MirroringSkillDescription": "Mirroring\n\nInstant Casting\nMana Cost {2}\n\nCreate a mirror image of yourself to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}",
+    // [hack] 三职业通用魔法
+    "MercenarySkillDescription": "Mercenary\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}",
     "FlameFieldSkillDescription": "Flame Field\n\nInstant Casting\nMana Cost {2}\n\nA powerful spell of fire is used to \ndamage surrounding enemies.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "VampirismSkillDescription": "Vampirism\n\nInstant Casting\nMana Cost {2}\n\nUsing Mp take away monsters Hp to\nincrease your Hp.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "BlizzardSkillDescription": "Blizzard\n\nChannelling Casting\nMana Cost {2}\n\nConcentrate inner force and spreads it to all\nthe parts of your body.This will enhance the\nprotection from enemies. Defence power and duration\ntime will depend on the skill level. Once the skill\nhas been used, you will have to wait to use it again.\n\nCurrent Skill Level {0}\nNext Level {1}",

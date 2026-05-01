@@ -183,7 +183,7 @@ namespace Server.MirEnvir
             PasswordReg = new Regex(@"^[A-Za-z0-9]{" + Globals.MinPasswordLength + "," + Globals.MaxPasswordLength + "}$");
             EMailReg = new Regex(@"\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*");
 
-            // [hack] allow charactername to use a mix of ascii and chinese characters
+            // [hack] 调整用户人物命名可用字符集的范围，增加日文字符
             //CharacterReg = new Regex(@"^[\u4e00-\u9fa5_A-Za-z0-9]{" + Globals.MinCharacterNameLength + "," + Globals.MaxCharacterNameLength + "}$");
             CharacterReg = new Regex(@"^[\u4e00-\u9fff\u3000-\u309f_A-Za-z0-9]{" + Globals.MinCharacterNameLength + "," + Globals.MaxCharacterNameLength + "}$");
         }
@@ -295,12 +295,12 @@ namespace Server.MirEnvir
                     Spell = Spell.Mercenary,
                     Icon = 16,
                     Level1 = 7,
-                    Level2 = 12,
-                    Level3 = 18,
+                    Level2 = 11,
+                    Level3 = 15,
                     Need1 = 400,
                     Need2 = 800,
                     Need3 = 1200,
-                    BaseCost = 12,
+                    BaseCost = 3,
                     LevelCost = 4,
                     Range = 0
                 });
@@ -870,7 +870,19 @@ namespace Server.MirEnvir
                 });
             if (!MagicExists(Spell.Mirroring))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "Mirroring", Spell = Spell.Mirroring, Icon = 41, Level1 = 41, Level2 = 43, Level3 = 45, Need1 = 6000, Need2 = 11000, Need3 = 16000, BaseCost = 21, Range = 0 });
+                { 
+                    Name = "Mirroring", 
+                    Spell = Spell.Mirroring, 
+                    Icon = 41, 
+                    Level1 = 41, 
+                    Level2 = 43, 
+                    Level3 = 45, 
+                    Need1 = 6000, 
+                    Need2 = 11000, 
+                    Need3 = 16000, 
+                    BaseCost = 21, 
+                    Range = 0 
+                });
             if (!MagicExists(Spell.FlameField))
                 MagicInfoList.Add(new MagicInfo
                 {
@@ -4549,7 +4561,7 @@ namespace Server.MirEnvir
             }
         }
 
-        // [hack] increase chance to get more stats on items
+        // [hack] 增加掉落物品极品属性的几率
         public void UpgradeItemHacked(UserItem item)
         {
             if (item.Info.RandomStats == null) return;
@@ -4564,11 +4576,11 @@ namespace Server.MirEnvir
 
 
             ItemGrade grade = item.Info.Grade;
-
+            
             bool hasDC = item.Info.Stats[Stat.MaxDC] > 0;
             bool hasMC = item.Info.Stats[Stat.MaxMC] > 0;
             bool hasSC = item.Info.Stats[Stat.MaxSC] > 0;
-
+            
             if (!hasDC && !hasMC && !hasSC)
             {
                 // no DC/MC/SC on item info, randomly assign one

@@ -37,6 +37,10 @@ namespace Client.MirObjects
             Experience = info.Experience;
             MaxExperience = info.MaxExperience;
 
+            // [hack] 自动打开刺杀和半月
+            Thrusting = true;
+            HalfMoon = true;
+
             Inventory = info.Inventory;
             Equipment = info.Equipment;
 

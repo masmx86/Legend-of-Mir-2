@@ -139,7 +139,7 @@ namespace Server.MirObjects
         {
             get
             {
-                // [hack] bypass run restriction by removing bag weight limit
+                // [hack] 跳过背包和穿戴负重限制
                 //return !Dead && Envir.Time >= ActionTime && (_stepCounter > 0 || FastRun) && (!Sneaking || ActiveSwiftFeet) && CurrentBagWeight <= Stats[Stat.BagWeight] && !CurrentPoison.HasFlag(PoisonType.Paralysis) && !CurrentPoison.HasFlag(PoisonType.LRParalysis) && !CurrentPoison.HasFlag(PoisonType.Frozen);
                 return !Dead && Envir.Time >= ActionTime && (_stepCounter > 0 || FastRun) && (!Sneaking || ActiveSwiftFeet) && !CurrentPoison.HasFlag(PoisonType.Paralysis) && !CurrentPoison.HasFlag(PoisonType.LRParalysis) && !CurrentPoison.HasFlag(PoisonType.Frozen);
             }
@@ -223,7 +223,7 @@ namespace Server.MirObjects
         public long LastRevivalTime;
         public float HpDrain = 0;
 
-        // [hack] last used poison 
+        // [hack] 记录最后一次用毒的种类以实现红绿毒交替使用
         protected PoisonType lastUsedPoison;
         public PoisonType LastUsedPoison
         {
@@ -915,7 +915,7 @@ namespace Server.MirObjects
             HP += amount;
             HP = GMNeverDie ? Stats[Stat.HP] : HP;
 
-            // [hack] protect hp so player never dies
+            // [hack] 锁红
             if (!Settings.LockHP)
             {
                 if (HP < 0) HP = 0;
@@ -930,8 +930,8 @@ namespace Server.MirObjects
             SendHealthChanged();
         }
 
-        // [hack] protect hp so player never dies
-        // [todo] read player name list from config and only protect those players
+        // [hack] 锁红
+        // [todo] 读取配置文件以实现只对特定玩家实现血量保护
         private void ProtectHP()
         {
             int hp_protection_val = (int) (Stats[Stat.HP] * Globals.LockHPPercent / 100D);
@@ -954,7 +954,7 @@ namespace Server.MirObjects
             MP += amount;
             MP = GMNeverDie ? Stats[Stat.MP] : MP;
 
-            // [hack] MP protection
+            // [hack] 锁蓝
             if (!Settings.LockMP)
             {
                 if (MP < 0) MP = 0;
@@ -968,7 +968,7 @@ namespace Server.MirObjects
             SendHealthChanged();
         }
 
-        // [hack] MP protection set to 10~20% of max MP
+        // [hack] 锁蓝，保护范围设置为最大量的 10~20%
         private void ProtectMP()
         {
             int mp_protection_val = (int)(Stats[Stat.MP] * Globals.LockMPPercent /100D);
@@ -2566,7 +2566,7 @@ namespace Server.MirObjects
         }
         public bool Run(MirDirection dir)
         {
-            // [hack] bypass bag weight limit restrictions
+            // [hack] 跳过背包负重限制
             //if (CurrentBagWeight > Stats[Stat.BagWeight])
             //{
                 //Walk(dir);
@@ -3819,6 +3819,10 @@ namespace Server.MirObjects
                 case Spell.FireBounce:
                     if (!FireBounce(target, magic, this)) targetID = 0;
                     break;
+                // [hack] 三职业通用魔法
+                case Spell.Mercenary:
+                    Mercenary(magic);
+                    break;
                 default:
                     cast = false;
                     break;
@@ -4322,7 +4326,8 @@ namespace Server.MirObjects
             DelayedAction action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, damage, CurrentLocation);
             CurrentMap.ActionList.Add(action);
         }
-        // [hack] allow magics to summon shinsu & skeleton pets, in addition to clones, with dynamic chances based on magic level
+        // [hack] 法师召唤分身，可随机召唤骷髅或者神兽
+        // [todo] 随机召唤神兽或者骷髅转移到新技能 Mercenary()
         private void Mirroring(UserMagic magic)
         {
             if (CurrentMap.Info.NoPets)
@@ -4337,7 +4342,6 @@ namespace Server.MirObjects
             {
                 monster = Pets[i];
 
-                // [hack] add shinsu & skeleton to recall list
                 if ((monster.Info.Name != Settings.CloneName) || (monster.Info.Name != Settings.SkeletonName) || (monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
                 if (monster.Node == null) continue;
 
@@ -4413,7 +4417,8 @@ namespace Server.MirObjects
 
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false));
         }
-        // [hack] a wrapper function to summon shinsu or skeleton so that all the hacks can be done within just one function to avoid coding in multiple places
+        // [hack] 道士召唤术，可随机召唤骷髅、神兽或者分身
+        // [todo] 将此功能转移到新技能 Mercenary()
         private void Summon_Skeleton_Shinsu(UserMagic magic, string pet_name)
         {
             if (CurrentMap.Info.NoPets)
@@ -4486,6 +4491,88 @@ namespace Server.MirObjects
             //action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front));
         }
+        // [hack] 三职业通用分身召唤技能
+        private void Mercenary(UserMagic magic)
+        {
+            if (CurrentMap.Info.NoPets)
+            {
+                ReceiveChat("You cannot summon pets on this map.", ChatType.System);
+                return;
+            }
+
+            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
+
+            UserMagic user_magic = null;
+            MonsterInfo info = null;
+
+            switch (Envir.Random.Next(3))
+            {
+                case 0:
+                    user_magic = new UserMagic(Spell.Mirroring);
+                    info = Envir.GetMonsterInfo(Settings.CloneName);
+                    break;
+                case 1:
+                    user_magic = new UserMagic(Spell.SummonSkeleton);
+                    info = Envir.GetMonsterInfo(Settings.SkeletonName);
+                    break;
+                case 2:
+                    user_magic = new UserMagic(Spell.SummonShinsu);
+                    info = Envir.GetMonsterInfo(Settings.ShinsuName);
+                    break;
+            }
+
+            if (info == null) return;
+
+            UserItem item = null;
+            if (info.Name == Settings.ShinsuName)
+            {
+                item = GetAmulet(5);
+                if (item == null) return;
+                ConsumeItem(item, 5);
+            }
+            else if (info.Name == Settings.SkeletonName)
+            {
+                item = GetAmulet(1);
+                if (item == null) return;
+                ConsumeItem(item, 1);
+            }
+
+            LevelMagic(magic);
+
+            MonsterObject monster = MonsterObject.GetMonster(info);
+            monster.Master = this;
+            monster.PetLevel = magic.Level;
+            if (monster.Info.Name == Settings.CloneName || monster.Info.Name == Settings.ShinsuName)
+            {
+                monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
+            }
+            else if (monster.Info.Name == Settings.SkeletonName)
+            {
+                monster.MaxPetLevel = (byte)(4 + magic.Level);
+            }
+
+            if (monster.Info.Name == Settings.ShinsuName) monster.Direction = Direction; // 原文件中只有Shinsu会面向玩家方向，Clone和Skeleton默认朝向
+            monster.ActionTime = Envir.Time + 1000;
+            monster.RefreshNameColour(false);
+
+            monster.Nickname = GivePetNickname(monster);
+
+            // 战士分身功能，不加这一句的话没办法用 PlayerPbject->HealPetHero() 给宝宝加血
+            if (Class == MirClass.Warrior) Pets.Add(monster);
+            // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
+            // Shinsu 和 Skeleton 会在 CompleteMagic() 中调用 monster.Master.Pets.Add()
+            else if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
+
+            // [debug] debug output monster info
+            Settings.debugSpawn(string.Format("\nsummon {0}:{1}[{2}] Level={3}", monster.Info.Name, monster.Nickname, monster.ObjectID, monster.PetLevel), "Server.HumanObject.ShoulderDashMirroring");
+            for (int i = 0; i < Pets.Count; i++)
+            {
+                MonsterObject pet = Pets[i];
+                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}:{3}[{4}] level={5} hp={6} [{7},{8}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Level, pet.Dead ? 0 : pet.HP, pet.CurrentLocation.X, pet.CurrentLocation.Y), "Server.HumanObject.ShoulderDashMirroring");
+            }
+
+            CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Back, false));
+        }
         private void Blizzard(UserMagic magic, Point location, out bool cast)
         {
             cast = false;
@@ -4549,7 +4636,7 @@ namespace Server.MirObjects
         {
             if (target == null || !target.IsAttackTarget(this)) return false;
 
-            // [hack] 施毒术同时释放红毒和绿毒
+            // [hack] 施毒术交替释放红毒和绿毒
             for (int i = 0; i < 2; i++)
             {
                 UserItem item = GetPoison(1);
@@ -4585,7 +4672,7 @@ namespace Server.MirObjects
         }
         private void SummonSkeleton(UserMagic magic)
         {
-            // [hack] call modified summon function to allow clones to be summoned
+            // [hack] 可随机召唤骷髅、神兽或者分身
             Summon_Skeleton_Shinsu(magic, Settings.SkeletonName);
             return;
 
@@ -4676,7 +4763,7 @@ namespace Server.MirObjects
         }
         private void SummonShinsu(UserMagic magic)
         {
-            // [hack] call modified summon function to allow clones to avoid coding in multiple places
+            // [hack] 可随机召唤骷髅、神兽或者分身
             Summon_Skeleton_Shinsu(magic, Settings.ShinsuName);
             return;
 
@@ -4765,7 +4852,7 @@ namespace Server.MirObjects
             //}
             //if (action != null) CurrentMap.ActionList.Add(action);
         }
-        // [hack] assign nickname to pets
+        // [hack] 给宠物添加昵称
         public string GivePetNickname(MonsterObject pet)
         {
             if (pet == null) return string.Empty;
@@ -5042,7 +5129,7 @@ namespace Server.MirObjects
                 monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
                 return;
             }
-            // [hack] allow multiple pets
+            // [hack] 增加最大可召唤宠物数量
             if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
 
             UserItem item = GetAmulet(2);
@@ -5472,8 +5559,6 @@ namespace Server.MirObjects
             {
                 _target?.Attacked(this, magic.GetDamage(0), DefenceType.None, false);
                 LevelMagic(magic);
-                // [hack] 战士分身
-                ShoulderDashMirroring(magic);
                 // Broadcast(new S.ObjectDash { ObjectID = ObjectID, Direction = Direction, Location = Front });
             }
 
@@ -5484,102 +5569,6 @@ namespace Server.MirObjects
 
             CellTime = now + 500;
             _stepCounter = 0;
-        }
-
-        // [hack] 战士增加分身技能
-        private void ShoulderDashMirroring(UserMagic magic)
-        {
-            if (CurrentMap.Info.NoPets)
-            {
-                ReceiveChat("You cannot summon pets on this map.", ChatType.System);
-                return;
-            }
-            UserMagic mirroring = new UserMagic(Spell.Mirroring);
-
-            MonsterObject monster;
-
-            //for (int i = 0; i < Pets.Count; i++)
-            //{
-            //    monster = Pets[i];
-
-            //    // [hack] add shinsu & skeleton to recall list
-            //    if ((monster.Info.Name != Settings.CloneName) || (monster.Info.Name != Settings.SkeletonName) || (monster.Info.Name != Settings.ShinsuName) || monster.Dead) continue;
-            //    if (monster.Node == null) continue;
-
-            //    if (monster.Info.Name == Settings.CloneName)
-            //    {
-            //        CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500, this, magic2, monster, Front, true));
-            //    }
-            //    else if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
-            //    {
-            //        monster.ActionList.Add(new DelayedAction(DelayedType.Recall, Envir.Time + 500));
-            //    }
-            //}
-
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
-
-            MonsterInfo info = (Envir.Random.Next(magic.Level) == 0) ? Envir.GetMonsterInfo(Settings.CloneName) :
-                                ((Envir.Random.Next(magic.Level) <= Envir.Random.Next(magic.Level)) ?
-                                Envir.GetMonsterInfo(Settings.SkeletonName) : Envir.GetMonsterInfo(Settings.ShinsuName));
-            if (info == null) return;
-
-            UserItem item = null;
-            if (info.Name == Settings.ShinsuName)
-            {
-                item = GetAmulet(5);
-                if (item == null) return;
-            }
-            else if (info.Name == Settings.SkeletonName)
-            {
-                item = GetAmulet(1);
-                if (item == null) return;
-            }
-
-            LevelMagic(magic);
-
-            if (info.Name == Settings.ShinsuName)
-            {
-                ConsumeItem(item, 5);
-            }
-            else if (info.Name == Settings.SkeletonName)
-            {
-                ConsumeItem(item, 1);
-            }
-
-            monster = MonsterObject.GetMonster(info);
-            monster.Master = this;
-            //monster.HP = Stats[Stat.HP];
-
-            monster.PetLevel = magic.Level;
-            if (monster.Info.Name == Settings.CloneName || monster.Info.Name == Settings.ShinsuName)
-            {
-                monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
-            }
-            else if (monster.Info.Name == Settings.SkeletonName)
-            {
-                monster.MaxPetLevel = (byte)(4 + magic.Level);
-            }
-
-            if (monster.Info.Name == Settings.ShinsuName) monster.Direction = Direction; // 原文件中只有Shinsu会面向玩家方向，Clone和Skeleton默认朝向
-            monster.ActionTime = Envir.Time + 1000;
-            monster.RefreshNameColour(false);
-
-            monster.Nickname = GivePetNickname(monster);
-
-            // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
-            if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
-            // 战士分身功能，不加这一句的话没办法用 PlayerPbject->HealPetHero() 给宝宝加血
-            if (Class == MirClass.Warrior && (monster.Info.Name == Settings.SkeletonName || monster.Info.Name == Settings.ShinsuName)) Pets.Add(monster); 
-
-            // [debug] debug output monster info
-            Settings.debugSpawn(string.Format("\nsummon {0}:{1}[{2}] Level={3}", monster.Info.Name, monster.Nickname, monster.ObjectID, monster.PetLevel), "Server.HumanObject.ShoulderDashMirroring");
-            for (int i = 0; i < Pets.Count; i++)
-            {
-                MonsterObject pet = Pets[i];
-                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}:{3}[{4}] level={5} hp={6} [{7},{8}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Level, pet.Dead ? 0 : pet.HP, pet.CurrentLocation.X, pet.CurrentLocation.Y), "Server.HumanObject.ShoulderDashMirroring");
-            }
-
-            CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, mirroring, monster, Back, false));
         }
         private void SlashingBurst(UserMagic magic)
         {
@@ -7290,7 +7279,7 @@ namespace Server.MirObjects
                     return item;
             }
 
-            // [hack] enable auto use amulet from inventory
+            // [hack] 自动使用背包里的符毒
             for (int i = 0; i < Info.Inventory.Length; i++)
             {
                 UserItem item = Info.Inventory[i];
@@ -8361,13 +8350,13 @@ namespace Server.MirObjects
             if (!SpecialMode.HasFlag(SpecialItemMode.NoDuraLoss))
                 for (int i = 0; i < Info.Equipment.Length; i++)
                     if (i != (int)EquipmentSlot.Weapon)
-                        // [hack] comment off this line to disable armour durability loss from hits
+                        // [hack] 装备磨损保护
                         DamageItem(Info.Equipment[i], Envir.Random.Next(1) + 1);
         }
         public void DamageWeapon()
         {
             if (!SpecialMode.HasFlag(SpecialItemMode.NoDuraLoss))
-                // [hack] comment off this line to disable weapon durability loss from hits
+                // [hack] 装备磨损保护
                 DamageItem(Info.Equipment[(int)EquipmentSlot.Weapon], Envir.Random.Next(4) + 1);
         }
         public void DamageItem(UserItem item, int amount, bool isChanged = false)
@@ -8376,19 +8365,16 @@ namespace Server.MirObjects
             if ((item.WeddingRing == Info.Married) && (Info.Equipment[(int)EquipmentSlot.RingL].UniqueID == item.UniqueID)) return;
             if (item.GetTotal(Stat.Strong) > 0) amount = Math.Max(1, amount - item.GetTotal(Stat.Strong));
 
-            // [hack] comment off this line to disable durability loss
+            // [hack] 装备磨损保护，使装备有一半的几率在使用中增加持久
             //item.CurrentDura = (ushort)Math.Max(ushort.MinValue, item.CurrentDura - amount);
-
-            // [hack] Durability Repair on hit - 50% chance to repair instead of damage
             if (Envir.Random.Next(100) < 50)
             {
                 item.CurrentDura = (ushort)Math.Max(ushort.MinValue, item.CurrentDura - amount);
             }
             else
             {
-                item.CurrentDura = (ushort)Math.Min(item.MaxDura, item.CurrentDura + amount); //Durability Repair on hit
+                item.CurrentDura = (ushort)Math.Min(item.MaxDura, item.CurrentDura + amount);
             }
-            // [end hack]
 
             item.DuraChanged = true;
 

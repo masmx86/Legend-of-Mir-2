@@ -839,7 +839,7 @@ namespace ServerPackets
         public uint ObjectID;
         public string Name = string.Empty;
 
-        // [hack] add nickname
+        // [hack] 添加昵称
         public string Nickname = string.Empty;
 
         public string GuildName = string.Empty;
@@ -2231,7 +2231,7 @@ namespace ServerPackets
         public uint ObjectID;
         public string Name = string.Empty;
 
-        // [hack] add nickname
+        // [hack] 添加昵称
         public string Nickname = string.Empty;
 
         public Color NameColour;

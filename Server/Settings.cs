@@ -9,10 +9,10 @@ namespace Server
 {
     public static class Settings
     {
-        // [hack] debug mode switch, not the same variable - Client.Settings.DebugMode
+        // [hack] 调试功能开关标志，和 Client.Settings.DebugMode 不是同一个变量
         public static bool isDebugMode = true;  
 
-        // [hack] add debug message method
+        // [hack] 增加调试输出功能 - 信息
         public static void debugMsg(string message, string function_name)     
         {
             if (isDebugMode)
@@ -23,7 +23,7 @@ namespace Server
                     Logger.GetLogger(LogType.Debug).Debug(string.Format("{0}", message));
             }
         }
-        // [hack] add debug spawn message method
+        // [hack] 增加调试输出功能 - 宠物
         public static void debugSpawn(string message, string function_name = null)   
         {
             if (isDebugMode)
@@ -137,7 +137,7 @@ namespace Server
         public static float DropRate = 1F, ExpRate = 1F;
         public static int TeleportToNPCCost = 3000;
 
-        public static int ItemTimeOut = 5,   // [hack] change dropped item timeout from 30 minutes to 5 minutes to reduce lag and free up map space
+        public static int ItemTimeOut = 5,   // [hack] 掉落物品显示时间从30分钟调整为5分钟
                           PlayerDiedItemTimeOut = 120,
                           DropRange = 4,
                           DropStackSize = 5,
@@ -1416,7 +1416,7 @@ namespace Server
                 GirlsHeroNicknames.Append(nickname);
             }
         }
-        // [hack] 掉血超过一定数值的时候会大喊
+        // [hack] 掉血超过一定数值的时候会随机输出一些聊天内容
         public static void LoadHealthDropShoutOutLoudMessage()
         {
             if (!File.Exists(Path.Combine(ConfigPath, "HealthDropMessage.ini")))

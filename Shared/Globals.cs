@@ -26,7 +26,7 @@
         PetRecallHPPercent = 10,    // [hack] 宠物血量低于这个百分比就召唤回到主人身边
         LockHPPercent = 10,         // [hack] 锁红百分比
         LockMPPercent = 10,         // [hack] 锁蓝百分比
-        HealthDropShoutOutLoud = 50,// [hack] 掉血超过这个数值的时候会大喊出来
+        HealthDropShoutOutLoud = 50,// [hack] 掉血超过这个数值的时候会随机触发聊天信息显示
 
         MaxAttackRange = 9,
 

@@ -589,6 +589,7 @@ public enum ClientTextKeys
     FlameDisruptorSkillDescription,
     FrostCrunchSkillDescription,
     MirroringSkillDescription,
+    MercenarySkillDescription,      // [hack] 三职业通用魔法
     FlameFieldSkillDescription,
     VampirismSkillDescription,
     BlizzardSkillDescription,
@@ -2808,7 +2809,7 @@ public static class GameLanguage
             { nameof(ClientTextKeys.Chat_Guild), "Guild" },
             { nameof(ClientTextKeys.ExpandedStorageLocked), "Expanded Storage Locked" },
 
-            // [hack] extend storage rental from 10 days to 1 year
+            // [hack] 背包空间租赁从10天扩展到1年
             //{ nameof(ClientTextKeys.ExtraStorage), "Would you like to rent extra storage for 10 days at a cost of 1,000,000 gold?" },
             //{ nameof(ClientTextKeys.ExtendYourRentalPeriod), "Would you like to extend your rental period for 10 days at a cost of 1,000,000 gold?" },
             { nameof(ClientTextKeys.ExtraStorage), "Would you like to rent extra storage for 1 year at a cost of 1,000,000 gold?" }, // extra storage
@@ -3330,6 +3331,10 @@ public static class GameLanguage
             },
             { nameof(ClientTextKeys.MirroringSkillDescription),
                 "Mirroring\n\nInstant Casting\nMana Cost {2}\n\nCreate a mirror image of yourself to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+            // [hack] 三职业通用魔法
+            { nameof(ClientTextKeys.MercenarySkillDescription),
+                "Mercenary\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             { nameof(ClientTextKeys.FlameFieldSkillDescription),
                 "Flame Field\n\nInstant Casting\nMana Cost {2}\n\nA powerful spell of fire is used to \ndamage surrounding enemies.\n\nCurrent Skill Level {0}\nNext Level {1}"

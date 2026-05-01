@@ -868,8 +868,30 @@ namespace Server.MirEnvir
             MirDirection dir;
             MonsterObject monster;
             Point front;
+
             switch (magic.Spell)
             {
+                // [hack] 三职业通用魔法
+                case Spell.Mercenary:
+                    monster = (MonsterObject)data[2];
+                    front = (Point)data[3];
+                    bool finish2 = (bool)data[4];
+
+                    if (finish2)
+                    {
+                        monster.Die();
+                        return;
+                    }
+                    if (monster.Master.Dead) return;
+
+                    if (ValidPoint(front))
+                        monster.Spawn(this, front);
+                    else
+                        monster.Spawn(player.CurrentMap, player.CurrentLocation);
+
+                    if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+                        monster.Master.Pets.Add(monster);
+                    break;
 
                 #region HellFire
 
@@ -923,8 +945,7 @@ namespace Server.MirEnvir
                     monster = (MonsterObject)data[2];
                     front = (Point)data[3];
 
-                    if (monster.Master.Dead) return;
-
+                    
                     if (ValidPoint(front))
                         monster.Spawn(this, front);
                     else

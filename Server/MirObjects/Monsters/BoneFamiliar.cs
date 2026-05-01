@@ -35,6 +35,7 @@ namespace Server.MirObjects.Monsters
                 List<int> max_attack = [ob.Stats[Stat.MaxDC], ob.Stats[Stat.MaxMC], ob.Stats[Stat.MaxSC]];
                 int min_limit = min_attack[Envir.Random.Next(min_attack.Count)];
                 int max_limit = max_attack[Envir.Random.Next(max_attack.Count)];
+                // [todo] 可以根据体力值等参数调整攻击力
                 damage = GetAttackPower(min_limit, max_limit); // * Math.Min(Level, MaxPetLevel) / MaxPetLevel; // * HealthPercent / 100;
             }
             else

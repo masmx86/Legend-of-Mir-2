@@ -3968,6 +3968,9 @@ namespace Client.MirScenes
 
         private void MapChanged(S.MapChanged p)
         {
+            // [debug] 显示地图信息
+            Scene.ChatDialog.ReceiveChat(string.Format("{0}: {1}", p.MapIndex, p.Title), ChatType.System);
+
             var isCurrentMap = (MapControl.Index == p.MapIndex);
 
             if (isCurrentMap)
@@ -12138,9 +12141,9 @@ namespace Client.MirScenes
         {
             if (User.InTrapRock) return false;
 
-            // [hack] bypass bag weight & wear weight restrictions
-            //if (User.CurrentBagWeight > User.Stats[Stat.BagWeight]) return false;   // bag weight
-            //if (User.CurrentWearWeight > User.Stats[Stat.BagWeight]) return false;  // wear weight
+            // [hack] 跳过负重限制
+            //if (User.CurrentBagWeight > User.Stats[Stat.BagWeight]) return false;   // 背包
+            //if (User.CurrentWearWeight > User.Stats[Stat.BagWeight]) return false;  // 穿戴
 
             if (CanWalk(dir) && EmptyCell(Functions.PointMove(User.CurrentLocation, dir, 2)))
             {

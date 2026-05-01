@@ -69,8 +69,8 @@ namespace Client.MirObjects
 
         public MonsterType Rarity;
 
-        // [hack] add nickname
-        public string Nickname = string.Empty;
+        // [hack] 添加昵称
+        public new string Nickname = string.Empty;
 
         public MonsterObject(uint objectID) : base(objectID) { }
 
@@ -78,7 +78,7 @@ namespace Client.MirObjects
         {
             Name = info.Name;
 
-            // [hack] add nickname
+            // [hack] 添加昵称
             Nickname = info.Nickname;
         
             NameColour = info.NameColour;
@@ -5641,9 +5641,9 @@ namespace Client.MirObjects
             {
                 // [hack] 用昵称替代名字
                 //if (splitName[s].Contains(Settings.CloneName) ||splitName[s].Contains(Settings.ShinsuName) ||splitName[s].Contains(Settings.SkeletonName))
-                if (splitName[s].Contains(User.Name))
-                    CreateMonsterLabel(string.IsNullOrEmpty(Nickname) ? splitName[s] : Nickname, s);
-                else
+                //if (splitName[s].Contains(User.Name))
+                //    CreateMonsterLabel(string.IsNullOrEmpty(Nickname) ? splitName[s] : Nickname, s);
+                //else
                     CreateMonsterLabel(splitName[s], s);
 
                 //TempLabel.Text = splitName[s];//When CreateLabel() is called, the name is already determined, so there's no need to assign it every time in DrawName.

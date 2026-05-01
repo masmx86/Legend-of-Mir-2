@@ -1227,10 +1227,10 @@ namespace Server.MirObjects
             RequestedGuildBuffInfo = true;
 
             // [hack] 自动给战士英雄打开刺杀和半月
-            if (Master != null && Class == MirClass.Warrior)
+            if (Hero != null && Hero.Class == MirClass.Warrior)
             {
-                Info.Thrusting = true;
-                Info.HalfMoon = true;
+                Hero.Info.Thrusting = true;
+                Hero.Info.HalfMoon = true;
             }
 
             if (Info.Thrusting) Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.Thrusting, CanUse = true });
@@ -1281,7 +1281,7 @@ namespace Server.MirObjects
                                 }
                                 else
                                 {
-                                    // [hack] fix pet tame time error
+                                    // [hack] 更正宠物召唤时间的计算公式错误
                                     monster.TameTime = Envir.Time + info.TameTime * Settings.Minute * 60;
                                 }
                                 break;
@@ -3680,7 +3680,7 @@ namespace Server.MirObjects
 
                     case "ADDSTORAGE":
                         {
-                            // [hack] extend storage rental from 10 days to 365 days
+                            // [hack] 背包空间租赁时间从10天扩展到1年
                             //TimeSpan addedTime = new TimeSpan(10, 0, 0, 0);
                             TimeSpan addedTime = new TimeSpan(DateTime.IsLeapYear(DateTime.Now.Year) ? 366 : 365, 0, 0, 0);
 

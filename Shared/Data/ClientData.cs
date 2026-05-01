@@ -636,7 +636,7 @@ public class ClientHeroInformation
 {
     public int Index;
     public string Name;
-    // [hack] 添加昵称
+    // [hack] 英雄添加昵称
     public string Nickname;
     public ushort Level;
     public MirClass Class;

@@ -136,7 +136,7 @@ namespace ClientPackets
         public override short Index { get { return (short)ClientPacketIds.NewCharacter; } }
 
         public string Name = string.Empty;
-        // [hack] 添加昵称
+        // [hack] 人物(英雄)添加昵称
         public string Nickname = string.Empty;
 
         public MirGender Gender;
