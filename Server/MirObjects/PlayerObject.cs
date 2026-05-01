@@ -1675,7 +1675,7 @@ namespace Server.MirObjects
                 RealId = (uint)Info.Index,
                 Name = Name,
                 // [hack] 添加昵称
-                Nickname = Nickname,
+                //Nickname = Nickname,
                 GuildName = guildname,
                 GuildRank = guildrank,
                 NameColour = GetNameColour(this),

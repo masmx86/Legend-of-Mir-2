@@ -569,7 +569,7 @@ namespace ServerPackets
             RealId = reader.ReadUInt32();
             Name = reader.ReadString();
             // [hack] 读取昵称
-            Nickname = reader.ReadString();
+            //Nickname = reader.ReadString();
 
             GuildName = reader.ReadString();
             GuildRank = reader.ReadString();
@@ -650,7 +650,7 @@ namespace ServerPackets
             writer.Write(RealId);
             writer.Write(Name);
             // [hack] 保存昵称
-            writer.Write(Nickname);
+            //writer.Write(Nickname);
             writer.Write(GuildName);
             writer.Write(GuildRank);
             writer.Write(NameColour.ToArgb());
@@ -4723,7 +4723,7 @@ namespace ServerPackets
             ObjectID = reader.ReadUInt32();
             Name = reader.ReadString();
             // [hack] 读取昵称
-            Nickname = reader.ReadString();
+            //Nickname = reader.ReadString();
             Class = (MirClass)reader.ReadByte();
             Gender = (MirGender)reader.ReadByte();
             Level = reader.ReadUInt16();
@@ -4774,7 +4774,7 @@ namespace ServerPackets
             writer.Write(ObjectID);
             writer.Write(Name);
             // [hack] 保存昵称
-            writer.Write(Nickname);
+            //writer.Write(Nickname);
             writer.Write((byte)Class);
             writer.Write((byte)Gender);
             writer.Write(Level);

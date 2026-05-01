@@ -649,7 +649,7 @@ public class ClientHeroInformation
         Index = reader.ReadInt32();
         Name = reader.ReadString();
         // [hack] 读取昵称
-        Nickname = reader.ReadString();
+        //Nickname = reader.ReadString();
         Level = reader.ReadUInt16();
         Class = (MirClass)reader.ReadByte();
         Gender = (MirGender)reader.ReadByte();
@@ -660,7 +660,7 @@ public class ClientHeroInformation
         writer.Write(Index);
         writer.Write(Name);
         // [hack] 保存昵称
-        writer.Write(Nickname);
+        //writer.Write(Nickname);
         writer.Write(Level);
         writer.Write((byte)Class);
         writer.Write((byte)Gender);

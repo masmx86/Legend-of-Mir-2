@@ -58,7 +58,7 @@ namespace Server.MirObjects.Monsters
             packet.Extra = Summoned;
 
             // [hack] 添加昵称显示
-            packet.Nickname = Nickname;
+            //packet.Nickname = Nickname;
 
             return packet;
         }

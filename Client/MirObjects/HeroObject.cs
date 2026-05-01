@@ -35,7 +35,7 @@ namespace Client.MirObjects
             Load((S.ObjectPlayer)info);
             OwnerName = info.OwnerName;
             // [hack] 英雄添加昵称
-            Nickname = info.Nickname;
+            //Nickname = info.Nickname;
 
             if (info.ObjectID == Hero?.ObjectID)
                 Hero.CurrentLocation = info.Location;

@@ -191,7 +191,7 @@ namespace Server.MirObjects.Monsters
                 Name = master != null ? master.Name : Name,
 
                 // [hack] 添加昵称显示
-                Nickname = master != null ? Nickname : string.Empty,
+                //Nickname = master != null ? Nickname : string.Empty,
 
                 NameColour = NameColour,
                 Class = master != null ? master.Class : MirClass.Wizard,

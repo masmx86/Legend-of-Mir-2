@@ -116,7 +116,7 @@ namespace Server.MirDatabase
         public CharacterInfo(ClientPackets.NewCharacter p, MirConnection c)
         {
             Name = p.Name;
-            Nickname = p.Nickname;
+            //Nickname = p.Nickname;
             Class = p.Class;
             Gender = p.Gender;
             Heroes = new HeroInfo[MaximumHeroCount];

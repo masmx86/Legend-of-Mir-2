@@ -145,7 +145,7 @@ namespace ClientPackets
         {
             Name = reader.ReadString();
             // [hack] 读取昵称
-            Nickname = reader.ReadString();
+            //Nickname = reader.ReadString();
             Gender = (MirGender)reader.ReadByte();
             Class = (MirClass)reader.ReadByte();
         }
@@ -153,7 +153,7 @@ namespace ClientPackets
         {
             writer.Write(Name);
             // [hack] 保存昵称
-            writer.Write(Nickname);
+            //writer.Write(Nickname);
 
             writer.Write((byte)Gender);
             writer.Write((byte)Class);
@@ -1161,7 +1161,7 @@ namespace ClientPackets
         {
             Name = reader.ReadString();
             // [hack] 读取昵称
-            Nickname = reader.ReadString();
+            //Nickname = reader.ReadString();
             Gender = (MirGender)reader.ReadByte();
             Class = (MirClass)reader.ReadByte();
         }
@@ -1169,7 +1169,7 @@ namespace ClientPackets
         {
             writer.Write(Name);
             // [hack] 保存昵称
-            writer.Write(Nickname);
+            //writer.Write(Nickname);
             writer.Write((byte)Gender);
             writer.Write((byte)Class);
         }

@@ -79,7 +79,7 @@ namespace Client.MirObjects
             Name = info.Name;
 
             // [hack] 添加昵称
-            Nickname = info.Nickname;
+            //Nickname = info.Nickname;
         
             NameColour = info.NameColour;
             BaseImage = info.Image;

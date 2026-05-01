@@ -119,7 +119,7 @@ namespace Client.MirObjects
             Name = info.Name;
 
             // [hack] 添加昵称
-            Nickname = info.Nickname;
+            //Nickname = info.Nickname;
 
             NameColour = info.NameColour;
             GuildName = info.GuildName;
@@ -5218,7 +5218,8 @@ namespace Client.MirObjects
                 OutLine = true,
                 OutLineColour = Color.Black,
                 // [hack] 用昵称替代名字
-                Text = string.IsNullOrEmpty(Nickname) ? Name : Nickname,
+                //Text = string.IsNullOrEmpty(Nickname) ? Name : Nickname,
+                Text = Name,
             };
             NameLabel.Disposing += (o, e) => LabelList.Remove(NameLabel);
             LabelList.Add(NameLabel);

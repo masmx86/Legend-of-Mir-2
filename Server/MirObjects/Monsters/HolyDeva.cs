@@ -113,7 +113,7 @@ namespace Server.MirObjects.Monsters
             packet.Image = Monster.HolyDeva;
             packet.Extra = Summoned;
             // [hack] 添加昵称
-            packet.Nickname = Nickname;
+            //packet.Nickname = Nickname;
             return packet;
         }
     }
