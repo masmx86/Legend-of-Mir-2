@@ -565,7 +565,13 @@
     "FrostCrunchSkillDescription": "寒冰掌\n\n瞬发技能\n魔法消耗 {2}\n\n冻结怪物周围空气中的元素，使其减速。\n\n当前技能等级 {0}\n下一级 {1}",
     "MirroringSkillDescription": "分身术\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像，与自己一同攻击\n怪物。\n\n当前技能等级 {0}\n下一级 {1}",
     // [hack] 三职业通用魔法
-    "MercenarySkillDescription": "雇佣术\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像或者随机召唤骷髅或者神兽，\n与自己一同攻击怪物。\n\n当前技能等级 {0}\n下一级 {1}",
+    "WarriorMirroringSkillDescription": "分身术（战）\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像或者随机召唤骷髅或者神兽，\n与自己一同攻击怪物。\n\n当前技能等级 {0}\n下一级 {1}",
+    "WarriorSummonSkeletonSkillDescription": "召唤骷髅（战）\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像或者随机召唤骷髅或者神兽，\n与自己一同攻击怪物。\n\n当前技能等级 {0}\n下一级 {1}",
+    "WarriorSummonShinsuSkillDescription": "召唤神兽（战）\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像或者随机召唤骷髅或者神兽，\n与自己一同攻击怪物。\n\n当前技能等级 {0}\n下一级 {1}",
+    "WizardSummonSkeletonSkillDescription": "召唤骷髅（法）\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像或者随机召唤骷髅或者神兽，\n与自己一同攻击怪物。\n\n当前技能等级 {0}\n下一级 {1}",
+    "WizardSummonShinsuSkillDescription": "召唤神兽（法）\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像或者随机召唤骷髅或者神兽，\n与自己一同攻击怪物。\n\n当前技能等级 {0}\n下一级 {1}",
+    "TaoistMirroringSkillDescription": "分身术（道）\n\n瞬间施法\n法力消耗 {2}\n\n创造一个自己的镜像或者随机召唤骷髅或者神兽，\n与自己一同攻击怪物。\n\n当前技能等级 {0}\n下一级 {1}",
+
     "FlameFieldSkillDescription": "火龙气焰\n\n瞬间施法\n法力消耗 {2}\n\n释放强大的火焰法术，对周围敌人造成伤害。\n\n当前技能等级 {0}\n下一级 {1}",
     "VampirismSkillDescription": "噬血术\n\n瞬间施法\n法力消耗 {2}\n\n消耗法力夺取怪物生命值来\n提升自身生命值。\n\n当前技能等级 {0}\n下一级 {1}",
     "BlizzardSkillDescription": "天霜冰环\n\n引导施法\n法力消耗 {2}\n\n集中内力并扩散至全身各处，\n增强对敌人的防护。防御力和持续时间\n取决于技能等级。技能使用后需等待一段时间才能再次施展。\n\n当前技能等级 {0}\n下一级 {1}",

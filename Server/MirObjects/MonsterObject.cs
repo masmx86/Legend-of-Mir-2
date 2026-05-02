@@ -1038,6 +1038,20 @@ namespace Server.MirObjects
 
             if (Master == null && EXPOwner != null)
                 Drop();
+            // [hack] 更新宠物计数
+            if (Master != null)
+            {
+                PlayerObject player = Master as PlayerObject;
+                if (Info.Name != Settings.CloneName)
+                    player.CloneCount--;
+                else if (Info.Name != Settings.SkeletonName)
+                    player.SkeletonCount--;
+                else if (Info.Name != Settings.ShinsuName)
+                    player.ShinsuCount--;
+
+                S.UpdatePetsCount p = new S.UpdatePetsCount() { CloneCount = player.CloneCount, ShinsuCount = player.ShinsuCount, SkeletonCount = player.SkeletonCount, TamedCount = player.TamedCount };
+                Enqueue(p);
+            }
 
             Master = null;
 

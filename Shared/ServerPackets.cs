@@ -6773,4 +6773,50 @@ namespace ServerPackets
             Info.Save(writer);
         }
     }
+    // [hack] 更新符毒数量信息
+    public sealed class UpdateAmuletCount : Packet
+    {
+        public override short Index
+        {
+            get { return (short)ServerPacketIds.UpdateAmuletCount; }
+        }
+        public int AmuletCount, RedPoisonCount, GreenPoisonCount;
+        protected override void ReadPacket(BinaryReader reader)
+        {
+            AmuletCount = reader.ReadInt32();
+            RedPoisonCount = reader.ReadInt32();
+            GreenPoisonCount = reader.ReadInt32();
+        }
+
+        protected override void WritePacket(BinaryWriter writer)
+        {
+            writer.Write(AmuletCount);
+            writer.Write(RedPoisonCount);
+            writer.Write(GreenPoisonCount);
+        }
+    }
+    // [hack] 更新宠物数量信息 
+    public sealed class UpdatePetsCount : Packet
+    {
+        public override short Index
+        {
+            get { return (short)ServerPacketIds.UpdatePetsCount; }
+        }
+        public int CloneCount, ShinsuCount, SkeletonCount, TamedCount;
+        protected override void ReadPacket(BinaryReader reader)
+        {
+            CloneCount = reader.ReadInt32();
+            ShinsuCount = reader.ReadInt32();
+            SkeletonCount = reader.ReadInt32();
+            TamedCount = reader.ReadInt32();
+        }
+
+        protected override void WritePacket(BinaryWriter writer)
+        {
+            writer.Write(CloneCount);
+            writer.Write(ShinsuCount);
+            writer.Write(SkeletonCount);
+            writer.Write(TamedCount);
+        }
+    }
 }

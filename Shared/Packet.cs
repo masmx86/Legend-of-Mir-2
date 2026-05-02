@@ -954,6 +954,13 @@ public abstract class Packet
                 return new S.SetCompass();
             case (short)ServerPacketIds.GuildTerritoryPage:
                 return new S.GuildTerritoryPage();
+
+            // [hack] 更新符毒数量信息
+            case (short)ServerPacketIds.UpdateAmuletCount:
+                return new S.UpdateAmuletCount();
+            // [hack] 更新宠物计数
+            case (short)ServerPacketIds.UpdatePetsCount:
+                return new S.UpdatePetsCount();
             default:
                 return null;
         }

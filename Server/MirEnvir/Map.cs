@@ -872,7 +872,12 @@ namespace Server.MirEnvir
             switch (magic.Spell)
             {
                 // [hack] 三职业通用魔法
-                case Spell.Mercenary:
+                case Spell.WarriorMirroring:
+                case Spell.WarriorSummonSkeleton:
+                case Spell.WarriorSummonShinsu:
+                case Spell.WizardSummonSkeleton:
+                case Spell.WizardSummonShinsu:
+                case Spell.TaoistMirroring:
                     monster = (MonsterObject)data[2];
                     front = (Point)data[3];
                     bool finish2 = (bool)data[4];

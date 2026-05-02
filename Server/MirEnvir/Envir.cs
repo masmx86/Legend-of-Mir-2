@@ -288,11 +288,27 @@ namespace Server.MirEnvir
         private void FillMagicInfoList()
         {
             // [hack] 添加三职业通用魔法技能
-            if (!MagicExists(Spell.Mercenary))
+            if (!MagicExists(Spell.WarriorMirroring))
                 MagicInfoList.Add(new MagicInfo
                 {
-                    Name = "Mercenary",
-                    Spell = Spell.Mercenary,
+                    Name = "WarriorMirroring",
+                    Spell = Spell.WarriorMirroring,
+                    Icon = 41,
+                    Level1 = 7,
+                    Level2 = 11,
+                    Level3 = 15,
+                    Need1 = 400,
+                    Need2 = 800,
+                    Need3 = 1200,
+                    BaseCost = 3,
+                    LevelCost = 4,
+                    Range = 0
+                });
+            if (!MagicExists(Spell.WarriorSummonSkeleton))
+                MagicInfoList.Add(new MagicInfo
+                {
+                    Name = "WarriorSummonSkeleton",
+                    Spell = Spell.WarriorSummonSkeleton,
                     Icon = 16,
                     Level1 = 7,
                     Level2 = 11,
@@ -304,6 +320,71 @@ namespace Server.MirEnvir
                     LevelCost = 4,
                     Range = 0
                 });
+            if (!MagicExists(Spell.WarriorSummonShinsu))
+                MagicInfoList.Add(new MagicInfo
+                {
+                    Name = "WarriorSummonShinsu",
+                    Spell = Spell.WarriorSummonShinsu,
+                    Icon = 29,
+                    Level1 = 7,
+                    Level2 = 11,
+                    Level3 = 15,
+                    Need1 = 400,
+                    Need2 = 800,
+                    Need3 = 1200,
+                    BaseCost = 3,
+                    LevelCost = 4,
+                    Range = 0
+                });
+            if (!MagicExists(Spell.WizardSummonSkeleton))
+                MagicInfoList.Add(new MagicInfo
+                {
+                    Name = "WizardSummonSkeleton",
+                    Spell = Spell.WizardSummonSkeleton,
+                    Icon = 16,
+                    Level1 = 7,
+                    Level2 = 11,
+                    Level3 = 15,
+                    Need1 = 400,
+                    Need2 = 800,
+                    Need3 = 1200,
+                    BaseCost = 3,
+                    LevelCost = 4,
+                    Range = 0
+                });
+            if (!MagicExists(Spell.WizardSummonShinsu))
+                MagicInfoList.Add(new MagicInfo
+                {
+                    Name = "WizardSummonShinsu",
+                    Spell = Spell.WizardSummonShinsu,
+                    Icon = 29,
+                    Level1 = 7,
+                    Level2 = 11,
+                    Level3 = 15,
+                    Need1 = 400,
+                    Need2 = 800,
+                    Need3 = 1200,
+                    BaseCost = 3,
+                    LevelCost = 4,
+                    Range = 0
+                });
+            if (!MagicExists(Spell.TaoistMirroring))
+                MagicInfoList.Add(new MagicInfo
+                {
+                    Name = "TaoistMirroring",
+                    Spell = Spell.TaoistMirroring,
+                    Icon = 41,
+                    Level1 = 7,
+                    Level2 = 11,
+                    Level3 = 15,
+                    Need1 = 400,
+                    Need2 = 800,
+                    Need3 = 1200,
+                    BaseCost = 3,
+                    LevelCost = 4,
+                    Range = 0
+                });
+
             //Warrior
             if (!MagicExists(Spell.Fencing))
                 MagicInfoList.Add(new MagicInfo 
@@ -501,7 +582,19 @@ namespace Server.MirEnvir
                 });
             if (!MagicExists(Spell.Rage))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "Rage", Spell = Spell.Rage, Icon = 49, Level1 = 44, Level2 = 47, Level3 = 50, Need1 = 8000, Need2 = 14000, Need3 = 20000, BaseCost = 20, LevelCost = 5, Range = 0 });
+                { 
+                    Name = "Rage", 
+                    Spell = Spell.Rage, 
+                    Icon = 49, 
+                    Level1 = 44, 
+                    Level2 = 47, 
+                    Level3 = 50, 
+                    Need1 = 8000, 
+                    Need2 = 14000, 
+                    Need3 = 20000, 
+                    BaseCost = 20, 
+                    LevelCost = 5, 
+                    Range = 0 });
             if (!MagicExists(Spell.CounterAttack))
                 MagicInfoList.Add(new MagicInfo
                 {
@@ -688,7 +781,20 @@ namespace Server.MirEnvir
                 });
             if (!MagicExists(Spell.Teleport))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "Teleport", Spell = Spell.Teleport, Icon = 20, Level1 = 19, Level2 = 22, Level3 = 25, Need1 = 350, Need2 = 1000, Need3 = 2000, BaseCost = 10, LevelCost = 3, Range = 0 });
+                { 
+                    Name = "Teleport", 
+                    Spell = Spell.Teleport, 
+                    Icon = 20, 
+                    Level1 = 19, 
+                    Level2 = 22, 
+                    Level3 = 25, 
+                    Need1 = 350, 
+                    Need2 = 1000, 
+                    Need3 = 2000, 
+                    BaseCost = 10, 
+                    LevelCost = 3, 
+                    Range = 0 
+                });
             if (!MagicExists(Spell.FireBang))
                 MagicInfoList.Add(new MagicInfo
                 {
@@ -977,7 +1083,20 @@ namespace Server.MirEnvir
                 });
             if (!MagicExists(Spell.Blink))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "Blink", Spell = Spell.Blink, Icon = 20, Level1 = 19, Level2 = 22, Level3 = 25, Need1 = 350, Need2 = 1000, Need3 = 2000, BaseCost = 10, LevelCost = 3, Range = 9 });
+                { 
+                    Name = "Blink", 
+                    Spell = Spell.Blink, 
+                    Icon = 20, 
+                    Level1 = 19, 
+                    Level2 = 22, 
+                    Level3 = 25, 
+                    Need1 = 350, 
+                    Need2 = 1000, 
+                    Need3 = 2000, 
+                    BaseCost = 10, 
+                    LevelCost = 3, 
+                    Range = 9 
+                });
             //if (!MagicExists(Spell.FastMove)) MagicInfoList.Add(new MagicInfo { Name = "FastMove", Spell = Spell.ImmortalSkin, Icon = ?, Level1 = ?, Level2 = ?, Level3 = ?, Need1 = ?, Need2 = ?, Need3 = ?, BaseCost = ?, LevelCost = ?, DelayBase = ?, DelayReduction = ? });
             if (!MagicExists(Spell.StormEscape))
                 MagicInfoList.Add(new MagicInfo
@@ -1019,10 +1138,34 @@ namespace Server.MirEnvir
                 });
             if (!MagicExists(Spell.SpiritSword))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "SpiritSword", Spell = Spell.SpiritSword, Icon = 3, Level1 = 9, Level2 = 12, Level3 = 15, Need1 = 350, Need2 = 1300, Need3 = 2700, Range = 0 });
+                { 
+                    Name = "SpiritSword", 
+                    Spell = Spell.SpiritSword, 
+                    Icon = 3, 
+                    Level1 = 9, 
+                    Level2 = 12, 
+                    Level3 = 15, 
+                    Need1 = 350, 
+                    Need2 = 1300, 
+                    Need3 = 2700, 
+                    Range = 0 
+                });
             if (!MagicExists(Spell.Poisoning))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "Poisoning", Spell = Spell.Poisoning, Icon = 5, Level1 = 14, Level2 = 17, Level3 = 20, Need1 = 700, Need2 = 1300, Need3 = 2700, BaseCost = 2, LevelCost = 1, Range = 9 });
+                { 
+                    Name = "Poisoning", 
+                    Spell = Spell.Poisoning, 
+                    Icon = 5, 
+                    Level1 = 14, 
+                    Level2 = 17, 
+                    Level3 = 20, 
+                    Need1 = 700, 
+                    Need2 = 1300, 
+                    Need3 = 2700, 
+                    BaseCost = 2, 
+                    LevelCost = 1, 
+                    Range = 9 
+                });
             if (!MagicExists(Spell.SoulFireBall))
                 MagicInfoList.Add(new MagicInfo
                 {
@@ -1059,7 +1202,20 @@ namespace Server.MirEnvir
                 });
             if (!MagicExists(Spell.Hiding))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "Hiding", Spell = Spell.Hiding, Icon = 17, Level1 = 20, Level2 = 23, Level3 = 26, Need1 = 1300, Need2 = 2700, Need3 = 5300, BaseCost = 1, LevelCost = 1, Range = 0 });
+                { 
+                    Name = "Hiding", 
+                    Spell = Spell.Hiding, 
+                    Icon = 17, 
+                    Level1 = 20, 
+                    Level2 = 23, 
+                    Level3 = 26, 
+                    Need1 = 1300, 
+                    Need2 = 2700, 
+                    Need3 = 5300, 
+                    BaseCost = 1, 
+                    LevelCost = 1, 
+                    Range = 0 
+                });
             if (!MagicExists(Spell.MassHiding))
                 MagicInfoList.Add(new MagicInfo
                 {
@@ -1290,7 +1446,20 @@ namespace Server.MirEnvir
                 });
             if (!MagicExists(Spell.Plague))
                 MagicInfoList.Add(new MagicInfo
-                { Name = "Plague", Spell = Spell.Plague, Icon = 74, Level1 = 42, Level2 = 44, Level3 = 47, Need1 = 5000, Need2 = 9000, Need3 = 13000, BaseCost = 20, LevelCost = 5, Range = 9 });
+                { 
+                    Name = "Plague", 
+                    Spell = Spell.Plague, 
+                    Icon = 74, 
+                    Level1 = 42, 
+                    Level2 = 44, 
+                    Level3 = 47, 
+                    Need1 = 5000, 
+                    Need2 = 9000, 
+                    Need3 = 13000, 
+                    BaseCost = 20, 
+                    LevelCost = 5, 
+                    Range = 9 
+                });
             if (!MagicExists(Spell.PoisonCloud))
                 MagicInfoList.Add(new MagicInfo
                 {

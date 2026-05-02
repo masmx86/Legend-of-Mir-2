@@ -273,7 +273,7 @@ namespace Client.MirScenes.Dialogs
             {
                 DrawFormat = TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter,
                 Parent = this,
-                Location = new Point(428, 140),
+                Location = new Point(550, 125),
                 AutoSize = true,
                 NotControl = true,
             };
@@ -511,39 +511,11 @@ namespace Client.MirScenes.Dialogs
                 User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC], User.Stats[Stat.Luck],
                 User.Stats[Stat.AttackSpeed], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility]);
             // [hack] 更新宠物信息
-            int clone_count = 0;
-            int shinshu_count = 0;
-            int skeleton_count = 0;
-            int tamed_count = 0;
-            int pet_hp = int.MaxValue;  // 血量最少的宠物的血量值
-            MonsterObject monster = null;
-            foreach (var ob in MapControl.Objects.Values)
-            {
-                if ((ob.Race == ObjectType.Monster || (ob.Race == ObjectType.Player && ob.ObjectID != User.ObjectID)) && !ob.Dead)
-                {
-                    if (ob.Name.Contains(User.Name))
-                    {
-                        if (ob.Name.Contains(Settings.ShinsuName)) shinshu_count++;
-                        else if (ob.Name.Contains(Settings.SkeletonName)) skeleton_count++;
-                        else if (ob.Name == User.Name) clone_count++;
-                        else tamed_count++;
-
-                        if (ob.PercentHealth < pet_hp)
-                        {
-                            monster = (MonsterObject)ob;
-                            pet_hp = ob.PercentHealth;
-                        }
-                    }
-                }
-            }
-            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] [符{5:#,##0} 毒{6:#,##0}|{7:#,##0}] <HP {8}% {9}>", 
-                clone_count + shinshu_count + skeleton_count + tamed_count, 
-                clone_count, shinshu_count, skeleton_count, tamed_count,
-                User.AmuletCount, User.RedPoisonCount, User.GreenPoisonCount,
-                (byte) (pet_hp == int.MaxValue ? 0 : pet_hp), 
-                monster == null ? "-" : (string.IsNullOrEmpty(monster.Nickname) ? monster.Name : monster.Nickname));
-
-            userPetLabel.Location = new Point(ExperienceLabel.Location.X + ExperienceLabel.Size.Width, UserAttribLabel.Location.Y);
+            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] [符{5:#,##0} 毒(红{6:#,##0}-绿{7:#,##0})]", 
+                User.CloneCount + User.ShinsuCount + User.SkeletonCount + User.TamedCount,
+                User.CloneCount, User.ShinsuCount, User.SkeletonCount, User.TamedCount,
+                User.AmuletCount, User.RedPoisonCount, User.GreenPoisonCount
+                );
         }
 
         private void Label_SizeChanged(object sender, EventArgs e)
@@ -2934,7 +2906,7 @@ namespace Client.MirScenes.Dialogs
                 {
                     Message = "@LOCKHP_ON",
                 });
-                GameScene.Scene.ChatDialog.ReceiveChat("HP locked", ChatType.Hint);
+                GameScene.Scene.ChatDialog.ReceiveChat("HP protection on", ChatType.Hint);
             };
 
             LockHPOff = new MirButton
@@ -2953,7 +2925,7 @@ namespace Client.MirScenes.Dialogs
                 {
                     Message = "@LOCKHP_OFF",
                 });
-                GameScene.Scene.ChatDialog.ReceiveChat("HP unlocked", ChatType.Hint);
+                GameScene.Scene.ChatDialog.ReceiveChat("HP protection off", ChatType.Hint);
             };
 
             LockMP = new MirLabel
@@ -2980,7 +2952,7 @@ namespace Client.MirScenes.Dialogs
                 {
                     Message = "@LOCKMP_ON",
                 });
-                GameScene.Scene.ChatDialog.ReceiveChat("MP locked", ChatType.Hint);
+                GameScene.Scene.ChatDialog.ReceiveChat("MP protection on", ChatType.Hint);
             };
 
             LockMPOff = new MirButton
@@ -2999,7 +2971,7 @@ namespace Client.MirScenes.Dialogs
                 {
                     Message = "@LOCKMP_OFF",
                 });
-                GameScene.Scene.ChatDialog.ReceiveChat("MP unlocked", ChatType.Hint);
+                GameScene.Scene.ChatDialog.ReceiveChat("MP protection off", ChatType.Hint);
             };
 
             ObserveOn = new MirButton
@@ -3985,9 +3957,25 @@ namespace Client.MirScenes.Dialogs
                 case Spell.OneWithNature:
                     SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.OneWithNatureSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
                     break;
+                
                 // [hack] 三职业通用魔法
-                case Spell.Mercenary:
-                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.MercenarySkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                case Spell.WarriorMirroring:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.WarriorMirroringSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                    break;
+                case Spell.WarriorSummonSkeleton:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.WarriorSummonSkeletonSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                    break;
+                case Spell.WarriorSummonShinsu:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.WarriorSummonShinsuSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                    break;
+                case Spell.WizardSummonSkeleton:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.WizardSummonSkeletonSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                    break;
+                case Spell.WizardSummonShinsu:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.WizardSummonShinsuSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                    break;
+                case Spell.TaoistMirroring:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.TaoistMirroringSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
                     break;
 
                 default:

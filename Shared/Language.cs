@@ -589,7 +589,15 @@ public enum ClientTextKeys
     FlameDisruptorSkillDescription,
     FrostCrunchSkillDescription,
     MirroringSkillDescription,
-    MercenarySkillDescription,      // [hack] 三职业通用魔法
+
+    // [hack] 三职业通用魔法
+    WarriorMirroringSkillDescription,
+    WarriorSummonSkeletonSkillDescription,
+    WarriorSummonShinsuSkillDescription,
+    WizardSummonSkeletonSkillDescription,
+    WizardSummonShinsuSkillDescription,
+    TaoistMirroringSkillDescription,
+
     FlameFieldSkillDescription,
     VampirismSkillDescription,
     BlizzardSkillDescription,
@@ -3333,9 +3341,25 @@ public static class GameLanguage
                 "Mirroring\n\nInstant Casting\nMana Cost {2}\n\nCreate a mirror image of yourself to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
             // [hack] 三职业通用魔法
-            { nameof(ClientTextKeys.MercenarySkillDescription),
-                "Mercenary\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            { nameof(ClientTextKeys.WarriorMirroringSkillDescription),
+                "WarriorMirroring\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
+            { nameof(ClientTextKeys.WarriorSummonSkeletonSkillDescription),
+                "WarriorSummonSkeleton\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+            { nameof(ClientTextKeys.WarriorSummonShinsuSkillDescription),
+                "WarriorSummonShinsu\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+            { nameof(ClientTextKeys.WizardSummonSkeletonSkillDescription),
+                "WizardSummonSkeleton\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+            { nameof(ClientTextKeys.WizardSummonShinsuSkillDescription),
+                "WizardSummonShinsu\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+            { nameof(ClientTextKeys.TaoistMirroringSkillDescription),
+                "TaoistMirroring\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+
             { nameof(ClientTextKeys.FlameFieldSkillDescription),
                 "Flame Field\n\nInstant Casting\nMana Cost {2}\n\nA powerful spell of fire is used to \ndamage surrounding enemies.\n\nCurrent Skill Level {0}\nNext Level {1}"
             },

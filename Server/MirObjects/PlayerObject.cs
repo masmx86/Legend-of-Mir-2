@@ -59,7 +59,6 @@ namespace Server.MirObjects
             get { return account; }
             set { account = value; }
         }
-
         public override bool CanMove
         {
             get
@@ -1227,10 +1226,10 @@ namespace Server.MirObjects
             RequestedGuildBuffInfo = true;
 
             // [hack] 自动给战士英雄打开刺杀和半月
-            if (Hero != null && Hero.Class == MirClass.Warrior)
+            if (HasHero && CurrentHero!= null && CurrentHero.Class == MirClass.Warrior)
             {
-                Hero.Info.Thrusting = true;
-                Hero.Info.HalfMoon = true;
+                CurrentHero.Thrusting = true;
+                CurrentHero.HalfMoon = true;
             }
 
             if (Info.Thrusting) Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.Thrusting, CanUse = true });
@@ -1255,8 +1254,6 @@ namespace Server.MirObjects
                 monster.MaxPetLevel = info.MaxPetLevel;
                 monster.PetExperience = info.Experience;
                 monster.Master = this;
-                // [hack] 这里添加这一条不知道能不能解决服务器重启宝宝叛变的问题
-                monster.Owner = this;   
                 // [hack] 给宝宝添加昵称
                 monster.Nickname = GivePetNickname(monster);
 
@@ -1307,6 +1304,15 @@ namespace Server.MirObjects
             }
 
             Info.Pets.Clear();
+
+            // [hack] 更新宠物数量信息
+            foreach (MonsterObject monster in Pets)
+            {
+                if (monster.Info.Name == Settings.CloneName) CloneCount++;
+                else if (monster.Info.Name == Settings.ShinsuName) ShinsuCount++;
+                else if (monster.Info.Name == Settings.SkeletonName) SkeletonCount++;
+                else TamedCount++;
+            }
 
             // Restore buffs
             for (int i = 0; i < Buffs.Count; i++)

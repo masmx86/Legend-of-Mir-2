@@ -1287,7 +1287,13 @@ public enum Spell : byte
     HornedCommanderRockSpike = 218,
 
     // [hack] 自定义三职业通用魔法
-    Mercenary = 250
+    WarriorMirroring = 160,
+    TaoistMirroring = 161,
+    WarriorSummonSkeleton = 162,
+    WizardSummonSkeleton = 163,
+    WarriorSummonShinsu = 164,
+    WizardSummonShinsu = 165,
+    Mercenary = 166,
 }
 
 public enum SpellEffect : byte
@@ -1714,6 +1720,9 @@ public enum ServerPacketIds : short
     GroupMembersMap,
     SendMemberLocation,
     GuildTerritoryPage,
+    // [hack] 更新宠物和符毒数量信息
+    UpdateAmuletCount,
+    UpdatePetsCount,
 }
 
 public enum ClientPacketIds : short
@@ -1875,6 +1884,9 @@ public enum ClientPacketIds : short
     GuildTerritoryPage,
     PurchaseGuildTerritory,
     DeleteItem,
+    // [hack] 更新宠物和符毒数量信息
+    UpdateAmuletCount,
+    UpdatePetsCount,
 }
 
 public enum ConquestType : byte

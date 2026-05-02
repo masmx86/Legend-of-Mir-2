@@ -32,6 +32,10 @@ namespace Client.MirObjects
         public int AmuletCount = 0;
         public int RedPoisonCount = 0;
         public int GreenPoisonCount = 0;
+        public int CloneCount = 0;
+        public int ShinsuCount = 0;
+        public int SkeletonCount = 0;
+        public int TamedCount = 0;
 
         public SpecialItemMode ItemMode;
 
@@ -143,6 +147,10 @@ namespace Client.MirObjects
         public void RefreshStats()
         {
             Stats.Clear();
+            // [hack] 刷新符毒计数 
+            AmuletCount = 0;
+            GreenPoisonCount = 0;
+            RedPoisonCount = 0;
 
             RefreshLevelStats();
             RefreshBagWeight();
@@ -259,17 +267,6 @@ namespace Client.MirObjects
                     MountType = realItem.Shape;
                 }
 
-                // [hack] 刷新符毒计数
-                if (realItem.Type == ItemType.Amulet && temp.Count > 0)
-                {
-                    switch (realItem.Shape)
-                    {
-                        case (short)PoisonType.None: AmuletCount += temp.Count; continue;
-                        case (short)PoisonType.Green: GreenPoisonCount += temp.Count; continue;
-                        case (short)PoisonType.Red: RedPoisonCount += temp.Count; continue;
-                    }
-                }
-
                 if (temp.Info.IsFishingRod) continue;
 
                 Stats.Add(realItem.Stats);
@@ -322,6 +319,17 @@ namespace Client.MirObjects
                 {
                     if (!MirSet.Contains((EquipmentSlot)i))
                         MirSet.Add((EquipmentSlot)i);
+                }
+
+                // [hack] 刷新符毒计数
+                if (realItem.Type == ItemType.Amulet && temp.Count > 0)
+                {
+                    switch (realItem.Shape)
+                    {
+                        case (short)PoisonType.None: AmuletCount += temp.Count; continue;
+                        case (short)PoisonType.Green: GreenPoisonCount += temp.Count; continue;
+                        case (short)PoisonType.Red: RedPoisonCount += temp.Count; continue;
+                    }
                 }
             }
 

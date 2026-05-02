@@ -1,6 +1,7 @@
 ﻿using Client.MirGraphics;
 using Client.MirNetwork;
 using Client.MirScenes;
+using ServerPackets;
 using SlimDX.Direct3D9;
 using S = ServerPackets;
 
@@ -197,9 +198,31 @@ namespace Client.MirControls
                 case (short)ServerPacketIds.NewHeroInfo:
                     NewHeroInfo((S.NewHeroInfo)p);
                     break;
+                // [hack] 更新符毒数量信息
+                case (short)ServerPacketIds.UpdateAmuletCount:
+                    UpdateaAmuletCount((S.UpdateAmuletCount)p);
+                    break;
+                // [hack] 更新宠物数量信息 
+                case (short)ServerPacketIds.UpdatePetsCount:
+                    UpdatePetsCount((S.UpdatePetsCount)p);
+                    break;
             }
         }
-
+        // [hack] 更新符毒数量信息
+        private void UpdateaAmuletCount(S.UpdateAmuletCount p)
+        {
+            GameScene.User.AmuletCount = p.AmuletCount;
+            GameScene.User.RedPoisonCount = p.RedPoisonCount;
+            GameScene.User.GreenPoisonCount = p.GreenPoisonCount;
+        }
+        // [hack] 更新宠物数量信息 
+        private void UpdatePetsCount(S.UpdatePetsCount p)
+        {
+            GameScene.User.CloneCount = p.CloneCount;
+            GameScene.User.ShinsuCount = p.ShinsuCount;
+            GameScene.User.SkeletonCount = p.SkeletonCount;
+            GameScene.User.TamedCount = p.TamedCount;
+        }
         private void NewItemInfo(S.NewItemInfo info)
         {
             GameScene.ItemInfoList.Add(info.Info);

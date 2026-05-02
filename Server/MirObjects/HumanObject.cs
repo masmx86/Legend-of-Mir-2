@@ -1,9 +1,10 @@
-using System.Drawing;
-using System.Reflection.Metadata.Ecma335;
 using Server.MirDatabase;
 using Server.MirEnvir;
 using Server.MirNetwork;
 using Server.MirObjects.Monsters;
+using System.Drawing;
+using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 //using System.Numerics;
 using S = ServerPackets;
 
@@ -177,6 +178,15 @@ namespace Server.MirObjects
                    CurrentWearWeight,
                    CurrentBagWeight;
 
+        // [hack] 符毒计数
+        public int AmuletCount = 0;
+        public int RedPoisonCount = 0;
+        public int GreenPoisonCount = 0;
+        public int CloneCount = 0;
+        public int ShinsuCount = 0;
+        public int SkeletonCount = 0;
+        public int TamedCount = 0;
+        
         public bool HasElemental;
         public int ElementsLevel;
 
@@ -1789,10 +1799,14 @@ namespace Server.MirObjects
             }
 
             Stats.Clear();
-
             RefreshLevelStats();
-            RefreshBagWeight();
+            
+            RefreshBagWeight();         
             RefreshEquipmentStats();
+
+            // [hack] 更新符毒数量信息
+            RefreshAmuletCount();
+
             RefreshItemSetStats();
             RefreshMirSetStats();
             RefreshSkills();
@@ -1832,13 +1846,58 @@ namespace Server.MirObjects
                 Stats[stat.Type] = stat.Calculate(Class, Level);
             }
         }
-        public void RefreshBagWeight()
+        // [hack] 更新符毒数量信息
+        public void RefreshAmuletCount()
         {
-            CurrentBagWeight = 0;
+            UserItem item = null;
+            AmuletCount = 0;
+            RedPoisonCount = 0;
+            GreenPoisonCount = 0;
 
             for (int i = 0; i < Info.Inventory.Length; i++)
             {
-                UserItem item = Info.Inventory[i];
+                item = Info.Inventory[i];
+                if (item != null && item.Info.Type == ItemType.Amulet)
+                {
+                    switch (item.Info.Shape)
+                    {
+                        case (short)PoisonType.None:
+                            AmuletCount += item.Count;
+                            continue;
+                        case (short)PoisonType.Red:
+                            RedPoisonCount += item.Count;
+                            continue;
+                        case (short)PoisonType.Green:
+                            GreenPoisonCount += item.Count;
+                            continue;
+                    }
+                }
+            }
+            item = Info.Equipment[(int)EquipmentSlot.Amulet];
+            if (item != null && item.Info.Type == ItemType.Amulet)
+            {
+                switch (item.Info.Shape)
+                {
+                    case (short)PoisonType.None:
+                        AmuletCount += item.Count;
+                        break;
+                    case (short)PoisonType.Red:
+                        RedPoisonCount += item.Count;
+                        break;
+                    case (short)PoisonType.Green:
+                        GreenPoisonCount += item.Count;
+                        break;
+                }
+            }
+            Enqueue(new S.UpdateAmuletCount() { AmuletCount = AmuletCount, RedPoisonCount = RedPoisonCount, GreenPoisonCount = GreenPoisonCount });
+        }
+        public void RefreshBagWeight()
+        {
+            CurrentBagWeight = 0;
+            UserItem item = null;
+            for (int i = 0; i < Info.Inventory.Length; i++)
+            {
+                item = Info.Inventory[i];
                 if (item != null)
                 {
                     CurrentBagWeight += item.Weight;
@@ -3820,8 +3879,23 @@ namespace Server.MirObjects
                     if (!FireBounce(target, magic, this)) targetID = 0;
                     break;
                 // [hack] 三职业通用魔法
-                case Spell.Mercenary:
-                    Mercenary(magic);
+                case Spell.WarriorMirroring:
+                    WarriorMirroring(magic);
+                    break;
+                case Spell.WarriorSummonSkeleton:
+                    WarriorSummonSkeleton(magic);
+                    break;
+                case Spell.WarriorSummonShinsu:
+                    WarriorSummonShinsu(magic);
+                    break;
+                case Spell.WizardSummonSkeleton:
+                    WizardSummonSkeleton(magic);
+                    break;
+                case Spell.WizardSummonShinsu:
+                    WizardSummonShinsu(magic);
+                    break;
+                case Spell.TaoistMirroring:
+                    TaoistMirroring(magic);
                     break;
                 default:
                     cast = false;
@@ -4126,7 +4200,12 @@ namespace Server.MirObjects
             else rate *= 2;
 
             if (Envir.Random.Next(rate) != 0) return;
-            //else if (Envir.Random.Next(20) == 0) target.Die();
+            // [hack] enable condition and add return to exit function
+            else if (Envir.Random.Next(20) == 0)
+            {
+                target.Die();
+                return;
+            }
 
             if (target.Master != null)
             {
@@ -4157,6 +4236,10 @@ namespace Server.MirObjects
             }
 
             target.Broadcast(new S.ObjectName { ObjectID = target.ObjectID, Name = target.Name });
+
+            // [hack] 更新宠物计数
+            TamedCount++;
+            Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
         }
         private void HellFire(UserMagic magic)
         {
@@ -4416,6 +4499,45 @@ namespace Server.MirObjects
             }
 
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false));
+
+            // [hack] 更新宠物计数
+            if (monster.Info.Name == Settings.CloneName)
+                CloneCount++;
+            else if (monster.Info.Name == Settings.SkeletonName)
+                SkeletonCount++;
+            else if (monster.Info.Name == Settings.ShinsuName)
+                ShinsuCount++;
+            Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
+        }
+        // [hack] 战士召唤分身
+        private void WarriorMirroring(UserMagic magic)
+        {
+
+        }
+        // [hack] 战士召唤分身
+        private void WarriorSummonSkeleton(UserMagic magic)
+        {
+
+        }
+        // [hack] 战士召唤分身
+        private void WarriorSummonShinsu(UserMagic magic)
+        {
+
+        }
+        // [hack] 战士召唤分身
+        private void WizardSummonSkeleton(UserMagic magic)
+        {
+
+        }
+        // [hack] 战士召唤分身
+        private void WizardSummonShinsu(UserMagic magic)
+        {
+
+        }
+        // [hack] 战士召唤分身
+        private void TaoistMirroring(UserMagic magic)
+        {
+
         }
         // [hack] 道士召唤术，可随机召唤骷髅、神兽或者分身
         // [todo] 将此功能转移到新技能 Mercenary()
@@ -4490,6 +4612,15 @@ namespace Server.MirObjects
 
             //action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front));
+
+            // [hack] 更新宠物计数
+            if (monster.Info.Name == Settings.CloneName)
+                CloneCount++;
+            else if (monster.Info.Name == Settings.SkeletonName)
+                SkeletonCount++;
+            else if (monster.Info.Name == Settings.ShinsuName)
+                ShinsuCount++;
+            Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
         }
         // [hack] 三职业通用分身召唤技能
         private void Mercenary(UserMagic magic)
