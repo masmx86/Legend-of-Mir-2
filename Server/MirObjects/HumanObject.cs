@@ -4238,7 +4238,10 @@ namespace Server.MirObjects
             target.Broadcast(new S.ObjectName { ObjectID = target.ObjectID, Name = target.Name });
 
             // [hack] 更新宠物计数
-            TamedCount++;
+            TamedCount = Pets.Count(
+                p => !p.Dead && p.Race == ObjectType.Monster && 
+                p.Name.Contains(Name) && 
+                p.Info.Name != Settings.CloneName && p.Info.Name != Settings.ShinsuName && p.Info.Name != Settings.SkeletonName);
             Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
         }
         private void HellFire(UserMagic magic)
@@ -4438,23 +4441,27 @@ namespace Server.MirObjects
                 }
             }
 
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int) (magic.Level * 3 + 1)) return;
+            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int) (magic.Level * 3 + 1)) 
+                return;
 
             MonsterInfo info = (Envir.Random.Next(magic.Level) == 0) ? Envir.GetMonsterInfo(Settings.CloneName) : 
                                 ((Envir.Random.Next(magic.Level) <= Envir.Random.Next(magic.Level)) ? 
                                 Envir.GetMonsterInfo(Settings.SkeletonName) : Envir.GetMonsterInfo(Settings.ShinsuName));
-            if (info == null) return;
+            if (info == null) 
+                return;
 
             UserItem item = null;
             if (info.Name == Settings.ShinsuName)
             {
                 item = GetAmulet(5);
-                if (item == null) return;
+                if (item == null) 
+                    return;
             }
             else if (info.Name == Settings.SkeletonName)
             {
                 item = GetAmulet(1);
-                if (item == null) return;
+                if (item == null) 
+                    return;
             }
 
             LevelMagic(magic);
@@ -5021,7 +5028,7 @@ namespace Server.MirObjects
             }
 
             // [debug] 给宠物添加昵称
-            Settings.debugSpawn(string.Format("Nicknamed picked up by {0}[{1}]: {2}", pet.Info.Name, pet.ObjectID, nickname), "Server.HumanObject.GivePetNickname");
+            //Settings.debugSpawn(string.Format("Nicknamed picked up by {0}[{1}]: {2}", pet.Info.Name, pet.ObjectID, string.IsNullOrEmpty(nickname) ? "-" : nickname), "Server.HumanObject.GivePetNickname");
 
             return nickname;
         }

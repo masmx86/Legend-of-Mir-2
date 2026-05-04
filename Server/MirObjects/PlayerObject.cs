@@ -282,8 +282,14 @@ namespace Server.MirObjects
 
                 // [debug]
                 if (pet == null || pet.Node == null) continue;
-                Logger.GetLogger(LogType.Spawn).Debug(string.Format("saving Pet: [{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8}",
-                    i, Pets.Count, pet.Name, pet.Info.Name, string.IsNullOrEmpty(pet.Nickname) ? "-" : pet.Nickname, pet.ObjectID, pet.Race, pet.Level, pet.HP));
+                Logger.GetLogger(LogType.Spawn).Debug(string.Format("Saving Pet: " +
+                    "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8} " +
+                    "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}]",
+                    i + 1, Pets.Count, pet.Name, pet.Info.Name, string.IsNullOrEmpty(pet.Nickname) ? "-" : pet.Nickname,
+                    pet.ObjectID, pet.Race, pet.PetLevel, pet.HP,
+                    pet.CurrentLocation.X, pet.CurrentLocation.Y,
+                    CurrentLocation.X, CurrentLocation.Y,
+                    CloneCount, ShinsuCount, SkeletonCount, TamedCount));
 
                 if (pet.Race == ObjectType.Creature)
                 {
@@ -323,13 +329,13 @@ namespace Server.MirObjects
                             switch (Class)
                             {
                                 case (MirClass.Wizard):
-
-                                    if (pet.Name == Settings.CloneName)
+                                    // [hack] 增加神兽和骷髅
+                                    if (pet.Name == Settings.CloneName || pet.Info.Name == Settings.ShinsuName || pet.Info.Name == Settings.SkeletonName)
                                     {
                                         Info.Pets.Add(new PetInfo(pet));
                                     }
-                                    else
-                                    {
+                                    else // [hack] 剩余的应该就是召唤的宝宝了
+                                    {   
                                         Info.Pets.Add(new PetInfo(pet)
                                         {
                                             TameTime = pet.TameTime - Envir.Time
@@ -338,7 +344,7 @@ namespace Server.MirObjects
                                     break;
 
                                 case (MirClass.Taoist):
-                                    if (pet.Name == Settings.SkeletonName || pet.Name == Settings.AngelName || pet.Name == Settings.ShinsuName || pet.Name == Settings.CloneName)
+                                    if (pet.Info.Name == Settings.SkeletonName || pet.Info.Name == Settings.AngelName || pet.Info.Name == Settings.ShinsuName || pet.Info.Name == Settings.CloneName)
                                         Info.Pets.Add(new PetInfo(pet));
                                     break;
                             }
@@ -346,8 +352,8 @@ namespace Server.MirObjects
                             break;
                     }
                     // [debug]
-                    //Logger.GetLogger(LogType.Spawn).Debug(string.Format("saving Pet: [{0}/{1}] {2}:{3}[{4}] <{5}> Level={6}",
-                        //i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Race, pet.Level));
+                    pet.Master = this;
+                    DumpObject(pet);
 
                     Envir.MonsterCount--;
                     pet.CurrentMap.MonsterCount--;
@@ -1238,6 +1244,13 @@ namespace Server.MirObjects
             if (Info.DoubleSlash) Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.DoubleSlash, CanUse = true });
 
             // --- Re-spawn saved pets ---
+
+            // [hack] 重置宠物数量
+            CloneCount = 0;
+            ShinsuCount = 0;
+            SkeletonCount = 0;
+            TamedCount = 0;
+
             for (int i = 0; i < Info.Pets.Count; i++)
             {
                 MonsterObject monster;
@@ -1254,6 +1267,7 @@ namespace Server.MirObjects
                 monster.MaxPetLevel = info.MaxPetLevel;
                 monster.PetExperience = info.Experience;
                 monster.Master = this;
+                monster.TameTime = info.TameTime;
                 // [hack] 给宝宝添加昵称
                 monster.Nickname = GivePetNickname(monster);
 
@@ -1278,8 +1292,7 @@ namespace Server.MirObjects
                                 }
                                 else
                                 {
-                                    // [hack] 更正宠物召唤时间的计算公式错误
-                                    monster.TameTime = Envir.Time + info.TameTime * Settings.Minute * 60;
+                                    monster.TameTime = Envir.Time + info.TameTime;
                                 }
                                 break;
                         }
@@ -1299,20 +1312,27 @@ namespace Server.MirObjects
                 monster.SetHP(info.HP);
 
                 // [debug]
-                Logger.GetLogger(LogType.Spawn).Debug(string.Format("Re-spawning Pet: [{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8}",
-                    i, Pets.Count, monster.Name, monster.Info.Name, string.IsNullOrEmpty(monster.Nickname) ? "-" : monster.Nickname, monster.ObjectID, monster.Race, monster.Level, monster.HP));
+                Logger.GetLogger(LogType.Spawn).Debug(string.Format("Re-spawning Pet: " +
+                    "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8} " +
+                    "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}]",
+                    i + 1, Pets.Count, monster.Name, monster.Info.Name, 
+                    string.IsNullOrEmpty(monster.Nickname) ? "-" : monster.Nickname, 
+                    monster.ObjectID, monster.Race, monster.PetLevel, monster.HP,
+                    monster.CurrentLocation.X, monster.CurrentLocation.Y,
+                    CurrentLocation.X, CurrentLocation.Y,
+                    CloneCount, ShinsuCount, SkeletonCount, TamedCount));
+                DumpObject(monster);
             }
+            // [hack] 更新宠物计数
+            CloneCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Name == Settings.CloneName);
+            ShinsuCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Info.Name == Settings.ShinsuName);
+            SkeletonCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Info.Name == Settings.SkeletonName);
+            TamedCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Name.Contains(Name) &&
+                p.Info.Name != Settings.CloneName && p.Info.Name != Settings.ShinsuName && p.Info.Name != Settings.SkeletonName);
+
+            Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
 
             Info.Pets.Clear();
-
-            // [hack] 更新宠物数量信息
-            foreach (MonsterObject monster in Pets)
-            {
-                if (monster.Info.Name == Settings.CloneName) CloneCount++;
-                else if (monster.Info.Name == Settings.ShinsuName) ShinsuCount++;
-                else if (monster.Info.Name == Settings.SkeletonName) SkeletonCount++;
-                else TamedCount++;
-            }
 
             // Restore buffs
             for (int i = 0; i < Buffs.Count; i++)
@@ -1374,7 +1394,50 @@ namespace Server.MirObjects
                 Envir.OnlineRankingCount[(int)Class + 1]++;
             }
         }
+        // [debug] dump object detail for debugging
+        public void DumpObject(MonsterObject m)
+        {
+            DumpMonsterObject(m);
+        }
+        private void DumpPetInfo(PetInfo info)
+        {
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("PetInfo:" +
+                "\n\t\t\t\tindex {0}, level {1} maxlevel {2} exp {3} hp {4} tametime {5}",
+                info.MonsterIndex, info.Level, info.MaxPetLevel, info.Experience, info.HP, info.TameTime.ToString()));
+        }
+        private void DumpMonsterInfo(MonsterInfo info)
+        {
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("MonsterInfo:" +
+                "\n\t\t\t\tindex {0}, name {1}, nickname {2}, AI {3}, level {4}, exp {5}, image {6}, viewrange {7}, spawn script {8}",
+                info.Index, info.Name, info.Nickname, info.AI, info.Level, info.Experience, info.Image, info.ViewRange, info.HasSpawnScript ? "Yes" : "No"));
+        }
+        private void DumpMonsterObject(MonsterObject ob)
+        {
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("MonsterObject: " +
+            "\n\t\t\t\tid {0}, mapindex {1}, spawned {2}",
+            ob.ObjectID, ob.CurrentMapIndex, ob.Node != null ? "Yes" : "No"));
 
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("name {0}/{1}, nickname {2}",
+            string.IsNullOrEmpty(ob.Name) ? "-" : ob.Name, ob.Info.Name, string.IsNullOrEmpty(ob.Nickname) ? "-" : ob.Nickname));
+
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("race {0}, type {1},",
+            ob.Race.ToString(),
+            ob.MonsterType.ToString()));
+
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("master {0}, owner {1}, expowner {2}",
+            ob.Master == null ? "x" : (string.IsNullOrEmpty(ob.Master.Name) ? "-" : ob.Master.Name), 
+            ob.Owner == null ? "x" : (string.IsNullOrEmpty(ob.Owner.Name) ? "-" : ob.Owner.Name),
+            ob.EXPOwner == null ? "x" : (string.IsNullOrEmpty(ob.EXPOwner.Name) ? "-" : ob.EXPOwner.Name)));
+
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("level {0}, maxlevel {1}, exp {2}" +
+            "\n\t\t\t\t{3}, hp {4}, health {5}%, maxhealth {6}, location [{7}, {8}]",
+            ob.Level, ob.MaxPetLevel, ob.PetExperience,
+            !ob.Dead ? "Alive" : "Dead", ob.HP, ob.PercentHealth, ob.MaxHealth,
+            ob.CurrentLocation.X, ob.CurrentLocation.Y));
+
+            Logger.GetLogger(LogType.Spawn).Debug(string.Format("cell time {0}, expire time {1}, rage time {2}, regen time {3}, shock time {4}, tame time {5}\n",
+            ob.CellTime, ob.ExpireTime, ob.RageTime, ob.RegenTime, ob.ShockTime, ob.TameTime));
+        }
         private void StartGameFailed()
         {
             Enqueue(new S.StartGame { Result = 3 });
@@ -5799,7 +5862,7 @@ namespace Server.MirObjects
         // [hack] 补红补蓝的时候，如果所需的量超过自身的需要，多余的部分优先补充给血量最低的宠物
         public void HealPetsHero(int hp, int mp, string item)
         {
-            if (hp <= 0 || mp <= 0) return;
+            if (hp + mp <= 0) return;
 
             int usr_hp_need = Stats[Stat.HP] - HP;
             int usr_mp_need = Stats[Stat.MP] - MP;
@@ -5812,7 +5875,7 @@ namespace Server.MirObjects
             {
                 MonsterObject pet = Pets.Where(p => p.Dead == false).OrderBy(p => p.HP).FirstOrDefault();
                 int pet_hp_need = pet.Info.Stats[Stat.HP] - pet.HP;
-                if (pet_hp_need <= 0) continue;
+                if (pet_hp_need <= 0) break;
                 int amount = Math.Min(pet_hp_need, excess_amount);
                 pet.ChangeHP((ushort) amount);
                 ReceiveChat(string.Format("healing {0}[{1}] with {2} (hp +{3})",
