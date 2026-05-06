@@ -4238,11 +4238,7 @@ namespace Server.MirObjects
             target.Broadcast(new S.ObjectName { ObjectID = target.ObjectID, Name = target.Name });
 
             // [hack] 更新宠物计数
-            TamedCount = Pets.Count(
-                p => !p.Dead && p.Race == ObjectType.Monster && 
-                p.Name.Contains(Name) && 
-                p.Info.Name != Settings.CloneName && p.Info.Name != Settings.ShinsuName && p.Info.Name != Settings.SkeletonName);
-            Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
+            UpdatePetsCount();
         }
         private void HellFire(UserMagic magic)
         {
@@ -4494,7 +4490,7 @@ namespace Server.MirObjects
 
             monster.Nickname = GivePetNickname(monster);
 
-            // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
+            // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton会在 CompleteMagic() 里面调用 Pets.Add()，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
             if (monster.Info.Name == Settings.CloneName) Pets.Add(monster); 
 
             // [debug] debug output monster info
@@ -4508,12 +4504,16 @@ namespace Server.MirObjects
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false));
 
             // [hack] 更新宠物计数
-            if (monster.Info.Name == Settings.CloneName)
-                CloneCount++;
-            else if (monster.Info.Name == Settings.SkeletonName)
-                SkeletonCount++;
-            else if (monster.Info.Name == Settings.ShinsuName)
-                ShinsuCount++;
+            UpdatePetsCount();
+        }
+        // [hack] 更新宠物计数
+        public void UpdatePetsCount()
+        {
+            CloneCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Name == Settings.CloneName);
+            ShinsuCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Info.Name == Settings.ShinsuName);
+            SkeletonCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Info.Name == Settings.SkeletonName);
+            TamedCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Name.Contains(Name) &&
+                p.Info.Name != Settings.CloneName && p.Info.Name != Settings.ShinsuName && p.Info.Name != Settings.SkeletonName);
             Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
         }
         // [hack] 战士召唤分身
@@ -4621,13 +4621,7 @@ namespace Server.MirObjects
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front));
 
             // [hack] 更新宠物计数
-            if (monster.Info.Name == Settings.CloneName)
-                CloneCount++;
-            else if (monster.Info.Name == Settings.SkeletonName)
-                SkeletonCount++;
-            else if (monster.Info.Name == Settings.ShinsuName)
-                ShinsuCount++;
-            Enqueue(new S.UpdatePetsCount() { CloneCount = CloneCount, ShinsuCount = ShinsuCount, SkeletonCount = SkeletonCount, TamedCount = TamedCount });
+            UpdatePetsCount();
         }
         // [hack] 三职业通用分身召唤技能
         private void Mercenary(UserMagic magic)
