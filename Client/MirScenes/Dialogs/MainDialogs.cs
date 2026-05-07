@@ -486,12 +486,12 @@ namespace Client.MirScenes.Dialogs
 
             LevelLabel.Text = User.Level.ToString();
 
-            // [kack] 在主界面上显示时间
+            // [hack] 在主界面上显示时间
             GameScene.Scene.ChatControl.ClockLabel.Text = DateTime.Now.ToString("HH:mm:ss");
             GameScene.Scene.ChatControl.ClockLabel.Location = new Point(GameScene.Scene.ChatControl.SizeButton.Location.X - GameScene.Scene.ChatControl.ClockLabel.Size.Width - 10, GameScene.Scene.ChatControl.ClockLabel.Location.Y);
 
             // [hack] 在主界面上显示当前经验值和升级所需经验值
-            ExperienceLabel.Text = string.Format("{0:#0.####%}", (User.Experience / (double)User.MaxExperience));
+            ExperienceLabel.Text = string.Format("{0:#0.####0%}", (User.Experience / (double)User.MaxExperience));
 
             GameScene.Scene.ChatControl.CurrentExperienceValue.Text = User.Experience.ToString("#,##0");
             GameScene.Scene.ChatControl.CurrentExperienceValue.Location = new Point(GameScene.Scene.ChatControl.Size.Width / 2 - GameScene.Scene.ChatControl.CurrentExperienceValue.Size.Width - 15, GameScene.Scene.ChatControl.CurrentExperienceValue.Location.Y);
@@ -511,7 +511,7 @@ namespace Client.MirScenes.Dialogs
                 User.Stats[Stat.MaxAC], User.Stats[Stat.MaxMAC], User.Stats[Stat.Luck],
                 User.Stats[Stat.AttackSpeed], User.Stats[Stat.Accuracy], User.Stats[Stat.Agility]);
             // [hack] 更新宠物信息
-            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] [符{5:#,##0} 毒(红{6:#,##0}-绿{7:#,##0})]", 
+            userPetLabel.Text = string.Format("宝宝 {0} [分身{1} 神兽{2} 骷髅{3} 召唤{4}] [符{5:#,##0} 红毒{6:#,##0} 绿毒{7:#,##0}]", 
                 User.CloneCount + User.ShinsuCount + User.SkeletonCount + User.TamedCount,
                 User.CloneCount, User.ShinsuCount, User.SkeletonCount, User.TamedCount,
                 User.AmuletCount, User.RedPoisonCount, User.GreenPoisonCount
