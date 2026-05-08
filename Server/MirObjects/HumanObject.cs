@@ -4509,7 +4509,7 @@ namespace Server.MirObjects
         // [hack] 更新宠物计数
         public void UpdatePetsCount()
         {
-            CloneCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Name == Settings.CloneName);
+            CloneCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Info.Name == Settings.CloneName);
             ShinsuCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Info.Name == Settings.ShinsuName);
             SkeletonCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Info.Name == Settings.SkeletonName);
             TamedCount = Pets.Count(p => !p.Dead && p.Race == ObjectType.Monster && p.Name.Contains(Name) &&
