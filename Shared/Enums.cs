@@ -1720,6 +1720,8 @@ public enum ServerPacketIds : short
     GroupMembersMap,
     SendMemberLocation,
     GuildTerritoryPage,
+    // [hack] 添加昵称
+    Nickname,
     // [hack] 更新宠物和符毒数量信息
     UpdateAmuletCount,
     UpdatePetsCount,
@@ -1884,6 +1886,8 @@ public enum ClientPacketIds : short
     GuildTerritoryPage,
     PurchaseGuildTerritory,
     DeleteItem,
+    // [hack] 添加昵称
+    Nickname,
     // [hack] 更新宠物和符毒数量信息
     UpdateAmuletCount,
     UpdatePetsCount,

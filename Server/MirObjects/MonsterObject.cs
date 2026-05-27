@@ -3038,8 +3038,6 @@ namespace Server.MirObjects
             {
                 ObjectID = ObjectID,
                 Name = Name,
-                // [hack] 添加昵称
-                //Nickname = Nickname,
                 NameColour = NameColour,
                 Location = CurrentLocation,
                 Image = Info.Image,
@@ -3056,6 +3054,15 @@ namespace Server.MirObjects
                 Buffs = Buffs.Where(d => d.Info.Visible).Select(e => e.Type).ToList(),
                 MasterObjectId = Master?.ObjectID ?? 0,
                 Rarity = MonsterType
+            };
+        }
+        // [hack] 添加昵称
+        public Packet GetNickname()
+        {
+            return new S.Nickname
+            {
+                Id = ObjectID,
+                Name = Master == null ? string.Empty : Nickname
             };
         }
 

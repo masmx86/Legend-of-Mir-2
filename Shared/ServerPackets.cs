@@ -529,8 +529,6 @@ namespace ServerPackets
         public uint ObjectID;
         public uint RealId;
         public string Name = string.Empty;
-        // [hack] 添加昵称
-        public string Nickname = string.Empty;
         public string GuildName = string.Empty;
         public string GuildRank = string.Empty;
         public Color NameColour;
@@ -568,9 +566,6 @@ namespace ServerPackets
             ObjectID = reader.ReadUInt32();
             RealId = reader.ReadUInt32();
             Name = reader.ReadString();
-            // [hack] 读取昵称
-            //Nickname = reader.ReadString();
-
             GuildName = reader.ReadString();
             GuildRank = reader.ReadString();
             NameColour = Color.FromArgb(reader.ReadInt32());
@@ -649,8 +644,6 @@ namespace ServerPackets
             writer.Write(ObjectID);
             writer.Write(RealId);
             writer.Write(Name);
-            // [hack] 保存昵称
-            //writer.Write(Nickname);
             writer.Write(GuildName);
             writer.Write(GuildRank);
             writer.Write(NameColour.ToArgb());
@@ -838,10 +831,6 @@ namespace ServerPackets
 
         public uint ObjectID;
         public string Name = string.Empty;
-
-        // [hack] 添加昵称
-        public string Nickname = string.Empty;
-
         public string GuildName = string.Empty;
         public string GuildRankName = string.Empty;
         public Color NameColour;
@@ -2230,10 +2219,6 @@ namespace ServerPackets
 
         public uint ObjectID;
         public string Name = string.Empty;
-
-        // [hack] 添加昵称
-        public string Nickname = string.Empty;
-
         public Color NameColour;
         public Point Location;
         public Monster Image;
@@ -4722,8 +4707,6 @@ namespace ServerPackets
         {
             ObjectID = reader.ReadUInt32();
             Name = reader.ReadString();
-            // [hack] 读取昵称
-            //Nickname = reader.ReadString();
             Class = (MirClass)reader.ReadByte();
             Gender = (MirGender)reader.ReadByte();
             Level = reader.ReadUInt16();
@@ -4773,8 +4756,6 @@ namespace ServerPackets
         {
             writer.Write(ObjectID);
             writer.Write(Name);
-            // [hack] 保存昵称
-            //writer.Write(Nickname);
             writer.Write((byte)Class);
             writer.Write((byte)Gender);
             writer.Write(Level);
@@ -6771,6 +6752,23 @@ namespace ServerPackets
         protected override void WritePacket(BinaryWriter writer)
         {
             Info.Save(writer);
+        }
+    }
+    // [hack] 添加昵称
+    public sealed class Nickname : Packet
+    {
+        public override short Index { get { return (short)ServerPacketIds.Nickname; } }
+        public uint Id;
+        public string Name;
+        protected override void ReadPacket(BinaryReader reader)
+        {
+            Id = reader.ReadUInt32();
+            Name = reader.ReadString();
+        }
+        protected override void WritePacket(BinaryWriter writer)
+        {
+            writer.Write(Id);
+            writer.Write(Name);
         }
     }
     // [hack] 更新符毒数量信息
