@@ -10,7 +10,7 @@
         MinPasswordLength = 5,
         MaxPasswordLength = 15,
 
-        MinCharacterNameLength = 3,
+        MinCharacterNameLength = 2, // [hack] 人物名字字符长度右 3 改成 2
         MaxCharacterNameLength = 15,
         MaxCharacterCount = 4,
 
