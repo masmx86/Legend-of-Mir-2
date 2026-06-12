@@ -597,6 +597,7 @@ public enum ClientTextKeys
     WizardSummonSkeletonSkillDescription,
     WizardSummonShinsuSkillDescription,
     TaoistMirroringSkillDescription,
+    MercenarySkillDescription,
 
     FlameFieldSkillDescription,
     VampirismSkillDescription,
@@ -3358,6 +3359,9 @@ public static class GameLanguage
             },
             { nameof(ClientTextKeys.TaoistMirroringSkillDescription),
                 "TaoistMirroring\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
+            },
+            { nameof(ClientTextKeys.MercenarySkillDescription),
+                "Mercenary\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself or summon a skeleton or shinsu\nor recall a clone or skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}"
             },
 
             { nameof(ClientTextKeys.FlameFieldSkillDescription),

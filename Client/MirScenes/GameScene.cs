@@ -3969,7 +3969,7 @@ namespace Client.MirScenes
         private void MapChanged(S.MapChanged p)
         {
             // [debug] 显示地图信息
-            Scene.ChatDialog.ReceiveChat(string.Format("{0}: {1}", p.MapIndex, p.Title), ChatType.System);
+            Scene.ChatDialog.ReceiveChat(string.Format("{0}: {1} [{2}, {3}]", p.MapIndex, p.Title, p.Location.X, p.Location.Y), ChatType.System);
 
             var isCurrentMap = (MapControl.Index == p.MapIndex);
 

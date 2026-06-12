@@ -571,6 +571,7 @@
     "WizardSummonSkeletonSkillDescription": "WizardSummonSkeleton\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}",
     "WizardSummonShinsuSkillDescription": "WizardSummonShinsu\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}",
     "TaoistMirroringSkillDescription": "TaoistMirroring\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}",
+    "MercenarySkillDescription": "Mercenary\n\nInstant Casting\nMana Cost {2}\n\nRandomly create a mirror image of yourself\nor recall a skeleton or shinsu to help you to attack\nthe monsters together\n\nCurrent Skill Level {0}\nNext Level {1}",
 
     "FlameFieldSkillDescription": "Flame Field\n\nInstant Casting\nMana Cost {2}\n\nA powerful spell of fire is used to \ndamage surrounding enemies.\n\nCurrent Skill Level {0}\nNext Level {1}",
     "VampirismSkillDescription": "Vampirism\n\nInstant Casting\nMana Cost {2}\n\nUsing Mp take away monsters Hp to\nincrease your Hp.\n\nCurrent Skill Level {0}\nNext Level {1}",

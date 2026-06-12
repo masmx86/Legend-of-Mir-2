@@ -3977,6 +3977,9 @@ namespace Client.MirScenes.Dialogs
                 case Spell.TaoistMirroring:
                     SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.TaoistMirroringSkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
                     break;
+                case Spell.Mercenary:
+                    SkillButton.Hint = GameLanguage.ClientTextMap.GetLocalization((ClientTextKeys.MercenarySkillDescription), Magic.Level, Magic.Level == 0 ? Magic.Level1 : Magic.Level == 1 ? Magic.Level2 : Magic.Level == 2 ? Magic.Level3 : 0, Magic.BaseCost);
+                    break;
 
                 default:
 

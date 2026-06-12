@@ -3897,6 +3897,9 @@ namespace Server.MirObjects
                 case Spell.TaoistMirroring:
                     TaoistMirroring(magic);
                     break;
+                case Spell.Mercenary:
+                    Mercenary(magic);
+                    break;
                 default:
                     cast = false;
                     break;
@@ -4749,6 +4752,24 @@ namespace Server.MirObjects
                 case Spell.WizardSummonShinsu:
                     user_magic = new UserMagic(Spell.SummonShinsu);
                     info = Envir.GetMonsterInfo(Settings.ShinsuName);
+                    break;
+                case Spell.Mercenary:
+                    int random_skill = Envir.Random.Next(3);
+                    switch(random_skill)
+                    {
+                        case 0:
+                            user_magic = new UserMagic(Spell.Mirroring);
+                            info = Envir.GetMonsterInfo(Settings.CloneName);
+                            break;
+                        case 1:
+                            user_magic = new UserMagic(Spell.SummonSkeleton);
+                            info = Envir.GetMonsterInfo(Settings.SkeletonName);
+                            break;
+                        case 2:
+                            user_magic = new UserMagic(Spell.SummonShinsu);
+                            info = Envir.GetMonsterInfo(Settings.ShinsuName);
+                            break;
+                    }
                     break;
             }
 

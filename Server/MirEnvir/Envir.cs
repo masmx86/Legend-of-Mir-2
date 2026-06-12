@@ -288,6 +288,22 @@ namespace Server.MirEnvir
         private void FillMagicInfoList()
         {
             // [hack] 添加三职业通用魔法技能
+            if (!MagicExists(Spell.Mercenary))
+                MagicInfoList.Add(new MagicInfo
+                {
+                    Name = "Mercenary",
+                    Spell = Spell.Mercenary,
+                    Icon = 41,
+                    Level1 = 7,
+                    Level2 = 11,
+                    Level3 = 15,
+                    Need1 = 400,
+                    Need2 = 800,
+                    Need3 = 1200,
+                    BaseCost = 3,
+                    LevelCost = 4,
+                    Range = 0
+                });
             if (!MagicExists(Spell.WarriorMirroring))
                 MagicInfoList.Add(new MagicInfo
                 {
