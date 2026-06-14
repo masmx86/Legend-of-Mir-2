@@ -2258,7 +2258,7 @@ namespace Server.MirObjects
 
             int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
 
-            // [hack] 根据职业调整宝宝攻击力
+            // [hack] 根据职业和血量调整宝宝攻击力
             if (Master != null)
             {
                 PlayerObject ob_master = Master as PlayerObject;
@@ -2276,7 +2276,7 @@ namespace Server.MirObjects
                     default:
                         break;
                 }
-                int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
+                int percent = PercentHealth >= 75 ? 125 : (PercentHealth >= 50 ? 100 : PercentHealth >= 25 ? 85 : 75);
                 damage = (int) (damage * percent / 100);
             }
 

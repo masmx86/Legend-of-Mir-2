@@ -242,7 +242,6 @@ namespace Server.MirObjects
 
         public int GetAttackPower(int min, int max)
         {
-            // [hack] 根据血量调整攻击值
             if (min < 0) min = 0;
             if (min > max) max = min;
 
@@ -257,8 +256,7 @@ namespace Server.MirObjects
                     return min;
             }
 
-            //int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
-            return Envir.Random.Next(min, max + 1); //* percent / 100;
+            return Envir.Random.Next(min, max + 1);
         }
 
         public int GetRangeAttackPower(int min, int max, int range)
@@ -275,12 +273,10 @@ namespace Server.MirObjects
 
         public int GetDefencePower(int min, int max)
         {
-            // [hack] 根据血量调整防御值
             if (min < 0) min = 0;
             if (min > max) max = min;
 
-            //int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
-            return Envir.Random.Next(min, max + 1); // * percent / 100;
+            return Envir.Random.Next(min, max + 1);
         }
 
         public virtual void Remove(HumanObject player)
