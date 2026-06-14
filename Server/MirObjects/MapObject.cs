@@ -505,8 +505,8 @@ namespace Server.MirObjects
                     break;
             }
 
-            //int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
-            return armour; // * percent / 100;
+            int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
+            return armour * percent / 100;
         }
 
         public virtual void ApplyNegativeEffects(HumanObject attacker, DefenceType type, ushort levelOffset)

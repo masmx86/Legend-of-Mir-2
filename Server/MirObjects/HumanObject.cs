@@ -234,11 +234,11 @@ namespace Server.MirObjects
         public float HpDrain = 0;
 
         // [hack] 记录最后一次用毒的种类以实现红绿毒交替使用
-        protected PoisonType lastUsedPoison;
+        protected PoisonType _lastUsedPoison;
         public PoisonType LastUsedPoison
         {
-            get { return lastUsedPoison; }
-            set { lastUsedPoison = value; }
+            get { return _lastUsedPoison; }
+            set { _lastUsedPoison = value; }
         }
 
         public bool UnlockCurse = false;
