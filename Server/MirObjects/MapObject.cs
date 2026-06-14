@@ -506,7 +506,9 @@ namespace Server.MirObjects
             }
 
             int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
-            return armour * percent / 100;
+            if (Race == ObjectType.Monster)
+                return armour * percent / 100;
+            else return armour;
         }
 
         public virtual void ApplyNegativeEffects(HumanObject attacker, DefenceType type, ushort levelOffset)
