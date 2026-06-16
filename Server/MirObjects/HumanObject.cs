@@ -4731,7 +4731,11 @@ namespace Server.MirObjects
                 return;
             }
 
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
+            if (Pets.Count(x => x.Race == ObjectType.Monster) >= Globals.MaxPets) // (int)(magic.Level * 3 + 1))
+            {
+                //ReceiveChat(string.Format("Pets.Count = {0}", Pets.Count(x => x.Race == ObjectType.Monster)), ChatType.Hint);
+                return;
+            }
 
             UserMagic user_magic = null;
             MonsterInfo info = null;
@@ -4742,16 +4746,19 @@ namespace Server.MirObjects
                 case Spell.TaoistMirroring:
                     user_magic = new UserMagic(Spell.Mirroring);
                     info = Envir.GetMonsterInfo(Settings.CloneName);
+                    //ReceiveChat(string.Format("magic = mirroring, class = {0}", Class == MirClass.Warrior ? "warrior" : "taoist"), ChatType.Hint);
                     break;
                 case Spell.WarriorSummonSkeleton:
                 case Spell.WizardSummonSkeleton:
                     user_magic = new UserMagic(Spell.SummonSkeleton);
                     info = Envir.GetMonsterInfo(Settings.SkeletonName);
+                    //ReceiveChat(string.Format("magic = summon skeleton, class = {0}", Class == MirClass.Warrior ? "warrior" : "wizard"), ChatType.Hint);
                     break;
                 case Spell.WarriorSummonShinsu:
                 case Spell.WizardSummonShinsu:
                     user_magic = new UserMagic(Spell.SummonShinsu);
                     info = Envir.GetMonsterInfo(Settings.ShinsuName);
+                    //ReceiveChat(string.Format("magic = summon shinsu, class = {0}", Class == MirClass.Warrior ? "warrior" : "wizard"), ChatType.Hint);
                     break;
                 case Spell.Mercenary:
                     int random_skill = Envir.Random.Next(3);
@@ -4760,20 +4767,27 @@ namespace Server.MirObjects
                         case 0:
                             user_magic = new UserMagic(Spell.Mirroring);
                             info = Envir.GetMonsterInfo(Settings.CloneName);
+                            //ReceiveChat(string.Format("magic = mercenary mirroring, class = {0}", Class == MirClass.Warrior ? "warrior" : "unknown"), ChatType.Hint);
                             break;
                         case 1:
                             user_magic = new UserMagic(Spell.SummonSkeleton);
                             info = Envir.GetMonsterInfo(Settings.SkeletonName);
+                            //ReceiveChat(string.Format("magic = mercenary skeleton, class = {0}", Class == MirClass.Warrior ? "warrior" : "unknown"), ChatType.Hint);
                             break;
                         case 2:
                             user_magic = new UserMagic(Spell.SummonShinsu);
                             info = Envir.GetMonsterInfo(Settings.ShinsuName);
+                            //ReceiveChat(string.Format("magic = mercenary shinsu, class = {0}", Class == MirClass.Warrior ? "warrior" : "unknown"), ChatType.Hint);
                             break;
                     }
                     break;
             }
 
-            if (info == null) return;
+            if (info == null)
+            {
+                //ReceiveChat("failed to get monster info", ChatType.Hint);
+                return;
+            }
 
             UserItem item = null;
             if (info.Name == Settings.ShinsuName)
@@ -4809,18 +4823,18 @@ namespace Server.MirObjects
 
             monster.Nickname = GivePetNickname(monster);
 
-            // 战士分身功能，不加这一句的话没办法用 PlayerPbject->HealPetHero() 给宝宝加血
-            if (Class == MirClass.Warrior) Pets.Add(monster);
             // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
             // Shinsu 和 Skeleton 会在 CompleteMagic() 中调用 monster.Master.Pets.Add()
-            else if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
+            if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
+            // 战士分身功能，不加这一句的话没办法用 PlayerPbject->HealPetHero() 给宝宝加血
+            //else if (Class == MirClass.Warrior) Pets.Add(monster);
 
             // [debug] debug output monster info
-            Settings.debugSpawn(string.Format("\nsummon {0}:{1}[{2}] Level={3}", monster.Info.Name, monster.Nickname, monster.ObjectID, monster.PetLevel), "Server.HumanObject.ShoulderDashMirroring");
+            Settings.debugSpawn(string.Format("summon {0}:{1}[{2}] Level={3}", monster.Info.Name, monster.Nickname, monster.ObjectID, monster.PetLevel), "Server.HumanObject.Mercenary");
             for (int i = 0; i < Pets.Count; i++)
             {
                 MonsterObject pet = Pets[i];
-                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}:{3}[{4}] level={5} hp={6} [{7},{8}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Level, pet.Dead ? 0 : pet.HP, pet.CurrentLocation.X, pet.CurrentLocation.Y), "Server.HumanObject.ShoulderDashMirroring");
+                Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}:{3}[{4}] level={5} hp={6} [{7},{8}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.ObjectID, pet.Level, pet.Dead ? 0 : pet.HP, pet.CurrentLocation.X, pet.CurrentLocation.Y), "Server.HumanObject.Mercenary");
             }
 
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, user_magic, monster, Back, false));
