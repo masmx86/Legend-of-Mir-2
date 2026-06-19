@@ -2,6 +2,7 @@ using Server.MirDatabase;
 using Server.MirEnvir;
 using Server.MirNetwork;
 using Server.MirObjects.Monsters;
+using ServerPackets;
 using System.Drawing;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
@@ -1090,14 +1091,16 @@ namespace Server.MirObjects
                     if (!item.Info.RequiredGender.HasFlag(RequiredGender.Male))
                     {
                         ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NotFemale), ChatType.System);
-                        return false;
+                        // [hack] 去除装备性别限制
+                        //return false;
                     }
                     break;
                 case MirGender.Female:
                     if (!item.Info.RequiredGender.HasFlag(RequiredGender.Female))
                     {
                         ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.NotMale), ChatType.System);
-                        return false;
+                        // [hack] 去除装备性别限制
+                        //return false;
                     }
                     break;
             }
@@ -1804,7 +1807,8 @@ namespace Server.MirObjects
             RefreshBagWeight();         
             RefreshEquipmentStats();
 
-            // [hack] 更新符毒数量信息
+            // [hack] 更新宝宝和符毒数量信息
+            UpdatePetsCount();
             RefreshAmuletCount();
 
             RefreshItemSetStats();
@@ -4241,7 +4245,7 @@ namespace Server.MirObjects
             target.Broadcast(new S.ObjectName { ObjectID = target.ObjectID, Name = target.Name });
 
             // [hack] 更新宠物计数
-            UpdatePetsCount();
+            //UpdatePetsCount();
         }
         private void HellFire(UserMagic magic)
         {
@@ -4507,7 +4511,7 @@ namespace Server.MirObjects
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false));
 
             // [hack] 更新宠物计数
-            UpdatePetsCount();
+            //UpdatePetsCount();
         }
         // [hack] 更新宠物计数
         public void UpdatePetsCount()
@@ -4525,100 +4529,100 @@ namespace Server.MirObjects
             Mercenary(magic);
             return;
 
-            if (magic == null) return;
-            if (CurrentMap.Info.NoPets)
-            {
-                ReceiveChat("You cannot summon pets on this map.", ChatType.System);
-                return;
-            }
-            if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
+            //if (magic == null) return;
+            //if (CurrentMap.Info.NoPets)
+            //{
+            //    ReceiveChat("You cannot summon pets on this map.", ChatType.System);
+            //    return;
+            //}
+            //if (Pets.Count(x => x.Race == ObjectType.Monster) >= (int)(magic.Level * 3 + 1)) return;
 
-            MonsterObject monster = null;
-            MonsterInfo info = null;
-            switch(magic.Spell)
-            {
-                case Spell.WarriorMirroring:
-                case Spell.TaoistMirroring:
+            //MonsterObject monster = null;
+            //MonsterInfo info = null;
+            //switch(magic.Spell)
+            //{
+            //    case Spell.WarriorMirroring:
+            //    case Spell.TaoistMirroring:
 
-                    info = Envir.GetMonsterInfo(Settings.CloneName);
-                    if (info == null) return;
+            //        info = Envir.GetMonsterInfo(Settings.CloneName);
+            //        if (info == null) return;
 
-                    LevelMagic(magic);
+            //        LevelMagic(magic);
 
-                    monster = MonsterObject.GetMonster(info);
-                    monster.Master = this;
-                    monster.PetLevel = magic.Level;
-                    monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
-                    monster.ActionTime = Envir.Time + 1000;
-                    monster.RefreshNameColour(false);
-                    monster.Nickname = GivePetNickname(monster);
+            //        monster = MonsterObject.GetMonster(info);
+            //        monster.Master = this;
+            //        monster.PetLevel = magic.Level;
+            //        monster.MaxPetLevel = (byte)(1 + magic.Level * 2);
+            //        monster.ActionTime = Envir.Time + 1000;
+            //        monster.RefreshNameColour(false);
+            //        monster.Nickname = GivePetNickname(monster);
 
-                    if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
-                    // 战士分身功能，不加这一句的话没办法用 PlayerPbject->HealPetHero() 给宝宝加血
-                    if (Class == MirClass.Warrior) Pets.Add(monster);
-                    // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
-                    // Shinsu 和 Skeleton 会在 CompleteMagic() 中调用 monster.Master.Pets.Add()
-                    else if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
+            //        if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
+            //        // 战士分身功能，不加这一句的话没办法用 PlayerPbject->HealPetHero() 给宝宝加血
+            //        if (Class == MirClass.Warrior) Pets.Add(monster);
+            //        // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton不会，否则会导致宠物列表里添加重复的影子宝宝，导致服务器崩溃
+            //        // Shinsu 和 Skeleton 会在 CompleteMagic() 中调用 monster.Master.Pets.Add()
+            //        else if (monster.Info.Name == Settings.CloneName) Pets.Add(monster);
 
-                    // [debug] debug output monster info
-                    Settings.debugSpawn(string.Format("{0}/{1} - Level: {2}", monster.Info.Name, monster.Nickname, monster.PetLevel), "Server.HumanObject.Mirroring");
-                    for (int i = 0; i < Pets.Count; i++)
-                    {
-                        MonsterObject pet = Pets[i];
-                        Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}/{3} [{4}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.Dead ? 0 : pet.HP), "Server.HumanObject.Mirroring");
-                    }
+            //        // [debug] debug output monster info
+            //        Settings.debugSpawn(string.Format("{0}/{1} - Level: {2}", monster.Info.Name, monster.Nickname, monster.PetLevel), "Server.HumanObject.Mirroring");
+            //        for (int i = 0; i < Pets.Count; i++)
+            //        {
+            //            MonsterObject pet = Pets[i];
+            //            Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}/{3} [{4}]", i, Pets.Count, pet.Info.Name, pet.Nickname, pet.Dead ? 0 : pet.HP), "Server.HumanObject.Mirroring");
+            //        }
 
-                    CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false));
+            //        CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front, false));
 
-                    // [hack] 更新宠物计数
-                    UpdatePetsCount();
-                    break;
-                case Spell.WarriorSummonSkeleton:
-                case Spell.WizardSummonSkeleton:
-                case Spell.WarriorSummonShinsu:
-                case Spell.WizardSummonShinsu:
-                    info = Envir.GetMonsterInfo((Envir.Random.Next(Level) % 2 == 1) ? Settings.ShinsuName : Settings.SkeletonName);
-                    if (info == null) return;
+            //        // [hack] 更新宠物计数
+            //        UpdatePetsCount();
+            //        break;
+            //    case Spell.WarriorSummonSkeleton:
+            //    case Spell.WizardSummonSkeleton:
+            //    case Spell.WarriorSummonShinsu:
+            //    case Spell.WizardSummonShinsu:
+            //        info = Envir.GetMonsterInfo((Envir.Random.Next(Level) % 2 == 1) ? Settings.ShinsuName : Settings.SkeletonName);
+            //        if (info == null) return;
 
-                    UserItem item = (info.Name == Settings.ShinsuName) ? GetAmulet(5) : GetAmulet(1);
-                    if (item == null) return;
+            //        UserItem item = (info.Name == Settings.ShinsuName) ? GetAmulet(5) : GetAmulet(1);
+            //        if (item == null) return;
 
-                    LevelMagic(magic);
+            //        LevelMagic(magic);
 
-                    if (info.Name == Settings.ShinsuName)
-                        ConsumeItem(item, 5);
-                    else
-                        ConsumeItem(item, 1);
+            //        if (info.Name == Settings.ShinsuName)
+            //            ConsumeItem(item, 5);
+            //        else
+            //            ConsumeItem(item, 1);
 
-                    monster = MonsterObject.GetMonster(info);
-                    monster.Master = this;
-                    monster.PetLevel = magic.Level;
-                    monster.MaxPetLevel = info.Name == Settings.ShinsuName ? (byte)(1 + magic.Level * 2) : (byte)(4 + magic.Level);
+            //        monster = MonsterObject.GetMonster(info);
+            //        monster.Master = this;
+            //        monster.PetLevel = magic.Level;
+            //        monster.MaxPetLevel = info.Name == Settings.ShinsuName ? (byte)(1 + magic.Level * 2) : (byte)(4 + magic.Level);
 
-                    if (monster.Info.Name == Settings.ShinsuName) monster.Direction = Direction; // 原文件中只有Shinsu会面向玩家方向，Clone和Skeleton默认朝向
-                    monster.ActionTime = Envir.Time + 1000;
-                    monster.RefreshNameColour(false);
+            //        if (monster.Info.Name == Settings.ShinsuName) monster.Direction = Direction; // 原文件中只有Shinsu会面向玩家方向，Clone和Skeleton默认朝向
+            //        monster.ActionTime = Envir.Time + 1000;
+            //        monster.RefreshNameColour(false);
 
-                    monster.Nickname = GivePetNickname(monster);
+            //        monster.Nickname = GivePetNickname(monster);
                     
-                    // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton会在 CompleteMagic() 里调用 Pets.Add()，否则会导致影子宠物从而无法被召回
-                    //Pets.Add(monster); 
+            //        // 原文件中只有Clone会加入Pets列表，Shinsu和Skeleton会在 CompleteMagic() 里调用 Pets.Add()，否则会导致影子宠物从而无法被召回
+            //        //Pets.Add(monster); 
 
-                    // [debug] debug output monster info
-                    Settings.debugSpawn(string.Format("{0}[{1}] ({2}) - Level: {3}", monster.Info.Name, monster.ObjectID, monster.Nickname, monster.PetLevel), "Server.HumanObject." + (monster.Info.Name == Settings.ShinsuName ? "SummonShinsu" : "SummonSkeleton"));
-                    for (int i = 0; i < Pets.Count; i++)
-                    {
-                        MonsterObject pet = Pets[i];
-                        Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}[{3}] ({4}) hp=[{5}]", i, Pets.Count, pet.Info.Name, pet.ObjectID, pet.Nickname, pet.Dead ? 0 : pet.HP), "Server.HumanObject." + (monster.Info.Name == Settings.ShinsuName ? "SummonShinsu" : "SummonSkeleton"));
-                    }
+            //        // [debug] debug output monster info
+            //        Settings.debugSpawn(string.Format("{0}[{1}] ({2}) - Level: {3}", monster.Info.Name, monster.ObjectID, monster.Nickname, monster.PetLevel), "Server.HumanObject." + (monster.Info.Name == Settings.ShinsuName ? "SummonShinsu" : "SummonSkeleton"));
+            //        for (int i = 0; i < Pets.Count; i++)
+            //        {
+            //            MonsterObject pet = Pets[i];
+            //            Settings.debugSpawn(string.Format("Pet[{0}/{1}]: {2}[{3}] ({4}) hp=[{5}]", i, Pets.Count, pet.Info.Name, pet.ObjectID, pet.Nickname, pet.Dead ? 0 : pet.HP), "Server.HumanObject." + (monster.Info.Name == Settings.ShinsuName ? "SummonShinsu" : "SummonSkeleton"));
+            //        }
 
-                    //action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
-                    CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front));
+            //        //action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front);
+            //        CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front));
 
-                    // [hack] 更新宠物计数
-                    UpdatePetsCount();
-                    break;
-            }
+            //        // [hack] 更新宠物计数
+            //        UpdatePetsCount();
+            //        break;
+            //}
         }
         // [hack] 战士召唤骷髅
         private void WarriorSummonSkeleton(UserMagic magic)
@@ -4720,7 +4724,7 @@ namespace Server.MirObjects
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, magic, monster, Front));
 
             // [hack] 更新宠物计数
-            UpdatePetsCount();
+            //UpdatePetsCount();
         }
         // [hack] 三职业通用分身召唤技能
         private void Mercenary(UserMagic magic)
@@ -4840,7 +4844,7 @@ namespace Server.MirObjects
             CurrentMap.ActionList.Add(new DelayedAction(DelayedType.Magic, Envir.Time + 500, this, user_magic, monster, Back, false));
 
             // [hack] 更新宠物计数
-            UpdatePetsCount();
+            //UpdatePetsCount();
         }
         private void Blizzard(UserMagic magic, Point location, out bool cast)
         {
