@@ -281,24 +281,24 @@ namespace Server.MirObjects
                 MonsterObject pet = Pets[i];
 
                 // [debug]
-                if (pet == null || pet.Node == null)
-                {
-                    Logger.GetLogger(LogType.Spawn).Debug(string.Format("skip null pet: " +
-                        "\n\t\t\t\t[{0}/{1}] type [{13}, {14}, {15}, {16}]",
-                        i + 1, Pets.Count, CloneCount, ShinsuCount, SkeletonCount, TamedCount));
-                    continue;
-                }
+                //if (pet == null || pet.Node == null)
+                //{
+                //    Logger.GetLogger(LogType.Spawn).Debug(string.Format("skip null pet: " +
+                //        "\n\t\t\t\t[{0}/{1}] type [{13}, {14}, {15}, {16}]",
+                //        i + 1, Pets.Count, CloneCount, ShinsuCount, SkeletonCount, TamedCount));
+                //    continue;
+                //}
                 
-                Logger.GetLogger(LogType.Spawn).Debug(string.Format("保存宝宝信息: " +
-                    "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8} " +
-                    "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}], master {17}\n",
-                    i + 1, Pets.Count, 
-                    pet.Name, pet.Info.Name, string.IsNullOrEmpty(pet.Nickname) ? "-" : pet.Nickname,
-                    pet.ObjectID, pet.Race, pet.PetLevel, pet.HP,
-                    pet.CurrentLocation.X, pet.CurrentLocation.Y,
-                    CurrentLocation.X, CurrentLocation.Y,
-                    CloneCount, ShinsuCount, SkeletonCount, TamedCount,
-                    pet.Master == null ? "-" : pet.Master.Name));
+                //Logger.GetLogger(LogType.Spawn).Debug(string.Format("保存宝宝信息: " +
+                //    "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8} " +
+                //    "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}], master {17}\n",
+                //    i + 1, Pets.Count, 
+                //    pet.Name, pet.Info.Name, string.IsNullOrEmpty(pet.Nickname) ? "-" : pet.Nickname,
+                //    pet.ObjectID, pet.Race, pet.PetLevel, pet.HP,
+                //    pet.CurrentLocation.X, pet.CurrentLocation.Y,
+                //    CurrentLocation.X, CurrentLocation.Y,
+                //    CloneCount, ShinsuCount, SkeletonCount, TamedCount,
+                //    pet.Master == null ? "-" : pet.Master.Name));
 
                 if (pet.Race == ObjectType.Creature)
                 {
@@ -306,14 +306,14 @@ namespace Server.MirObjects
                     UnSummonIntelligentCreature(((IntelligentCreatureObject)pet).PetType, false);
                     
                     // [debug]
-                    Logger.GetLogger(LogType.Spawn).Debug(string.Format("skip saving creatures: " +
-                        "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8} " +
-                        "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}]\n",
-                        i + 1, Pets.Count, pet.Name, pet.Info.Name, string.IsNullOrEmpty(pet.Nickname) ? "-" : pet.Nickname,
-                        pet.ObjectID, pet.Race, pet.PetLevel, pet.HP,
-                        pet.CurrentLocation.X, pet.CurrentLocation.Y,
-                        CurrentLocation.X, CurrentLocation.Y,
-                        CloneCount, ShinsuCount, SkeletonCount, TamedCount));
+                    //Logger.GetLogger(LogType.Spawn).Debug(string.Format("skip saving creatures: " +
+                    //    "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}> level={7} hp={8} " +
+                    //    "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}]\n",
+                    //    i + 1, Pets.Count, pet.Name, pet.Info.Name, string.IsNullOrEmpty(pet.Nickname) ? "-" : pet.Nickname,
+                    //    pet.ObjectID, pet.Race, pet.PetLevel, pet.HP,
+                    //    pet.CurrentLocation.X, pet.CurrentLocation.Y,
+                    //    CurrentLocation.X, CurrentLocation.Y,
+                    //    CloneCount, ShinsuCount, SkeletonCount, TamedCount));
 
                     Pets.RemoveAt(i);
                     continue;
@@ -372,7 +372,7 @@ namespace Server.MirObjects
                     }
                     // [debug]
                     //pet.Master = this;
-                    DumpMonsterObject(pet);
+                    //DumpMonsterObject(pet);
 
                     Envir.MonsterCount--;
                     pet.CurrentMap.MonsterCount--;
@@ -555,6 +555,10 @@ namespace Server.MirObjects
                 }
             }
             RefreshCreaturesTimeLeft();
+
+            // [hack] 更新宠物计数
+            UpdatePetsCount();
+            RefreshAmuletCount();
         }
         public override void Process(DelayedAction action)
         {
@@ -1326,20 +1330,21 @@ namespace Server.MirObjects
                 monster.SetHP(info.HP);
 
                 // [debug]
-                Logger.GetLogger(LogType.Spawn).Debug(string.Format("重新召回宝宝: " +
-                    "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}:{17}> level={7} hp={8} " +
-                    "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}]",
-                    i + 1, Pets.Count, monster.Name, monster.Info.Name, 
-                    string.IsNullOrEmpty(monster.Nickname) ? "-" : monster.Nickname, 
-                    monster.ObjectID, monster.Race, monster.PetLevel, monster.HP,
-                    monster.CurrentLocation.X, monster.CurrentLocation.Y,
-                    CurrentLocation.X, CurrentLocation.Y,
-                    CloneCount, ShinsuCount, SkeletonCount, TamedCount,
-                    info.MonsterIndex));
-                DumpMonsterObject(monster);
+                //Logger.GetLogger(LogType.Spawn).Debug(string.Format("重新召回宝宝: " +
+                //    "\n\t\t\t\t[{0}/{1}] {2}:{3}({4})[{5}] <{6}:{17}> level={7} hp={8} " +
+                //    "at [{9}, {10}] with Master [{11}, {12}] type [{13}, {14}, {15}, {16}]",
+                //    i + 1, Pets.Count, monster.Name, monster.Info.Name, 
+                //    string.IsNullOrEmpty(monster.Nickname) ? "-" : monster.Nickname, 
+                //    monster.ObjectID, monster.Race, monster.PetLevel, monster.HP,
+                //    monster.CurrentLocation.X, monster.CurrentLocation.Y,
+                //    CurrentLocation.X, CurrentLocation.Y,
+                //    CloneCount, ShinsuCount, SkeletonCount, TamedCount,
+                //    info.MonsterIndex));
+                //DumpMonsterObject(monster);
             }
             // [hack] 更新宠物计数
             UpdatePetsCount();
+            RefreshAmuletCount();
 
             Info.Pets.Clear();
 
@@ -1420,32 +1425,32 @@ namespace Server.MirObjects
         //        "\n\t\t\t\tindex {0}, name {1}, nickname {2}, AI {3}, level {4}, exp {5}, image {6}, viewrange {7}, spawn script {8}",
         //        info.Index, info.Name, info.Nickname, info.AI, info.Level, info.Experience, info.Image, info.ViewRange, info.HasSpawnScript ? "Yes" : "No"));
         //}
-        private void DumpMonsterObject(MonsterObject ob)
-        {
-            Logger.GetLogger(LogType.Spawn).Debug(string.Format("MonsterObject: " +
-            "\n\t\t\t\tid {0}, infoindex {1}, mapindex {2}, spawned {3}",
-            ob.ObjectID, ob.Info.Index, ob.CurrentMapIndex, ob.Node != null ? "Yes" : "No"));
+        //private void DumpMonsterObject(MonsterObject ob)
+        //{
+            //Logger.GetLogger(LogType.Spawn).Debug(string.Format("MonsterObject: " +
+            //"\n\t\t\t\tid {0}, infoindex {1}, mapindex {2}, spawned {3}",
+            //ob.ObjectID, ob.Info.Index, ob.CurrentMapIndex, ob.Node != null ? "Yes" : "No"));
 
-            Logger.GetLogger(LogType.Spawn).Debug(string.Format("name {0}/{1}, nickname {2}",
-            string.IsNullOrEmpty(ob.Name) ? "-" : ob.Name, ob.Info.Name, string.IsNullOrEmpty(ob.Nickname) ? "-" : ob.Nickname));
+            //Logger.GetLogger(LogType.Spawn).Debug(string.Format("name {0}/{1}, nickname {2}",
+            //string.IsNullOrEmpty(ob.Name) ? "-" : ob.Name, ob.Info.Name, string.IsNullOrEmpty(ob.Nickname) ? "-" : ob.Nickname));
 
-            Logger.GetLogger(LogType.Spawn).Debug(string.Format("race {0}, type {1}, AI {2}, level {3}, exp {4}, image {5}, viewrange {6}",
-            ob.Race.ToString(), ob.MonsterType.ToString(), ob.Info.AI, ob.Info.Level, ob.Info.Experience, ob.Info.Image.ToString(), ob.Info.ViewRange));
+            //Logger.GetLogger(LogType.Spawn).Debug(string.Format("race {0}, type {1}, AI {2}, level {3}, exp {4}, image {5}, viewrange {6}",
+            //ob.Race.ToString(), ob.MonsterType.ToString(), ob.Info.AI, ob.Info.Level, ob.Info.Experience, ob.Info.Image.ToString(), ob.Info.ViewRange));
 
-            Logger.GetLogger(LogType.Spawn).Debug(string.Format("master {0}, owner {1}, expowner {2}",
-            ob.Master == null ? "x" : (string.IsNullOrEmpty(ob.Master.Name) ? "-" : ob.Master.Name), 
-            ob.Owner == null ? "x" : (string.IsNullOrEmpty(ob.Owner.Name) ? "-" : ob.Owner.Name),
-            ob.EXPOwner == null ? "x" : (string.IsNullOrEmpty(ob.EXPOwner.Name) ? "-" : ob.EXPOwner.Name)));
+            //Logger.GetLogger(LogType.Spawn).Debug(string.Format("master {0}, owner {1}, expowner {2}",
+            //ob.Master == null ? "x" : (string.IsNullOrEmpty(ob.Master.Name) ? "-" : ob.Master.Name), 
+            //ob.Owner == null ? "x" : (string.IsNullOrEmpty(ob.Owner.Name) ? "-" : ob.Owner.Name),
+            //ob.EXPOwner == null ? "x" : (string.IsNullOrEmpty(ob.EXPOwner.Name) ? "-" : ob.EXPOwner.Name)));
 
-            Logger.GetLogger(LogType.Spawn).Debug(string.Format("level {0}, maxlevel {1}, exp {2}" +
-            "\n\t\t\t\t{3}, hp {4}, health {5}%, maxhealth {6}, location [{7}, {8}]",
-            ob.PetLevel, ob.MaxPetLevel, ob.PetExperience,
-            !ob.Dead ? "Alive" : "Dead", ob.HP, ob.PercentHealth, ob.MaxHealth,
-            ob.CurrentLocation.X, ob.CurrentLocation.Y));
+            //Logger.GetLogger(LogType.Spawn).Debug(string.Format("level {0}, maxlevel {1}, exp {2}" +
+            //"\n\t\t\t\t{3}, hp {4}, health {5}%, maxhealth {6}, location [{7}, {8}]",
+            //ob.PetLevel, ob.MaxPetLevel, ob.PetExperience,
+            //!ob.Dead ? "Alive" : "Dead", ob.HP, ob.PercentHealth, ob.MaxHealth,
+            //ob.CurrentLocation.X, ob.CurrentLocation.Y));
 
-            Logger.GetLogger(LogType.Spawn).Debug(string.Format("cell time {0}, expire time {1}, rage time {2}, regen time {3}, shock time {4}, tame time {5}\n",
-            ob.CellTime, ob.ExpireTime, ob.RageTime, ob.RegenTime, ob.ShockTime, ob.TameTime));
-        }
+            //Logger.GetLogger(LogType.Spawn).Debug(string.Format("cell time {0}, expire time {1}, rage time {2}, regen time {3}, shock time {4}, tame time {5}\n",
+            //ob.CellTime, ob.ExpireTime, ob.RageTime, ob.RegenTime, ob.ShockTime, ob.TameTime));
+        //}
         private void StartGameFailed()
         {
             Enqueue(new S.StartGame { Result = 3 });

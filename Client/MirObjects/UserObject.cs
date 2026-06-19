@@ -207,15 +207,15 @@ namespace Client.MirObjects
                     CurrentBagWeight += item.Weight;
 
                     // [hack] 刷新符毒计数
-                    if (item.Info.Type == ItemType.Amulet && item.Count > 0)
-                    {
-                        switch (item.Info.Shape)
-                        {
-                            case (short)PoisonType.None: AmuletCount += item.Count; continue;
-                            case (short)PoisonType.Green: GreenPoisonCount += item.Count; continue;
-                            case (short)PoisonType.Red: RedPoisonCount += item.Count; continue;
-                        }
-                    }
+                    //if (item.Info.Type == ItemType.Amulet && item.Count > 0)
+                    //{
+                    //    switch (item.Info.Shape)
+                    //    {
+                    //        case (short)PoisonType.None: AmuletCount += item.Count; continue;
+                    //        case (short)PoisonType.Green: GreenPoisonCount += item.Count; continue;
+                    //        case (short)PoisonType.Red: RedPoisonCount += item.Count; continue;
+                    //    }
+                    //}
                 }
             }
         }
@@ -322,15 +322,15 @@ namespace Client.MirObjects
                 }
 
                 // [hack] 刷新符毒计数
-                if (realItem.Type == ItemType.Amulet && temp.Count > 0)
-                {
-                    switch (realItem.Shape)
-                    {
-                        case (short)PoisonType.None: AmuletCount += temp.Count; continue;
-                        case (short)PoisonType.Green: GreenPoisonCount += temp.Count; continue;
-                        case (short)PoisonType.Red: RedPoisonCount += temp.Count; continue;
-                    }
-                }
+                //if (realItem.Type == ItemType.Amulet && temp.Count > 0)
+                //{
+                //    switch (realItem.Shape)
+                //    {
+                //        case (short)PoisonType.None: AmuletCount += temp.Count; continue;
+                //        case (short)PoisonType.Green: GreenPoisonCount += temp.Count; continue;
+                //        case (short)PoisonType.Red: RedPoisonCount += temp.Count; continue;
+                //    }
+                //}
             }
 
             if (ItemMode.HasFlag(SpecialItemMode.Muscle))

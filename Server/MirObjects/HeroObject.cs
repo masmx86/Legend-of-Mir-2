@@ -692,6 +692,10 @@ namespace Server.MirObjects
             base.LevelUp();
 
             Owner.Enqueue(new S.HeroLevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
+
+            // [hack] 增加英雄背包容量
+            if (Info.Level > 9 && Info.Level % 9 == 0)
+                Enqueue(new S.ResizeInventory { Size = Info.ResizeInventory() });
         }
         protected override void SendHealthChanged()
         {

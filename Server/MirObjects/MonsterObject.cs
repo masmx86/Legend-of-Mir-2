@@ -1417,10 +1417,10 @@ namespace Server.MirObjects
             PMode = PetMode.Both;
 
             // Only teleport if needed
-            // [hack] 添加召唤限制条件 hp < 10% max health
+            // [hack] 添加召唤限制条件 hp < 10% max health 并且增加了视距范围 +8
             if (CurrentMap != Master.CurrentMap ||
                (CurrentMap == Master.CurrentMap && 
-               ((!Functions.InRange(CurrentLocation, Master.CurrentLocation, Globals.DataRange))) && Target == null) ||
+               ((!Functions.InRange(CurrentLocation, Master.CurrentLocation, Globals.DataRange + 8))) && Target == null) ||
                (int)Info.Stats[Stat.HP] <= (int)(MaxHealth * Globals.PetRecallHPPercent / 100))
             {
                 if (!Teleport(Master.CurrentMap, Master.Back))

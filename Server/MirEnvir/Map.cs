@@ -872,31 +872,34 @@ namespace Server.MirEnvir
             switch (magic.Spell)
             {
                 // [hack] 三职业通用魔法
-                case Spell.WarriorMirroring:
-                case Spell.WarriorSummonSkeleton:
-                case Spell.WarriorSummonShinsu:
-                case Spell.WizardSummonSkeleton:
-                case Spell.WizardSummonShinsu:
-                case Spell.TaoistMirroring:
-                    monster = (MonsterObject)data[2];
-                    front = (Point)data[3];
-                    bool finish2 = (bool)data[4];
+                //case Spell.WarriorMirroring:
+                //case Spell.WarriorSummonSkeleton:
+                //case Spell.WarriorSummonShinsu:
+                //case Spell.WizardSummonSkeleton:
+                //case Spell.WizardSummonShinsu:
+                //case Spell.TaoistMirroring:
+                //case Spell.Mercenary:
+                    //monster = (MonsterObject)data[2];
+                    //front = (Point)data[3];
+                    //bool finish2 = (bool)data[4];
 
-                    if (finish2)
-                    {
-                        monster.Die();
-                        return;
-                    }
-                    if (monster.Master.Dead) return;
+                    //if (finish2)
+                    //{
+                    //    monster.Die();
+                    //    return;
+                    //}
+                    //if (monster.Master.Dead) return;
 
-                    if (ValidPoint(front))
-                        monster.Spawn(this, front);
-                    else
-                        monster.Spawn(player.CurrentMap, player.CurrentLocation);
+                    //if (ValidPoint(front))
+                    //    monster.Spawn(this, front);
+                    //else
+                    //    monster.Spawn(player.CurrentMap, player.CurrentLocation);
 
-                    if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
-                        monster.Master.Pets.Add(monster);
-                    break;
+                    //if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+                    //{ 
+                    //    monster.Master.Pets.Add(monster);                     
+                    //}
+                    //break;
 
                 #region HellFire
 
@@ -947,6 +950,11 @@ namespace Server.MirEnvir
                 case Spell.SummonVampire:
                 case Spell.SummonToad:
                 case Spell.SummonSnakes:
+                // [hack] 三职业通用魔法
+                case Spell.WarriorSummonSkeleton:
+                case Spell.WarriorSummonShinsu:
+                case Spell.WizardSummonSkeleton:
+                case Spell.WizardSummonShinsu:
                     monster = (MonsterObject)data[2];
                     front = (Point)data[3];
 
@@ -956,7 +964,8 @@ namespace Server.MirEnvir
                     else
                         monster.Spawn(player.CurrentMap, player.CurrentLocation);
 
-                    monster.Master.Pets.Add(monster);
+                    if (monster.Info.Name == Settings.ShinsuName || monster.Info.Name == Settings.SkeletonName)
+                        monster.Master.Pets.Add(monster);
                     break;
                 case Spell.Stonetrap:
                     monster = (MonsterObject)data[2];
@@ -1636,6 +1645,9 @@ namespace Server.MirEnvir
                 #region Mirroring
 
                 case Spell.Mirroring:
+                // [hack] 三职业通用魔法
+                case Spell.WarriorMirroring:
+                case Spell.TaoistMirroring:
                     monster = (MonsterObject)data[2];
                     front = (Point)data[3];
                     bool finish = (bool)data[4];
@@ -1650,6 +1662,9 @@ namespace Server.MirEnvir
                         monster.Spawn(this, front);
                     else
                         monster.Spawn(player.CurrentMap, player.CurrentLocation);
+                    // [hack] 把在 HumanObject.cs->Mercenary()/Mirroring() 中的操作移到这里,效果是一样的
+                    if (monster.Info.Name == Settings.CloneName)
+                        monster.Master.Pets.Add(monster);
                     break;
 
                 #endregion
@@ -2378,7 +2393,7 @@ namespace Server.MirEnvir
                     break;
 
                     #endregion
-        }
+            }
 
             if (train)
                 player.LevelMagic(magic);
