@@ -693,9 +693,12 @@ namespace Server.MirObjects
 
             Owner.Enqueue(new S.HeroLevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
 
-            // [hack] 增加英雄背包容量
+            // [hack] 英雄每升9级自动解锁 8 格背包容量
             if (Info.Level > 9 && Info.Level % 9 == 0)
+            {
                 Enqueue(new S.ResizeInventory { Size = Info.ResizeInventory() });
+                ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.HeroInventoryIncreased), ChatType.System);
+            }
         }
         protected override void SendHealthChanged()
         {

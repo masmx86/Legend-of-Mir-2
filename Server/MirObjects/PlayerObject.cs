@@ -968,6 +968,13 @@ namespace Server.MirObjects
 
             Enqueue(new S.LevelChanged { Level = Level, Experience = Experience, MaxExperience = MaxExperience });
 
+            // [hack] 玩家每升 3 级自动解锁 4 格背包容量
+            if (Level > 9 && Level %3 == 0)
+            {
+                Enqueue(new S.ResizeInventory { Size = Info.ResizeInventory() });
+                ReceiveChat(GameLanguage.ServerTextMap.GetLocalization(ServerTextKeys.InventoryIncreased), ChatType.System);
+            }
+
             if (Info.Mentor != 0 && !Info.IsMentor)
             {
                 CharacterInfo Mentor = Envir.GetCharacterInfo(Info.Mentor);

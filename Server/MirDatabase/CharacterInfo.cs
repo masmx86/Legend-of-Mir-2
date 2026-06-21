@@ -603,10 +603,12 @@ namespace Server.MirDatabase
 
             if (Inventory.Length == 46)
             {
+                // [comment] 英雄的背包每次增加 8 格
                 Array.Resize(ref Inventory, Inventory.Length + 8);
             }
             else
             {
+                // [comment] 玩家的背包每次增加 4 格
                 Array.Resize(ref Inventory, Inventory.Length + 4);
             }
 
