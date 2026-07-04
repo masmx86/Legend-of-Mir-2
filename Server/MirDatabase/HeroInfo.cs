@@ -149,7 +149,9 @@ namespace Server.MirDatabase
         public override int ResizeInventory()
         {
             if (Inventory.Length >= 42) return Inventory.Length;
-            Array.Resize(ref Inventory, Inventory.Length + 8);
+            // [hack] 英雄每升 9 级增加 8 格背包容量
+            //Array.Resize(ref Inventory, Inventory.Length + 8);
+            Array.Resize(ref Inventory, Math.Min(8 * (Level / 9), 42));
             return Inventory.Length;
         }
 
