@@ -2261,29 +2261,34 @@ namespace Server.MirObjects
             int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : (PercentHealth >= 25 ? 60 : 40));
             damage = (int)(damage * percent / 100);
 
-            // [hack] 根据主人职业调整宝宝攻击力
-            if (Race == ObjectType.Monster && Master != null)
-            {
-                int damage_value = damage;
+            //string msg = string.Format("{0}[{1}]: {2} / {3}% --> {4}%", Name, ObjectID, damage, PercentHealth, percent);
+            //Logger.GetLogger(LogType.Debug).Debug(msg);
 
-                PlayerObject ob_master = Master as PlayerObject;
-                switch (ob_master.Class)
-                {
-                    case MirClass.Wizard:
-                        damage = GetAttackPower(ob_master.Stats[Stat.MinMC], ob_master.Stats[Stat.MaxMC]);
-                        break;
-                    case MirClass.Taoist:
-                        damage = GetAttackPower(ob_master.Stats[Stat.MinSC], ob_master.Stats[Stat.MaxSC]);
-                        break;
-                    case MirClass.Warrior:
-                        damage = GetAttackPower(ob_master.Stats[Stat.MinDC], ob_master.Stats[Stat.MaxDC]);
-                        break;
-                    default:
-                        break;
-                }
-                // [debug] 输出数值以便调试
-                ob_master.ReceiveChat(string.Format("{0}[{1}]: {2} / {3}% --> {4} | {5}", Name, ObjectID, damage_value, percent, damage, damage - damage_value), ChatType.Normal);
-            }
+            //// [hack] 根据主人职业调整宝宝攻击力
+            //if (Master != null)
+            //{
+            //    int damage_value = damage;
+
+            //    PlayerObject ob_master = Master as PlayerObject;
+            //    switch (ob_master.Class)
+            //    {
+            //        case MirClass.Wizard:
+            //            damage = GetAttackPower(ob_master.Stats[Stat.MinMC], ob_master.Stats[Stat.MaxMC]);
+            //            break;
+            //        case MirClass.Taoist:
+            //            damage = GetAttackPower(ob_master.Stats[Stat.MinSC], ob_master.Stats[Stat.MaxSC]);
+            //            break;
+            //        case MirClass.Warrior:
+            //            damage = GetAttackPower(ob_master.Stats[Stat.MinDC], ob_master.Stats[Stat.MaxDC]);
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //    // [debug] 输出数值以便调试
+            //    msg = string.Format("{0}[{1}]: {2} / {3}% --> {4} | {5}", Name, ObjectID, damage_value, percent, damage, damage - damage_value);
+            //    //Enqueue(new S.ObjectChat { ObjectID = ObjectID, Text = msg, Type = ChatType.Normal });
+            //    Logger.GetLogger(LogType.Debug).Debug(msg);
+            //}
 
             if (damage == 0) return;
 

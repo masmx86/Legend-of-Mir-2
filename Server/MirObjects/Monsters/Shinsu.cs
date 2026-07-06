@@ -82,8 +82,8 @@ namespace Server.MirObjects.Monsters
                 // [hack] 调整为根据玩家的攻击力计算伤害
                 List<int> min_attack = [player.Stats[Stat.MinDC], player.Stats[Stat.MinMC], player.Stats[Stat.MinSC]];
                 List<int> max_attack = [player.Stats[Stat.MaxDC], player.Stats[Stat.MaxMC], player.Stats[Stat.MaxSC]];
-                int min_limit = min_attack[Envir.Random.Next(min_attack.Count)];
-                int max_limit = max_attack[Envir.Random.Next(max_attack.Count)];
+                int min_limit = min_attack[(int) player.Class]; // [Envir.Random.Next(min_attack.Count)];
+                int max_limit = max_attack[(int) player.Class]; // [Envir.Random.Next(max_attack.Count)];
                 damage = GetAttackPower(min_limit, max_limit); // * Math.Min(Level, MaxPetLevel) / MaxPetLevel; // * HealthPercent / 100;
             }
             else
