@@ -2257,9 +2257,14 @@ namespace Server.MirObjects
             AttackTime = Envir.Time + AttackSpeed;
 
             int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
+
             // [hack] 根据怪物血量调整攻击力
-            int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : (PercentHealth >= 25 ? 60 : 40));
-            damage = (int)(damage * percent / 100);
+            int percent = 100;
+            if (Info.Name != Settings.CloneName && Info.Name != Settings.SkeletonName && Info.Name != Settings.ShinsuName)
+            {
+                percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : (PercentHealth >= 25 ? 60 : 40));
+                damage = (int)(damage * percent / 100);
+            }
 
             //string msg = string.Format("{0}[{1}]: {2} / {3}% --> {4}%", Name, ObjectID, damage, PercentHealth, percent);
             //Logger.GetLogger(LogType.Debug).Debug(msg);
