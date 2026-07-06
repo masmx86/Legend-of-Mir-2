@@ -2257,13 +2257,15 @@ namespace Server.MirObjects
             AttackTime = Envir.Time + AttackSpeed;
 
             int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
-            // [hack] 根据怪物血量调整宝宝攻击力
+            // [hack] 根据怪物血量调整攻击力
             int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : (PercentHealth >= 25 ? 60 : 40));
             damage = (int)(damage * percent / 100);
 
             // [hack] 根据主人职业调整宝宝攻击力
             if (Race == ObjectType.Monster && Master != null)
             {
+                int damage_value = damage;
+
                 PlayerObject ob_master = Master as PlayerObject;
                 switch (ob_master.Class)
                 {
@@ -2279,6 +2281,8 @@ namespace Server.MirObjects
                     default:
                         break;
                 }
+                // [debug] 输出数值以便调试
+                ob_master.ReceiveChat(string.Format("{0}[{1}]: {2} / {3}% --> {4} | {5}", Name, ObjectID, damage_value, percent, damage, damage - damage_value), ChatType.Normal);
             }
 
             if (damage == 0) return;

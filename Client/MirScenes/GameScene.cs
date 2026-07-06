@@ -3514,18 +3514,21 @@ namespace Client.MirScenes
                 if (MapControl.Objects.TryGetValue(p.ObjectID, out var obj))
                 {
                     if (obj.Damages.Count >= 10) return;
-
+                                       
                     switch (p.Type)
                     {
                         case DamageType.Hit: //add damage level colours
-                            obj.Damages.Add(new Damage(p.Damage.ToString("#,##0"), 1000, obj.Race == ObjectType.Player ? Color.Red : Color.White, 50));
+                            // [hack] 回血用天蓝色数字显示
+                            obj.Damages.Add(new Damage(p.Damage.ToString("#,##0"), 1000, 
+                                obj.Race == ObjectType.Player ? Color.Red : p.Damage > 0 ? Color.LightSkyBlue : Color.White, 50));
                             break;
                         case DamageType.Miss:
-                            obj.Damages.Add(new Damage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Miss), 1200, obj.Race == ObjectType.Player ? Color.LightCoral : Color.LightGray, 50));
+                            obj.Damages.Add(new Damage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Miss), 1200, 
+                                obj.Race == ObjectType.Player ? Color.LightCoral : Color.LightGray, 50));
                             break;
                         case DamageType.Critical:
-                            obj.Damages.Add(
-                                new Damage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Crit), 1000, obj.Race == ObjectType.Player ? Color.DarkRed : Color.DarkRed, 50) { Offset = 15 });
+                            obj.Damages.Add(new Damage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Crit), 1000, 
+                                obj.Race == ObjectType.Player ? Color.DarkRed : Color.DarkRed, 50) { Offset = 15 });
                             break;
                     }
                 }
