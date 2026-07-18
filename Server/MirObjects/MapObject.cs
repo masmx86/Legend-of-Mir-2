@@ -459,7 +459,6 @@ namespace Server.MirObjects
 
         public virtual int GetArmour(DefenceType type, MapObject attacker, out bool hit)
         {
-            // [hack] 根据血量调整防御值
             var armour = 0;
             hit = true;
             switch (type)
@@ -505,10 +504,7 @@ namespace Server.MirObjects
                     break;
             }
 
-            int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : PercentHealth >= 25 ? 60 : 40);
-            if (Race == ObjectType.Monster)
-                return armour * percent / 100;
-            else return armour;
+            return armour;
         }
 
         public virtual void ApplyNegativeEffects(HumanObject attacker, DefenceType type, ushort levelOffset)

@@ -353,12 +353,12 @@ namespace Server
         // [hack] 给宠物和英雄添加昵称
         public static string[] SkeletonNicknames = ["硬骨头", "软骨头"];
         public static string[] ShinsuNicknames = ["大狗", "二狗"];
-        public static string[] HeroTitles = ["霸道总裁","好狗不当道","磨磨鸡鸡", "精神小伙"];
-        public static string[] BoysHeroNicknames = ["玩世不出恭", "霸道总裁", "好狗不当道", "磨磨鸡鸡"];
+        public static string[] HeroTitles = ["霸道总裁", "磨磨鸡鸡", "精神小伙"];
+        public static string[] BoysHeroNicknames = ["玩世不出恭", "霸道总裁", "磨磨鸡鸡"];
         public static string[] GirlsHeroNicknames = ["精神小妹", "小太妹"];
 
         // [hack] 掉血超过一定数值时喊出来的话
-        public static string[] HealthDropMessages = ["哎吆~~~", "你小子玩真的啊", "你是认真的吗", "可以啊", "wc 你使这么大劲儿啊"];
+        public static string[] HealthDropMessages = ["哎吆~~~", "你丫的玩真的啊", "你行~~ 我记住你了~", "可以啊~", "wc 你使这么大劲儿啊~", "放学别走~~"];
 
         //Guild related settings
         public static bool NewbieGuildBuffEnabled = true;

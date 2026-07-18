@@ -2258,7 +2258,7 @@ namespace Server.MirObjects
 
             int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
 
-            // [hack] 根据怪物血量调整攻击力
+            // [hack] 根据怪物血量调整攻击伤害值
             int percent = 100;
             if (Info.Name != Settings.CloneName && Info.Name != Settings.SkeletonName && Info.Name != Settings.ShinsuName)
             {
@@ -2920,25 +2920,37 @@ namespace Server.MirObjects
         // [hack] 掉血超过一定数值的时候会随机输出一些聊天信息或者回到主人身边
         public void MonsterHealthDropShout(int healthdrop)
         {
-            PlayerObject ob = Master as PlayerObject;
-            if (healthdrop > Globals.HealthDropShoutOutLoud)
+            PlayerObject player = Master as PlayerObject;
+            if (healthdrop >= Globals.HealthDropShoutOutLoud)
             {
-                if (ob != null && Envir.Random.Next(Globals.HealthDropShoutOutLoud) == 0)
+                if (player != null && Envir.Random.Next(Globals.HealthDropShoutOutLoud) == 0)
                 {
                     string msg = Settings.HealthDropMessages[Envir.Random.Next(Settings.HealthDropMessages.Length)];
                     // [debug]
                     Enqueue(new S.ObjectChat { ObjectID = ObjectID, Text = msg, Type = ChatType.Normal });
-                    ob.ReceiveChat(string.Format("{0}[{1}]: {2}", Name, ObjectID, msg), ChatType.Normal);
+                    player.ReceiveChat(string.Format("{0}[{1}]: {2}", Name, ObjectID, msg), ChatType.Normal);
                     //Logger.GetLogger(LogType.Chat).Debug(string.Format("{0}[{1}]: {2}", Name, ObjectID, msg));
                 }
             }
-            if (Master != null && PercentHealth <= (byte)Globals.PetRecallHPPercent)
+            if (player != null && PercentHealth <= (byte)Globals.PetRecallHPPercent)
             {
                 PetRecall();
                 // [debug]
-                //ob.ReceiveChat(string.Format("{0}[{1}]: {2}", Name, ObjectID, "溜了溜了~~~"), ChatType.Normal);
+                //player.ReceiveChat(string.Format("{0}[{1}]: {2}", Name, ObjectID, "溜了溜了~~~"), ChatType.Normal);
                 //Logger.GetLogger(LogType.Chat).Debug(string.Format("{0}[{1}]: {2}", Name, ObjectID, "溜了溜了~~~"));
             }
+        }
+        public override int GetArmour(DefenceType type, MapObject attacker, out bool hit)
+        {
+            int armour = base.GetArmour(type, attacker, out hit);
+            // [hack] 根据怪物血量调整防御值
+            if (Info.Name != Settings.CloneName && Info.Name != Settings.SkeletonName && Info.Name != Settings.ShinsuName)
+            {
+                int percent = PercentHealth >= 75 ? 100 : (PercentHealth >= 50 ? 80 : (PercentHealth >= 25 ? 60 : 40));
+                armour = (int)(armour * percent / 100);
+            }
+
+            return armour;
         }
         public override int Struck(int damage, DefenceType type = DefenceType.ACAgility)
         {
