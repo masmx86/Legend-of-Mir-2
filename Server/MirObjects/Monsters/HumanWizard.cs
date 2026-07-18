@@ -32,8 +32,19 @@ namespace Server.MirObjects.Monsters
             
             ShockTime = 0;
 
+            // [hack] 分身的攻击方式为随机选择法术中的一种进行攻击
+            List<Spell> spells = [Spell.ThunderBolt,Spell.FireWall, Spell.ThunderStorm, Spell.IceStorm];
+
             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
-            Broadcast(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Spell = Spell.ThunderBolt, TargetID = Target.ObjectID, Target = Target.CurrentLocation, Cast = true, Level = 3 });
+            Broadcast(new S.ObjectMagic { 
+                ObjectID = ObjectID, 
+                Direction = Direction, 
+                Location = CurrentLocation, 
+                Spell = spells[Envir.Random.Next(spells.Count)], 
+                TargetID = Target.ObjectID, 
+                Target = Target.CurrentLocation, 
+                Cast = true, 
+                Level = 3 });
 
             ActionTime = Envir.Time + 300;
             AttackTime = Envir.Time + AttackSpeed;
@@ -75,7 +86,13 @@ namespace Server.MirObjects.Monsters
             if (Target == null || !CanAttack) return;
 
             if (Master != null)
-                MoveTo(Master.CurrentLocation);
+            {
+                //MoveTo(Master.CurrentLocation);
+                // [hack] 分身会自动移动到主人的位置附近而不是每次都移动到主人所在的确切位置，避免影响主人的移动
+                int x = Envir.Random.Next(-2, 2);
+                int y = Envir.Random.Next(-2, 2);
+                MoveTo(new System.Drawing.Point(Master.CurrentLocation.X + x, Master.CurrentLocation.Y + y));
+            }
 
             if (InAttackRange() && (Master != null || Envir.Time < FearTime))
             {
