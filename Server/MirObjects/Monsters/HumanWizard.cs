@@ -38,16 +38,16 @@ namespace Server.MirObjects.Monsters
             ActionTime = Envir.Time + 300;
             AttackTime = Envir.Time + AttackSpeed;
 
-            // [hack] 根据玩家的攻击力计算伤害
+            // [hack] 根据玩家的职业调整分身的攻击力计算伤害
             PlayerObject player = Master as PlayerObject;
             int damage = 0;
             if (player != null)
             {
                 List<int> min_attack = [player.Stats[Stat.MinDC], player.Stats[Stat.MinMC], player.Stats[Stat.MinSC]];
                 List<int> max_attack = [player.Stats[Stat.MaxDC], player.Stats[Stat.MaxMC], player.Stats[Stat.MaxSC]];
-                int min_limit = min_attack[Envir.Random.Next(min_attack.Count)];
-                int max_limit = max_attack[Envir.Random.Next(max_attack.Count)];
-                damage = GetAttackPower(min_limit, max_limit) * HealthPercent / 100;
+                int min_limit = min_attack[(int)player.Class];
+                int max_limit = max_attack[(int)player.Class];
+                damage = GetAttackPower(min_limit, max_limit);
             }
             else
                 damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
