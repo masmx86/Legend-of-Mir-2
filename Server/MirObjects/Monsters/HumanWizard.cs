@@ -9,6 +9,7 @@ namespace Server.MirObjects.Monsters
         public long FearTime, DecreaseMPTime;
         public byte AttackRange = 6;
         public bool Summoned;
+        public List<Spell> spells = [Spell.ThunderBolt, Spell.IceStorm, Spell.ThunderStorm];
 
         protected internal HumanWizard(MonsterInfo info)
             : base(info)
@@ -35,31 +36,6 @@ namespace Server.MirObjects.Monsters
 
             // [hack] 分身的攻击方式为随机选择法术中的一种进行攻击
             PlayerObject player = Master as PlayerObject;
-            
-            List<Spell> spells = [Spell.ThunderBolt, Spell.IceStorm, Spell.ThunderStorm];
-            Spell spell = spells[Envir.Random.Next(spells.Count)];
-
-            // [hack] 3 级 ThunderStorm 的等级是 34 级
-            // [hack] 分身自己周围的怪物少于等于 4 只则使用 雷电术
-            if (spell == Spell.ThunderStorm && (player.Level < 34 || GetNearMonsterCount(CurrentLocation, 2) <= 4))
-                spell = Spell.ThunderBolt;
-            // [hack] 3 级 IceStorm 的等级是 40 级
-            // [hack] 目标怪物及周围的其他怪物少于等于 3 只则使用 雷电术
-            if (spell == Spell.IceStorm && (player.Level < 40 || GetNearMonsterCount(Target.CurrentLocation, 2) <= 3))
-                spell = Spell.ThunderBolt;
-
-            Broadcast(new S.ObjectMagic { 
-                ObjectID = ObjectID, 
-                Direction = Direction, 
-                Location = CurrentLocation, 
-                Spell = spell, 
-                TargetID = Target.ObjectID, 
-                Target = Target.CurrentLocation, 
-                Cast = true, 
-                Level = 3 });
-
-            ActionTime = Envir.Time + 300;
-            AttackTime = Envir.Time + AttackSpeed;
 
             // [hack] 根据玩家的职业调整分身的攻击力计算伤害
             int damage = 0;
@@ -74,6 +50,51 @@ namespace Server.MirObjects.Monsters
             else
                 damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
             if (damage == 0) return;
+
+            Spell spell = spells[Envir.Random.Next(spells.Count)];
+
+            // [hack] 3 级 ThunderStorm 的等级是 34 级
+            // [hack] 分身自己周围的怪物少于等于 4 只则使用 雷电术
+            if (spell == Spell.ThunderStorm)
+            {
+                if (player.Level < 34 || GetNearMonsterCount(CurrentLocation, 2) <= 4)
+                {
+                    spell = Spell.ThunderBolt;
+                }
+                else
+                {
+                    DelayedAction action2 = new DelayedAction(DelayedType.Magic, Envir.Time + 500, player, new UserMagic(spell), damage, CurrentLocation);
+                    CurrentMap.ActionList.Add(action2);
+                }
+            }
+            // [hack] 3 级 IceStorm 的等级是 40 级
+            // [hack] 目标怪物及周围的其他怪物少于等于 3 只则使用 雷电术
+            if (spell == Spell.IceStorm)
+            {
+                if (player.Level < 40 || GetNearMonsterCount(Target.CurrentLocation, 2) <= 3)
+                {
+                    spell = Spell.ThunderBolt;
+                }
+                else
+                {
+                    DelayedAction action2 = new DelayedAction(DelayedType.Magic, Envir.Time + 500, player, new UserMagic(spell), damage, Target.CurrentLocation);
+                    CurrentMap.ActionList.Add(action2);
+                }
+            }
+
+            Broadcast(new S.ObjectMagic { 
+                ObjectID = ObjectID, 
+                Direction = Direction, 
+                Location = CurrentLocation, 
+                Spell = spell, 
+                TargetID = Target.ObjectID, 
+                Target = Target.CurrentLocation, 
+                Cast = true, 
+                Level = 3 });
+
+            ActionTime = Envir.Time + 300;
+            AttackTime = Envir.Time + AttackSpeed;
+
 
             DelayedAction action = new DelayedAction(DelayedType.Damage, Envir.Time + 500, Target, damage, DefenceType.MAC);
             ActionList.Add(action);
