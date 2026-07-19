@@ -2107,10 +2107,11 @@ namespace Server.MirObjects
                         if (ob.Race == ObjectType.Monster)
                         {
                             if (ob == this) continue;
+                            if (ob.Master != null && ob.Master == Master) continue;
                             if (ob.Hidden && (!CoolEye || Level < ob.Level)) continue;
                             if (this is TrapRock && ob.InTrapRock) continue;
 
-                            if (!ob.Dead && ob.Name != Settings.CloneName && ob.Name != Settings.SkeletonName && ob.Name != Settings.ShinsuName) count++;
+                            if (!ob.Dead && !ob.Name.Contains(Settings.CloneName) && !ob.Name.Contains(Settings.SkeletonName) && !ob.Name.Contains(Settings.ShinsuName)) count++;
                         }
                     }
                 }
