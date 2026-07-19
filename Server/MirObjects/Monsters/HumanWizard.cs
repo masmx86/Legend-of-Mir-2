@@ -41,11 +41,11 @@ namespace Server.MirObjects.Monsters
 
             // [hack] 3 级 ThunderStorm 的等级是 34 级
             // [hack] 分身自己周围的怪物少于等于 4 只则使用 雷电术
-            if (spell == Spell.ThunderStorm && (player.Level < 34 || GetNearMonsterCount(CurrentLocation) <= 4))
+            if (spell == Spell.ThunderStorm && (player.Level < 34 || GetNearMonsterCount(CurrentLocation, 2) <= 4))
                 spell = Spell.ThunderBolt;
             // [hack] 3 级 IceStorm 的等级是 40 级
             // [hack] 目标怪物及周围的其他怪物少于等于 3 只则使用 雷电术
-            if (spell == Spell.IceStorm && (player.Level < 40 || GetNearMonsterCount(Target.CurrentLocation) <= 3))
+            if (spell == Spell.IceStorm && (player.Level < 40 || GetNearMonsterCount(Target.CurrentLocation, 2) <= 3))
                 spell = Spell.ThunderBolt;
 
             Broadcast(new S.ObjectMagic { 

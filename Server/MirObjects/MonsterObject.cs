@@ -2087,14 +2087,14 @@ namespace Server.MirObjects
             }
         }
         // [hack] 计算目标点周围怪物的数量 
-        protected int GetNearMonsterCount(System.Drawing.Point location)
+        protected int GetNearMonsterCount(System.Drawing.Point location, int distance)
         {
             int count = 0;
-            for (int x = location.X - 2; x <= location.X + 2; x++)
+            for (int x = location.X - distance; x <= location.X + distance; x++)
             {
                 if (x < 0) continue;
                 if (x > CurrentMap.Width) break;
-                for (int y = location.Y - 2; y <= location.Y + 2; y++)
+                for (int y = location.Y - distance; y <= location.Y + distance; y++)
                 {
                     if (y < 0) continue;
                     if (y > CurrentMap.Height) break;
