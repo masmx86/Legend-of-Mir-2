@@ -3518,9 +3518,9 @@ namespace Client.MirScenes
                     switch (p.Type)
                     {
                         case DamageType.Hit: //add damage level colours
-                            // [hack] 回血用天蓝色数字显示
+                            // [hack] 回血用绿色和天蓝色数字显示
                             obj.Damages.Add(new Damage(p.Damage.ToString("#,##0"), 1000, 
-                                obj.Race == ObjectType.Player ? Color.Red : p.Damage > 0 ? Color.LightSkyBlue : Color.White, 50));
+                                obj.Race == ObjectType.Player ? p.Damage > 0 ? Color.DarkGreen : Color.Red : p.Damage > 0 ? Color.LightSkyBlue : Color.White, 50));
                             break;
                         case DamageType.Miss:
                             obj.Damages.Add(new Damage(GameLanguage.ClientTextMap.GetLocalization(ClientTextKeys.Miss), 1200, 
