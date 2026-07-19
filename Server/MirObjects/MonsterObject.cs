@@ -2086,7 +2086,37 @@ namespace Server.MirObjects
                 }
             }
         }
+        // [hack] 计算目标点周围怪物的数量 
+        protected int GetNearMonsterCount(System.Drawing.Point location)
+        {
+            int count = 0;
+            for (int x = location.X - 2; x <= location.X + 2; x++)
+            {
+                if (x < 0) continue;
+                if (x > CurrentMap.Width) break;
+                for (int y = location.Y - 2; y <= location.Y + 2; y++)
+                {
+                    if (y < 0) continue;
+                    if (y > CurrentMap.Height) break;
 
+                    Cell cell = CurrentMap.Cells[x, y];
+                    if (cell.Objects == null || !cell.Valid) continue;
+                    for (int i = 0; i < cell.Objects.Count; i++)
+                    {
+                        MapObject ob = cell.Objects[i];
+                        if (ob.Race == ObjectType.Monster)
+                        {
+                            if (ob == this) continue;
+                            if (ob.Hidden && (!CoolEye || Level < ob.Level)) continue;
+                            if (this is TrapRock && ob.InTrapRock) continue;
+
+                            if (!ob.Dead && ob.Name != Settings.CloneName && ob.Name != Settings.SkeletonName && ob.Name != Settings.ShinsuName) count++;
+                        }
+                    }
+                }
+            }
+            return count;
+        }
         protected virtual bool ProcessRoute()
         {
             if (Route.Count < 1) return false;

@@ -31,16 +31,28 @@ namespace Server.MirObjects.Monsters
             }
             
             ShockTime = 0;
+            Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
 
             // [hack] 分身的攻击方式为随机选择法术中的一种进行攻击
-            List<Spell> spells = [Spell.ThunderBolt,Spell.FireWall, Spell.ThunderStorm, Spell.IceStorm];
+            PlayerObject player = Master as PlayerObject;
+            
+            List<Spell> spells = [Spell.ThunderBolt, Spell.IceStorm, Spell.ThunderStorm];
+            Spell spell = spells[Envir.Random.Next(spells.Count)];
 
-            Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
+            // [hack] 3 级 ThunderStorm 的等级是 34 级
+            // [hack] 分身自己周围的怪物少于等于 4 只则使用 雷电术
+            if (spell == Spell.ThunderStorm && (player.Level < 34 || GetNearMonsterCount(CurrentLocation) <= 4))
+                spell = Spell.ThunderBolt;
+            // [hack] 3 级 IceStorm 的等级是 40 级
+            // [hack] 目标怪物及周围的其他怪物少于等于 3 只则使用 雷电术
+            if (spell == Spell.IceStorm && (player.Level < 40 || GetNearMonsterCount(Target.CurrentLocation) <= 3))
+                spell = Spell.ThunderBolt;
+
             Broadcast(new S.ObjectMagic { 
                 ObjectID = ObjectID, 
                 Direction = Direction, 
                 Location = CurrentLocation, 
-                Spell = spells[Envir.Random.Next(spells.Count)], 
+                Spell = spell, 
                 TargetID = Target.ObjectID, 
                 Target = Target.CurrentLocation, 
                 Cast = true, 
@@ -50,7 +62,6 @@ namespace Server.MirObjects.Monsters
             AttackTime = Envir.Time + AttackSpeed;
 
             // [hack] 根据玩家的职业调整分身的攻击力计算伤害
-            PlayerObject player = Master as PlayerObject;
             int damage = 0;
             if (player != null)
             {
@@ -67,7 +78,6 @@ namespace Server.MirObjects.Monsters
             DelayedAction action = new DelayedAction(DelayedType.Damage, Envir.Time + 500, Target, damage, DefenceType.MAC);
             ActionList.Add(action);
         }
-
         protected override void ProcessAI()
         {
             base.ProcessAI();
