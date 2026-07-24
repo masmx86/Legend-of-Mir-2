@@ -40,7 +40,8 @@
 
         LogDelay = 10000,
 
-        DataRange = 16;//Was 24
+        DataRange = 16, //Was 24
+        PetAlertRange = 4;          // [hack] 宝宝警戒范围
 
     public static float Commission = 0.05F;
 

@@ -120,8 +120,8 @@ namespace Server.MirObjects.Monsters
             {
                 //MoveTo(Master.CurrentLocation);
                 // [hack] 分身会自动移动到主人的位置附近而不是每次都移动到主人所在的确切位置，避免影响主人的移动
-                int x = Envir.Random.Next(-2, 2);
-                int y = Envir.Random.Next(-2, 2);
+                int x = Envir.Random.Next(Globals.PetAlertRange * (-1), Globals.PetAlertRange);
+                int y = Envir.Random.Next(Globals.PetAlertRange * (-1), Globals.PetAlertRange);
                 MoveTo(new System.Drawing.Point(Master.CurrentLocation.X + x, Master.CurrentLocation.Y + y));
             }
 
