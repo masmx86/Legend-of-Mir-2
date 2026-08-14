@@ -227,6 +227,12 @@ namespace Server.MirObjects
         public bool FatalSword, Slaying, TwinDrakeBlade, FlamingSword, MPEater, Hemorrhage, CounterAttack;
         public int MPEaterCount, HemorrhageAttackCount;
         public long FlamingSwordTime, CounterAttackTime;
+
+        // [hack] 增加烈火连击次数
+        public long FlamingSwordCooldownTime = 10000; //  烈火冷却时间
+        public int FlamingSwordMaxComboStrike = 1; // 烈火最大连击次数
+        public int FlamingSwordComboStrike = 1; // 烈火连击次数
+
         public bool ActiveBlizzard, ActiveReincarnation, ActiveSwiftFeet, ReincarnationReady;
         public HumanObject ReincarnationTarget, ReincarnationHost;
         public long ReincarnationExpireTime;
@@ -290,8 +296,13 @@ namespace Server.MirObjects
 
             if (FlamingSword && Envir.Time >= FlamingSwordTime)
             {
-                FlamingSword = false;
-                Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.FlamingSword, CanUse = false });
+                // [hack] 增加烈火连击次数
+                if (FlamingSwordComboStrike > FlamingSwordMaxComboStrike)
+                {
+                    FlamingSword = false;
+                    Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.FlamingSword, CanUse = false });
+                    //FlamingSwordComboStrike = 1;
+                }
             }
 
             if (CounterAttack && Envir.Time >= CounterAttackTime)
@@ -3077,6 +3088,9 @@ namespace Server.MirObjects
                         break;
                     }
                     level = magic.Level;
+                    // [hack] 增加烈火连击次数
+                    FlamingSwordMaxComboStrike = (int) level;
+                    FlamingSwordComboStrike++;
                     break;
                 case Spell.HalfMoon:
                 case Spell.CrossHalfMoon:
@@ -3341,7 +3355,8 @@ namespace Server.MirObjects
                     case Spell.FlamingSword:
                         magic = GetMagic(Spell.FlamingSword);
                         damageFinal = magic.GetDamage(damageBase);
-                        FlamingSword = false;
+                        // [hack] 增加烈火连击次数
+                        FlamingSword = FlamingSwordComboStrike > FlamingSwordMaxComboStrike ? false : true;
                         defence = DefenceType.AC;
                         //action = new DelayedAction(DelayedType.Damage, Envir.Time + 400, ob, damage, DefenceType.Agility, true);
                         //ActionList.Add(action);
@@ -9299,14 +9314,20 @@ namespace Server.MirObjects
                     Enqueue(new S.ObjectMagic { ObjectID = ObjectID, Direction = Direction, Location = CurrentLocation, Spell = spell });
                     break;
                 case Spell.FlamingSword:
-                    if (FlamingSword || Envir.Time < FlamingSwordTime) return;
+                    // [hack] 增加烈火连击次数
+                    if ((FlamingSword || Envir.Time < FlamingSwordTime) && FlamingSwordComboStrike > FlamingSwordMaxComboStrike) 
+                    {
+                        FlamingSwordComboStrike = 1;
+                        return;
+                    }
+
                     magic = GetMagic(spell);
                     if (magic == null) return;
                     cost = magic.Info.BaseCost + magic.Level * magic.Info.LevelCost;
                     if (cost >= MP) return;
 
                     FlamingSword = true;
-                    FlamingSwordTime = Envir.Time + 10000;
+                    FlamingSwordTime = Envir.Time + FlamingSwordCooldownTime;
                     Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.FlamingSword, CanUse = true });
                     ChangeMP(-cost);
                     break;
