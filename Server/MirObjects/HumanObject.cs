@@ -301,7 +301,7 @@ namespace Server.MirObjects
                 {
                     FlamingSword = false;
                     Enqueue(new S.SpellToggle { ObjectID = ObjectID, Spell = Spell.FlamingSword, CanUse = false });
-                    //FlamingSwordComboStrike = 1;
+                    FlamingSwordComboStrike = 1;
                 }
             }
 
@@ -9315,10 +9315,13 @@ namespace Server.MirObjects
                     break;
                 case Spell.FlamingSword:
                     // [hack] 增加烈火连击次数
-                    if ((FlamingSword || Envir.Time < FlamingSwordTime) && FlamingSwordComboStrike > FlamingSwordMaxComboStrike) 
-                    {
-                        FlamingSwordComboStrike = 1;
-                        return;
+                    if ((FlamingSword || Envir.Time < FlamingSwordTime))
+                    { 
+                        if(FlamingSwordComboStrike > FlamingSwordMaxComboStrike)
+                        {
+                            FlamingSwordComboStrike = 1;
+                            return;
+                        }
                     }
 
                     magic = GetMagic(spell);
