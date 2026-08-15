@@ -9,7 +9,8 @@ namespace Server.MirObjects.Monsters
         public long FearTime, DecreaseMPTime;
         public byte AttackRange = 6;
         public bool Summoned;
-        public List<Spell> spells = [Spell.ThunderBolt, Spell.IceStorm, Spell.ThunderStorm];
+        // [hack] 分身的攻击方式为随机选择法术中的一种进行攻击
+        public List<Spell> spells = [Spell.ThunderBolt, Spell.IceStorm, Spell.ThunderStorm, Spell.FlamingSword];
 
         protected internal HumanWizard(MonsterInfo info)
             : base(info)
@@ -30,7 +31,7 @@ namespace Server.MirObjects.Monsters
                 Target = null;
                 return;
             }
-            
+
             ShockTime = 0;
             Direction = Functions.DirectionFromPoint(CurrentLocation, Target.CurrentLocation);
 
@@ -51,35 +52,54 @@ namespace Server.MirObjects.Monsters
                 damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
             if (damage == 0) return;
 
+            DelayedAction action;
             Spell spell = spells[Envir.Random.Next(spells.Count)];
 
-            // [hack] 3 级 ThunderStorm 的等级是 34 级
-            // [hack] 分身自己周围的怪物少于等于 4 只则使用 雷电术
-            if (spell == Spell.ThunderStorm)
+            switch (spell)
             {
-                if (player.Level < 34 || GetNearMonsterCount(CurrentLocation, 2) <= 4)
-                {
+                case Spell.ThunderStorm:
+                    // [hack] 1 级 ThunderStorm 的等级是 30 级
+                    // [hack] 分身自己周围的怪物少于等于 4 只则使用 雷电术
+                    if (player.Level < 30 || GetNearMonsterCount(CurrentLocation, 2) <= 4)
+                    {
+                        spell = Spell.ThunderBolt;
+                    }
+                    else
+                    {
+                        action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, player, new UserMagic(spell), damage, CurrentLocation);
+                        CurrentMap.ActionList.Add(action);
+                    }
+                        break;
+                case Spell.IceStorm:
+                    // [hack] 1 级 IceStorm 的等级是 35 级
+                    // [hack] 目标怪物及周围的其他怪物少于等于 3 只则使用 雷电术
+                    if (player.Level < 35 || GetNearMonsterCount(Target.CurrentLocation, 2) <= 3)
+                    {
+                        spell = Spell.ThunderBolt;
+                    }
+                    else
+                    {
+                        action = new DelayedAction(DelayedType.Magic, Envir.Time + 500, player, new UserMagic(spell), damage, Target.CurrentLocation);
+                        CurrentMap.ActionList.Add(action);
+                    }
+                        break;
+                case Spell.FlamingSword:
+                    // [hack] 1 级 FlamingSword 的等级是 35 级
+                    if (player.Level < 35 || !(CurrentMap == Target.CurrentMap && Functions.InRange(CurrentLocation, Target.CurrentLocation, 1)))
+                    {
+                        spell = Spell.ThunderBolt;
+                    }
+                    else
+                    {
+                        action = new DelayedAction(DelayedType.Damage, Envir.Time + 400, Target, damage, DefenceType.AC, true);
+                        CurrentMap.ActionList.Add(action);
+                    }
+                        break;
+                case Spell.ThunderBolt:
+                    break;
+                default:
                     spell = Spell.ThunderBolt;
-                }
-                else
-                {
-                    DelayedAction action2 = new DelayedAction(DelayedType.Magic, Envir.Time + 500, player, new UserMagic(spell), damage, CurrentLocation);
-                    CurrentMap.ActionList.Add(action2);
-                }
-            }
-            // [hack] 3 级 IceStorm 的等级是 40 级
-            // [hack] 目标怪物及周围的其他怪物少于等于 3 只则使用 雷电术
-            if (spell == Spell.IceStorm)
-            {
-                if (player.Level < 40 || GetNearMonsterCount(Target.CurrentLocation, 2) <= 3)
-                {
-                    spell = Spell.ThunderBolt;
-                }
-                else
-                {
-                    DelayedAction action2 = new DelayedAction(DelayedType.Magic, Envir.Time + 500, player, new UserMagic(spell), damage, Target.CurrentLocation);
-                    CurrentMap.ActionList.Add(action2);
-                }
+                    break;
             }
 
             Broadcast(new S.ObjectMagic { 
@@ -96,7 +116,7 @@ namespace Server.MirObjects.Monsters
             AttackTime = Envir.Time + AttackSpeed;
 
 
-            DelayedAction action = new DelayedAction(DelayedType.Damage, Envir.Time + 500, Target, damage, DefenceType.MAC);
+            action = new DelayedAction(DelayedType.Damage, Envir.Time + 500, Target, damage, DefenceType.MAC);
             ActionList.Add(action);
         }
         protected override void ProcessAI()

@@ -3090,7 +3090,6 @@ namespace Server.MirObjects
                     level = magic.Level;
                     // [hack] 增加烈火连击次数
                     FlamingSwordMaxComboStrike = (int) level;
-                    FlamingSwordComboStrike++;
                     break;
                 case Spell.HalfMoon:
                 case Spell.CrossHalfMoon:
@@ -3356,6 +3355,7 @@ namespace Server.MirObjects
                         magic = GetMagic(Spell.FlamingSword);
                         damageFinal = magic.GetDamage(damageBase);
                         // [hack] 增加烈火连击次数
+                        FlamingSwordComboStrike++;
                         FlamingSword = FlamingSwordComboStrike > FlamingSwordMaxComboStrike ? false : true;
                         defence = DefenceType.AC;
                         //action = new DelayedAction(DelayedType.Damage, Envir.Time + 400, ob, damage, DefenceType.Agility, true);
@@ -4738,23 +4738,23 @@ namespace Server.MirObjects
                     //ReceiveChat(string.Format("magic = summon shinsu, class = {0}", Class == MirClass.Warrior ? "warrior" : "wizard"), ChatType.Hint);
                     break;
                 case Spell.Mercenary:
-                    int random_skill = Envir.Random.Next(3);
+                    int random_skill = Envir.Random.Next(magic.Level);
                     switch(random_skill)
                     {
                         case 0:
-                            user_magic = new UserMagic(Spell.Mirroring);
-                            info = Envir.GetMonsterInfo(Settings.CloneName);
-                            //ReceiveChat(string.Format("magic = mercenary mirroring, class = {0}", Class == MirClass.Warrior ? "warrior" : "unknown"), ChatType.Hint);
-                            break;
-                        case 1:
                             user_magic = new UserMagic(Spell.SummonSkeleton);
                             info = Envir.GetMonsterInfo(Settings.SkeletonName);
                             //ReceiveChat(string.Format("magic = mercenary skeleton, class = {0}", Class == MirClass.Warrior ? "warrior" : "unknown"), ChatType.Hint);
                             break;
-                        case 2:
+                        case 1:
                             user_magic = new UserMagic(Spell.SummonShinsu);
                             info = Envir.GetMonsterInfo(Settings.ShinsuName);
                             //ReceiveChat(string.Format("magic = mercenary shinsu, class = {0}", Class == MirClass.Warrior ? "warrior" : "unknown"), ChatType.Hint);
+                            break;
+                        case 2:
+                            user_magic = new UserMagic(Spell.Mirroring);
+                            info = Envir.GetMonsterInfo(Settings.CloneName);
+                            //ReceiveChat(string.Format("magic = mercenary mirroring, class = {0}", Class == MirClass.Warrior ? "warrior" : "unknown"), ChatType.Hint);
                             break;
                     }
                     break;
