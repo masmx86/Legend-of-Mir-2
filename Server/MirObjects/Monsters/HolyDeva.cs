@@ -39,7 +39,7 @@ namespace Server.MirObjects.Monsters
             // [hack] 调整远程攻击伤害数值
             //int damage = GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]);
             PlayerObject player = Master as PlayerObject;
-            int damage = GetAttackPower(player.Stats[Stat.MinSC], player.Stats[Stat.MaxSC]);
+            int damage = player == null ? GetAttackPower(Stats[Stat.MinDC], Stats[Stat.MaxDC]) : GetAttackPower(player.Stats[Stat.MinSC], player.Stats[Stat.MaxSC]);
 
             if (damage == 0) return;
 
